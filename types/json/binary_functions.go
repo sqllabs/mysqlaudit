@@ -22,7 +22,7 @@ import (
 	"unicode/utf8"
 	"unsafe"
 
-	"github.com/hanchuanchuan/goInception/util/hack"
+	"github.com/sqllabs/sqlaudit/util/hack"
 	"github.com/pingcap/errors"
 )
 

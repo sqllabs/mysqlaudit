@@ -16,11 +16,11 @@ import (
 	"math"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/testleak"
-	"github.com/hanchuanchuan/goInception/util/testutil"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/sqlaudit/util/testutil"
 	. "github.com/pingcap/check"
 )
 

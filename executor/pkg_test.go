@@ -3,13 +3,13 @@ package executor
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/mysql"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/mock"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/mysql"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/mock"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

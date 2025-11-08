@@ -20,11 +20,11 @@ import (
 	"strconv"
 	"strings"
 
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/parser/opcode"
-	"github.com/hanchuanchuan/goInception/types"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/parser/opcode"
+	"github.com/sqllabs/sqlaudit/types"
 	"github.com/pingcap/errors"
 )
 

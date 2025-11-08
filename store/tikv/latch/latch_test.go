@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
 	. "github.com/pingcap/check"
 )
 

@@ -20,9 +20,9 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 )
 

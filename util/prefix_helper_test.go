@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/util"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/util"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

@@ -21,12 +21,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/executor"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/store/tikv"
-	"github.com/hanchuanchuan/goInception/tablecodec"
-	"github.com/hanchuanchuan/goInception/util/testkit"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/executor"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/sqlaudit/tablecodec"
+	"github.com/sqllabs/sqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

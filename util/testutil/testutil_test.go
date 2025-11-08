@@ -16,7 +16,7 @@ package testutil
 import (
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

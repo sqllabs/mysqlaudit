@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/util/testkit"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

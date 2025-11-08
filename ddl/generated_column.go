@@ -14,8 +14,8 @@
 package ddl
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/table"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/table"
 	"github.com/pingcap/errors"
 )
 

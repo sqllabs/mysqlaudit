@@ -14,8 +14,8 @@
 package expression
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 	log "github.com/sirupsen/logrus"
 )
 

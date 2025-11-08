@@ -17,8 +17,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/model"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/model"
 )
 
 // StatsHandler is the handler for dumping statistics.

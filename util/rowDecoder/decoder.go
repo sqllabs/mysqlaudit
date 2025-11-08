@@ -16,14 +16,14 @@ package decoder
 import (
 	"time"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/table"
-	"github.com/hanchuanchuan/goInception/tablecodec"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/sqlaudit/tablecodec"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 )
 

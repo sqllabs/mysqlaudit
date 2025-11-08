@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"io"
 
-	. "github.com/hanchuanchuan/goInception/format"
+	. "github.com/sqllabs/sqlaudit/format"
 	"github.com/pingcap/errors"
 )
 

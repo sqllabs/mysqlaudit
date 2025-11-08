@@ -14,8 +14,8 @@
 package executor
 
 import (
-	"github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 	"golang.org/x/net/context"
 	"modernc.org/mathutil"
 )

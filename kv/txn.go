@@ -18,7 +18,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

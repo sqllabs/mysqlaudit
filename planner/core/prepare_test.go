@@ -14,9 +14,9 @@
 package core_test
 
 import (
-	"github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/util/testkit"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

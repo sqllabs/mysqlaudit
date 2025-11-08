@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
 	log "github.com/sirupsen/logrus"
 )
 

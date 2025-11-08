@@ -16,7 +16,7 @@ package tikv
 import (
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/config"
+	"github.com/sqllabs/sqlaudit/config"
 	. "github.com/pingcap/check"
 )
 

@@ -17,12 +17,12 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/hanchuanchuan/goInception/meta"
-	"github.com/hanchuanchuan/goInception/meta/autoid"
-	"github.com/hanchuanchuan/goInception/model"
-	// "github.com/hanchuanchuan/goInception/perfschema"
-	"github.com/hanchuanchuan/goInception/table"
-	"github.com/hanchuanchuan/goInception/table/tables"
+	"github.com/sqllabs/sqlaudit/meta"
+	"github.com/sqllabs/sqlaudit/meta/autoid"
+	"github.com/sqllabs/sqlaudit/model"
+	// "github.com/sqllabs/sqlaudit/perfschema"
+	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/sqlaudit/table/tables"
 	"github.com/pingcap/errors"
 )
 

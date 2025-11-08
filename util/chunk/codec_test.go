@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/types/json"
-	"github.com/hanchuanchuan/goInception/util/hack"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/types/json"
+	"github.com/sqllabs/sqlaudit/util/hack"
 	"github.com/pingcap/check"
 )
 

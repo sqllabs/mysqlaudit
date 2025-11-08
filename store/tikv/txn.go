@@ -18,8 +18,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/sessionctx"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

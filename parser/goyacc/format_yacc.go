@@ -25,7 +25,7 @@ import (
 
 	parser "github.com/cznic/parser/yacc"
 	"github.com/cznic/strutil"
-	"github.com/hanchuanchuan/goInception/format"
+	"github.com/sqllabs/sqlaudit/format"
 	"github.com/pingcap/errors"
 )
 

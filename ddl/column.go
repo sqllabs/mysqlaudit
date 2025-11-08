@@ -14,11 +14,11 @@
 package ddl
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/ddl/util"
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/meta"
-	"github.com/hanchuanchuan/goInception/model"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/ddl/util"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/meta"
+	"github.com/sqllabs/sqlaudit/model"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

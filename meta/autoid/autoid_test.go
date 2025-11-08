@@ -19,11 +19,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/meta"
-	"github.com/hanchuanchuan/goInception/meta/autoid"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/meta"
+	"github.com/sqllabs/sqlaudit/meta/autoid"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

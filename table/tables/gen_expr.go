@@ -16,9 +16,9 @@ package tables
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/parser"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/parser"
 	"github.com/pingcap/errors"
 )
 

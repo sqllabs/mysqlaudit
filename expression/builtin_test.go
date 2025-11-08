@@ -16,14 +16,14 @@ package expression
 import (
 	"reflect"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/charset"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

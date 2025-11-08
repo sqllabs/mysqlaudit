@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
 )
 
 // Cacheable checks whether the input ast is cacheable.

@@ -14,8 +14,8 @@
 package tikv
 
 import (
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/mockstore/mocktikv"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"golang.org/x/net/context"

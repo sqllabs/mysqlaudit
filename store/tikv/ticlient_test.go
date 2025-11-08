@@ -19,9 +19,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/mockstore/mocktikv"
-	"github.com/hanchuanchuan/goInception/util/codec"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/sqlaudit/util/codec"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"

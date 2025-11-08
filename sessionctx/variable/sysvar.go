@@ -17,11 +17,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util/charset"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util/charset"
 )
 
 // ScopeFlag is for system variable whether can be changed in global/session dynamically or not.

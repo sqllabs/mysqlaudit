@@ -5,7 +5,7 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/hanchuanchuan/goInception/session"
+	"github.com/sqllabs/sqlaudit/session"
 )
 
 type ErrorLevel struct {

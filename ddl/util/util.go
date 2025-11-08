@@ -17,11 +17,11 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

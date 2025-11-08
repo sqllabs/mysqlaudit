@@ -19,10 +19,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/auth"
-	"github.com/hanchuanchuan/goInception/util/hack"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/sqlaudit/util/hack"
 	"github.com/pingcap/errors" // SchemaState is the state for schema elements.
 	"github.com/pingcap/tipb/go-tipb"
 )
@@ -619,7 +619,7 @@ func NewCIStr(s string) (cs CIStr) {
 
 // UnmarshalJSON implements the user defined unmarshal method.
 // CIStr can be unmarshaled from a single string, so PartitionDefinition.Name
-// in this change https://github.com/hanchuanchuan/goInception/pull/6460/files would be
+// in this change https://github.com/sqllabs/sqlaudit/pull/6460/files would be
 // compatible during TiDB upgrading.
 func (cis *CIStr) UnmarshalJSON(b []byte) error {
 	type T CIStr

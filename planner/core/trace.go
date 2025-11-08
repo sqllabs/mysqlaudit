@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
+	"github.com/sqllabs/sqlaudit/ast"
 )
 
 // Trace represents a trace plan.

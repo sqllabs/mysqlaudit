@@ -16,11 +16,11 @@ package statistics
 import (
 	"math"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/util/ranger"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/util/ranger"
 	"github.com/pingcap/errors"
 )
 

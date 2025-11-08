@@ -22,9 +22,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/store/tikv"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

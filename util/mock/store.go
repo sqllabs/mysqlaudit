@@ -14,8 +14,8 @@
 package mock
 
 import (
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
 )
 
 // Store implements kv.Storage interface.

@@ -10,9 +10,9 @@ import (
 	"golang.org/x/net/context"
 
 	json "github.com/CorgiMan/json2"
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	log "github.com/sirupsen/logrus"
 )
 

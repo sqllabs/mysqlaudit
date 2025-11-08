@@ -19,12 +19,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util/charset"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	// "github.com/pingcap/errors"
 )
@@ -119,7 +119,7 @@ func (s *testParserSuite) TestSimple(c *C) {
 
 	// Testcase for /*! xx */
 	// See http://dev.mysql.com/doc/refman/5.7/en/comments.html
-	// Fix: https://github.com/hanchuanchuan/goInception/issues/971
+	// Fix: https://github.com/sqllabs/sqlaudit/issues/971
 	src = "/*!40101 SET character_set_client = utf8 */;"
 	stmts, _, err = parser.Parse(src, "", "")
 	c.Assert(err, IsNil)

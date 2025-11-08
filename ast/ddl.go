@@ -17,13 +17,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/format"
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/auth"
+	"github.com/sqllabs/sqlaudit/format"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/auth"
 	"github.com/pingcap/errors"
 )
 

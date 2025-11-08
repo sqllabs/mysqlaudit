@@ -20,23 +20,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/table"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/auth"
-	"github.com/hanchuanchuan/goInception/util/mock"
-	"github.com/hanchuanchuan/goInception/util/testkit"
-	"github.com/hanchuanchuan/goInception/util/testleak"
-	"github.com/hanchuanchuan/goInception/util/testutil"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/sqlaudit/util/mock"
+	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/sqlaudit/util/testutil"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
@@ -2254,7 +2254,7 @@ func (s *testIntegrationSuite) TestBuiltin(c *C) {
 	result.Check(testkit.Rows("2442"))
 
 	// for regexp, rlike
-	// https://github.com/hanchuanchuan/goInception/issues/4080
+	// https://github.com/sqllabs/sqlaudit/issues/4080
 	tk.MustExec(`drop table if exists t;`)
 	tk.MustExec(`create table t (a char(10), b varchar(10), c binary(10), d varbinary(10));`)
 	tk.MustExec(`insert into t values ('text','text','text','text');`)

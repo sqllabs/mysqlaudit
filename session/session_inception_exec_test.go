@@ -21,10 +21,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/util"
-	"github.com/hanchuanchuan/goInception/util/testkit"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/util"
+	"github.com/sqllabs/sqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

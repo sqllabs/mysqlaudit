@@ -16,15 +16,15 @@ package session
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/meta"
-	"github.com/hanchuanchuan/goInception/parser"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/util/auth"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/meta"
+	"github.com/sqllabs/sqlaudit/parser"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )
@@ -99,7 +99,7 @@ func (s *testBootstrapSuite) TestBootstrap(c *C) {
 	se.Close()
 
 	// Try to do bootstrap dml jobs on an already bootstraped TiDB system will not cause fatal.
-	// For https://github.com/hanchuanchuan/goInception/issues/1096
+	// For https://github.com/sqllabs/sqlaudit/issues/1096
 	se, err = CreateSession4Test(store)
 	c.Assert(err, IsNil)
 	doDMLWorks(se)

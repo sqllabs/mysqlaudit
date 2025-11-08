@@ -18,8 +18,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/tikv/tikvrpc"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"golang.org/x/net/context"

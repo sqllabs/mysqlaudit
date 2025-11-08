@@ -16,7 +16,7 @@ package expression
 import (
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/ast"
+	"github.com/sqllabs/sqlaudit/ast"
 	"github.com/pingcap/errors"
 )
 

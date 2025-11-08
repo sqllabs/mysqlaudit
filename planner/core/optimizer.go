@@ -16,12 +16,12 @@ package core
 import (
 	"math"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/planner/property"
-	"github.com/hanchuanchuan/goInception/privilege"
-	"github.com/hanchuanchuan/goInception/sessionctx"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/planner/property"
+	"github.com/sqllabs/sqlaudit/privilege"
+	"github.com/sqllabs/sqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 )
 

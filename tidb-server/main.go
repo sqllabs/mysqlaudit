@@ -23,26 +23,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/ddl"
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/mysql"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/privilege/privileges"
-	"github.com/hanchuanchuan/goInception/server"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/sessionctx/binloginfo"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/statistics"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/store/tikv"
-	"github.com/hanchuanchuan/goInception/store/tikv/gcworker"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util"
-	"github.com/hanchuanchuan/goInception/util/logutil"
-	"github.com/hanchuanchuan/goInception/util/printer"
-	"github.com/hanchuanchuan/goInception/util/signal"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/ddl"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/mysql"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/privilege/privileges"
+	"github.com/sqllabs/sqlaudit/server"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/sessionctx/binloginfo"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/statistics"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/sqlaudit/store/tikv/gcworker"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util"
+	"github.com/sqllabs/sqlaudit/util/logutil"
+	"github.com/sqllabs/sqlaudit/util/printer"
+	"github.com/sqllabs/sqlaudit/util/signal"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-binlog"
 	goMysqlLog "github.com/siddontang/go-log/log"
@@ -145,7 +145,7 @@ func main() {
 		fmt.Println("\tenable_json_type")
 		fmt.Println("\tenable_enum_set_bit")
 		fmt.Println("\tenable_timestamp_type")
-		fmt.Println("https://github.com/hanchuanchuan/goInception/pull/418")
+		fmt.Println("https://github.com/sqllabs/sqlaudit/pull/418")
 		fmt.Println("################################################")
 	}
 	runServer()

@@ -14,7 +14,7 @@
 package ast_test
 
 import (
-	. "github.com/hanchuanchuan/goInception/ast"
+	. "github.com/sqllabs/sqlaudit/ast"
 	. "github.com/pingcap/check"
 )
 

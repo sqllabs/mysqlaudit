@@ -13,7 +13,7 @@
 
 package domain
 
-import "github.com/hanchuanchuan/goInception/sessionctx"
+import "github.com/sqllabs/sqlaudit/sessionctx"
 
 // domainKeyType is a dummy type to avoid naming collision in context.
 type domainKeyType int

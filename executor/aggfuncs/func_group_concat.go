@@ -17,10 +17,10 @@ import (
 	"bytes"
 	"sync/atomic"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/set"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/set"
 	"github.com/pingcap/errors"
 	"modernc.org/mathutil"
 )

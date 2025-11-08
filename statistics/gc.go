@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 	"modernc.org/mathutil"

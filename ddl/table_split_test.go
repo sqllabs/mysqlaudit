@@ -17,12 +17,12 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/ddl"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/store/tikv"
-	"github.com/hanchuanchuan/goInception/tablecodec"
+	"github.com/sqllabs/sqlaudit/ddl"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/sqlaudit/tablecodec"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

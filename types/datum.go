@@ -22,12 +22,12 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types/json"
-	"github.com/hanchuanchuan/goInception/util/charset"
-	"github.com/hanchuanchuan/goInception/util/hack"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types/json"
+	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/sqlaudit/util/hack"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -1138,8 +1138,8 @@ func ProduceDecWithSpecifiedTp(dec *MyDecimal, tp *FieldType, sc *stmtctx.Statem
 			}
 			if !dec.IsZero() && frac > decimal && dec.Compare(&old) != 0 {
 				if sc.InInsertStmt || sc.InUpdateOrDeleteStmt {
-					// fix https://github.com/hanchuanchuan/goInception/issues/3895
-					// fix https://github.com/hanchuanchuan/goInception/issues/5532
+					// fix https://github.com/sqllabs/sqlaudit/issues/3895
+					// fix https://github.com/sqllabs/sqlaudit/issues/5532
 					sc.AppendWarning(ErrTruncated)
 					err = nil
 				} else {

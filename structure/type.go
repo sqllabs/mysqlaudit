@@ -16,8 +16,8 @@ package structure
 import (
 	"bytes"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/util/codec"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/util/codec"
 	"github.com/pingcap/errors"
 )
 

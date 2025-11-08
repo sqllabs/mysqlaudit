@@ -14,11 +14,11 @@
 package executor
 
 import (
-	"github.com/hanchuanchuan/goInception/expression"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/expression"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 )
 
@@ -144,7 +144,7 @@ func (j *baseJoiner) initDefaultInner(innerTypes []*types.FieldType, defaultInne
 
 func (j *baseJoiner) makeJoinRowToChunk(chk *chunk.Chunk, lhs, rhs chunk.Row) {
 	// Call AppendRow() first to increment the virtual rows.
-	// Fix: https://github.com/hanchuanchuan/goInception/issues/5771
+	// Fix: https://github.com/sqllabs/sqlaudit/issues/5771
 	chk.AppendRow(lhs)
 	chk.AppendPartialRow(lhs.Len(), rhs)
 }

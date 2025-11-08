@@ -14,7 +14,7 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/expression"
+	"github.com/sqllabs/sqlaudit/expression"
 )
 
 // canProjectionBeEliminatedLoose checks whether a projection can be eliminated,

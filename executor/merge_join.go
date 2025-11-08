@@ -16,10 +16,10 @@ package executor
 import (
 	"time"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/memory"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/memory"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

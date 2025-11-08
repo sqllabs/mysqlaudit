@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

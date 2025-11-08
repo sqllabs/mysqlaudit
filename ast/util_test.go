@@ -17,11 +17,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	. "github.com/hanchuanchuan/goInception/ast"
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/parser"
-	// "github.com/hanchuanchuan/goInception/types/parser_driver"
+	"github.com/sqllabs/sqlaudit/ast"
+	. "github.com/sqllabs/sqlaudit/ast"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/parser"
+	// "github.com/sqllabs/sqlaudit/types/parser_driver"
 	. "github.com/pingcap/check"
 )
 

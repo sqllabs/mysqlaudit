@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"github.com/hanchuanchuan/goInception/mysql"
+	"github.com/sqllabs/sqlaudit/mysql"
 	. "github.com/pingcap/check"
 )
 

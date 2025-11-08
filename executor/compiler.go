@@ -16,12 +16,12 @@ package executor
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/planner"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/sessionctx"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/planner"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

@@ -1,25 +1,15 @@
-module github.com/hanchuanchuan/goInception
+module github.com/sqllabs/sqlaudit
 
 go 1.25.1
 
 replace gopkg.in/gcfg.v1 => github.com/hanchuanchuan/gcfg.v1 v0.0.0-20190302111942-77c0f3dcc0b3
 
-// replace go.etcd.io/gofail => github.com/etcd-io/gofail v0.0.0-20180808172546-51ce9a71510a
 replace github.com/etcd-io/gofail => go.etcd.io/gofail v0.0.0-20180808172546-51ce9a71510a
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.29.1
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v1.1.2
 
-// replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.9
-
-// replace  go.etcd.io/etcd => github.com/etcd-io/etcd a4f7c65
-// replace  github.com/coreos/etcd => github.com/etcd-io/etcd a4f7c65
-// replace go.etcd.io/etcd => github.com/etcd-io/etcd v0.5.0-alpha.5.0.20231122225832-2c8e2e933f77
-
-// replace github.com/coreos/etcd => go.etcd.io/etcd v0.5.0-alpha.5.0.20231122225832-2c8e2e933f77
-// replace inet.af/netaddr => github.com/inetaf/netaddr
-// replace gopkg.in/DataDog/dd-trace-go.v1 => github.com/DataDog/datadog-go v0.0.0-2d091ec
 replace gopkg.in/DataDog/dd-trace-go.v1 => gopkg.in/DataDog/dd-trace-go.v1 v1.29.0-alpha.1.0.20210216140755-2d091eca40bb
 
 require (

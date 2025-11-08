@@ -17,7 +17,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/types"
 )
 
 func getChk() (*Chunk, *Chunk, []bool) {

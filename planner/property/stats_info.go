@@ -16,7 +16,7 @@ package property
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/statistics"
+	"github.com/sqllabs/sqlaudit/statistics"
 )
 
 // StatsInfo stores the basic information of statistics for the plan's output. It is used for cost estimation.

@@ -14,11 +14,11 @@
 package executor_test
 
 import (
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util/testkit"
-	"github.com/hanchuanchuan/goInception/util/testutil"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/sqlaudit/util/testutil"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

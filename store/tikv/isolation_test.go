@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/terror"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

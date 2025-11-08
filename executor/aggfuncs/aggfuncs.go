@@ -16,9 +16,9 @@ package aggfuncs
 import (
 	"unsafe"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 )
 
 // All the AggFunc implementations are listed here for navigation.

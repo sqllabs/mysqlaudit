@@ -14,8 +14,8 @@
 package ast_test
 
 import (
-	. "github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/format"
+	. "github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/format"
 	. "github.com/pingcap/check"
 )
 

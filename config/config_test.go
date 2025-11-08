@@ -20,7 +20,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/mysql"
+	"github.com/sqllabs/sqlaudit/mysql"
 	. "github.com/pingcap/check"
 )
 

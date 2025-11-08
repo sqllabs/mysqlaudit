@@ -16,10 +16,10 @@ package ast
 import (
 	"strings"
 
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/util/auth"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/util/auth"
 	"github.com/pingcap/errors"
 )
 

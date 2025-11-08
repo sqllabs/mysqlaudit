@@ -16,10 +16,10 @@ package executor
 import (
 	"encoding/json"
 
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/statistics"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/statistics"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

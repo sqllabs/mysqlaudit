@@ -1,3 +1,5 @@
+// Copyright (C) 2025 JustCoding247. All rights reserved.
+
 package mysql
 
 import "strings"

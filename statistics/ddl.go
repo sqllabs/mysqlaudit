@@ -16,13 +16,13 @@ package statistics
 import (
 	"fmt"
 
-	// "github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/ddl/util"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
+	// "github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/ddl/util"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

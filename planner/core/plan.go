@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/planner/property"
-	"github.com/hanchuanchuan/goInception/sessionctx"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/planner/property"
+	"github.com/sqllabs/sqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-tipb"
 )

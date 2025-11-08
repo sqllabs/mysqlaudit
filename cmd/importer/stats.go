@@ -19,11 +19,11 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/model"
-	stats "github.com/hanchuanchuan/goInception/statistics"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/codec"
+	"github.com/sqllabs/sqlaudit/model"
+	stats "github.com/sqllabs/sqlaudit/statistics"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/codec"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

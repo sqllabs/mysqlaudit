@@ -14,12 +14,12 @@
 package privileges_test
 
 import (
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/privilege/privileges"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/privilege/privileges"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
 	. "github.com/pingcap/check"
 )
 

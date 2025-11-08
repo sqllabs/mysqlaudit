@@ -14,8 +14,8 @@
 package ast
 
 import (
-	. "github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/model"
+	. "github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/model"
 	"github.com/pingcap/errors"
 )
 

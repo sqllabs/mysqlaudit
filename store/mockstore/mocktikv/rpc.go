@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/tikv/tikvrpc"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/kvproto/pkg/errorpb"

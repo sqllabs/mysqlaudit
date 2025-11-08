@@ -16,7 +16,7 @@ package kvenc
 import (
 	"sync/atomic"
 
-	"github.com/hanchuanchuan/goInception/meta/autoid"
+	"github.com/sqllabs/sqlaudit/meta/autoid"
 )
 
 var _ autoid.Allocator = &Allocator{}

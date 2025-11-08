@@ -14,10 +14,10 @@
 package aggregation
 
 import (
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/codec"
-	"github.com/hanchuanchuan/goInception/util/mvmap"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/sqlaudit/util/mvmap"
 	"github.com/pingcap/errors"
 )
 

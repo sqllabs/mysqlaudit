@@ -14,7 +14,7 @@
 package cascades
 
 import (
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
 )
 
 // Operand is the node of a pattern tree, it represents a logical expression operator.

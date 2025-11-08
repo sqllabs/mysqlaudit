@@ -16,8 +16,8 @@ package mocktikv
 import (
 	"container/heap"
 
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/types"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-tipb"
 )

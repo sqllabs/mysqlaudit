@@ -14,15 +14,15 @@
 package core_test
 
 import (
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/parser"
-	"github.com/hanchuanchuan/goInception/planner"
-	"github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/parser"
+	"github.com/sqllabs/sqlaudit/planner"
+	"github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

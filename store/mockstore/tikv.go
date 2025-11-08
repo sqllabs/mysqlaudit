@@ -17,10 +17,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/store/mockstore/mocktikv"
-	"github.com/hanchuanchuan/goInception/store/tikv"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/sqlaudit/store/tikv"
 	"github.com/pingcap/errors" // MockDriver is in memory mock TiKV driver.
 	"github.com/pingcap/pd/client"
 )

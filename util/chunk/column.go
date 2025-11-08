@@ -16,8 +16,8 @@ package chunk
 import (
 	"unsafe"
 
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/types/json"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/types/json"
 )
 
 func (c *column) appendDuration(dur types.Duration) {

@@ -16,7 +16,7 @@ package structure
 import (
 	"encoding/binary"
 
-	"github.com/hanchuanchuan/goInception/kv"
+	"github.com/sqllabs/sqlaudit/kv"
 	"github.com/pingcap/errors"
 )
 

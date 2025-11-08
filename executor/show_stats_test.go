@@ -14,9 +14,9 @@
 package executor_test
 
 import (
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/statistics"
-	"github.com/hanchuanchuan/goInception/util/testkit"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/statistics"
+	"github.com/sqllabs/sqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

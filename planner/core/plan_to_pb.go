@@ -14,13 +14,13 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/expression/aggregation"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/table"
-	"github.com/hanchuanchuan/goInception/tablecodec"
-	"github.com/hanchuanchuan/goInception/util/ranger"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/expression/aggregation"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/sqlaudit/tablecodec"
+	"github.com/sqllabs/sqlaudit/util/ranger"
 	"github.com/pingcap/errors" // ToPB implements PhysicalPlan ToPB interface.
 	"github.com/pingcap/tipb/go-tipb"
 )

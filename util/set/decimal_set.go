@@ -14,7 +14,7 @@
 package set
 
 import (
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/types"
 )
 
 // DecimalSet is a decimal set.

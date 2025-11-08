@@ -18,7 +18,7 @@
 package session
 
 import (
-	"github.com/hanchuanchuan/goInception/mysql"
+	"github.com/sqllabs/sqlaudit/mysql"
 )
 
 // 数据库类型

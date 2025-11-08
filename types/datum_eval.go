@@ -14,7 +14,7 @@
 package types
 
 import (
-	"github.com/hanchuanchuan/goInception/parser/opcode"
+	"github.com/sqllabs/sqlaudit/parser/opcode"
 	"github.com/pingcap/errors"
 	"modernc.org/mathutil"
 )

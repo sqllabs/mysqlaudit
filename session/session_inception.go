@@ -21,20 +21,20 @@ import (
 	"time"
 
 	mysqlDriver "github.com/go-sql-driver/mysql"
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/executor"
-	"github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/parser/opcode"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util"
-	"github.com/hanchuanchuan/goInception/util/auth"
-	"github.com/hanchuanchuan/goInception/util/charset"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
-	"github.com/hanchuanchuan/goInception/util/stringutil"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/executor"
+	"github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/parser/opcode"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util"
+	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
+	"github.com/sqllabs/sqlaudit/util/stringutil"
 	"github.com/jinzhu/gorm"
 	"github.com/percona/go-mysql/query"
 	"github.com/pingcap/errors"
@@ -4741,7 +4741,7 @@ func (s *session) mysqlCheckField(t *TableInfo, field *ast.ColumnDef, alterTable
 			s.appendErrorNo(ER_TIMESTAMP_DEFAULT, field.Name.Name.O)
 		} else if hasDefaultValue {
 			// v5.6在使用default null后即使指定on update仍会报错
-			// https://github.com/hanchuanchuan/goInception/issues/406
+			// https://github.com/sqllabs/sqlaudit/issues/406
 			if _, ok := defaultExpr.(*ast.ValueExpr); ok &&
 				defaultValue.IsNull() && !notNullFlag && s.dbVersion < 50700 {
 				//有默认值，且为NULL，且有NOT NULL约束，如(not null default null)

@@ -14,7 +14,7 @@
 package kv_test
 
 import (
-	"github.com/hanchuanchuan/goInception/kv"
+	"github.com/sqllabs/sqlaudit/kv"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

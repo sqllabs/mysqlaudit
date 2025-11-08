@@ -14,7 +14,7 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/expression"
+	"github.com/sqllabs/sqlaudit/expression"
 )
 
 func (ds *DataSource) preparePossibleProperties() [][]*expression.Column {

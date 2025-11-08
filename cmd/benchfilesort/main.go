@@ -24,12 +24,12 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/codec"
-	"github.com/hanchuanchuan/goInception/util/filesort"
-	"github.com/hanchuanchuan/goInception/util/logutil"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/sqlaudit/util/filesort"
+	"github.com/sqllabs/sqlaudit/util/logutil"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

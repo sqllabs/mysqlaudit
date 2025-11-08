@@ -19,7 +19,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/util/testleak"
+	"github.com/sqllabs/sqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 )
 
 // ExplainInfo implements the Expression interface.

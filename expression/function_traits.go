@@ -14,7 +14,7 @@
 package expression
 
 import (
-	"github.com/hanchuanchuan/goInception/ast"
+	"github.com/sqllabs/sqlaudit/ast"
 )
 
 // UnCacheableFunctions stores functions which can not be cached to plan cache.

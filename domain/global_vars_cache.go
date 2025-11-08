@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/util/chunk"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/util/chunk"
 )
 
 // GlobalVariableCache caches global variables.

@@ -16,9 +16,9 @@ package session
 import (
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/parser"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/parser"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
 )
 
 func Test_checkDDLInstantMySQL(t *testing.T) {

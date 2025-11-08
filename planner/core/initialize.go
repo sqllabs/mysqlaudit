@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/hanchuanchuan/goInception/planner/property"
-	"github.com/hanchuanchuan/goInception/sessionctx"
+	"github.com/sqllabs/sqlaudit/planner/property"
+	"github.com/sqllabs/sqlaudit/sessionctx"
 )
 
 const (

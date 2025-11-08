@@ -23,17 +23,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/infoschema"
-	"github.com/hanchuanchuan/goInception/meta/autoid"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/table"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/charset"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/infoschema"
+	"github.com/sqllabs/sqlaudit/meta/autoid"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/charset"
 	"github.com/pingcap/errors"
 	"modernc.org/mathutil"
 )
@@ -1626,7 +1626,7 @@ func (d *ddl) getModifiableColumnJob(ctx sessionctx.Context, ident ast.Ident, or
 
 	newCol := table.ToColumn(&model.ColumnInfo{
 		ID: col.ID,
-		// We use this PR(https://github.com/hanchuanchuan/goInception/pull/6274) as the dividing line to define whether it is a new version or an old version TiDB.
+		// We use this PR(https://github.com/sqllabs/sqlaudit/pull/6274) as the dividing line to define whether it is a new version or an old version TiDB.
 		// The old version TiDB initializes the column's offset and state here.
 		// The new version TiDB doesn't initialize the column's offset and state, and it will do the initialization in run DDL function.
 		// When we do the rolling upgrade the following may happen:

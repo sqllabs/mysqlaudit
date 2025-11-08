@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
 	"golang.org/x/net/context"
 )
 

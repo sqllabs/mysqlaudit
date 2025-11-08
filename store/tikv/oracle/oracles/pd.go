@@ -17,7 +17,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/store/tikv/oracle"
+	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/pd/client"
 	log "github.com/sirupsen/logrus"

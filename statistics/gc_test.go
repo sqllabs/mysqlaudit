@@ -17,7 +17,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/util/testkit"
+	"github.com/sqllabs/sqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

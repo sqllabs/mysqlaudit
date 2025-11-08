@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/hanchuanchuan/goInception/kv"
-	tmysql "github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/util/logutil"
+	"github.com/sqllabs/sqlaudit/kv"
+	tmysql "github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/util/logutil"
 	. "github.com/pingcap/check"
 	log "github.com/sirupsen/logrus"
 )

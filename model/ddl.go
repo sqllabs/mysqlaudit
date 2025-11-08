@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 )
 

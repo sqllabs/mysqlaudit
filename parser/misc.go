@@ -16,7 +16,7 @@ package parser
 import (
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/util/charset"
+	"github.com/sqllabs/sqlaudit/util/charset"
 )
 
 func isLetter(ch rune) bool {

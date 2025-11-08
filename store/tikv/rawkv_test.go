@@ -17,7 +17,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/store/mockstore/mocktikv"
+	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

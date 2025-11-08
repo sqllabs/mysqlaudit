@@ -24,13 +24,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/store/tikv"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/util/logutil"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/util/logutil"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
@@ -76,7 +76,7 @@ func main() {
 	ut := newBenchDB()
 	works := strings.Split(*runJobs, "|")
 
-	f, err := os.Create("/root/hcc/github.com/hanchuanchuan/goInception/profile_cpu")
+	f, err := os.Create("/root/hcc/github.com/sqllabs/sqlaudit/profile_cpu")
 	if err != nil {
 		log.Error(err)
 	}

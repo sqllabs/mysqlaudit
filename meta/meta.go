@@ -23,11 +23,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/structure"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/structure"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

@@ -16,8 +16,8 @@ package core
 import (
 	"math"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/planner/property"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/planner/property"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

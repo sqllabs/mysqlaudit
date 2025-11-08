@@ -14,8 +14,8 @@
 package chunk
 
 import (
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/memory"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/memory"
 	"github.com/pingcap/errors"
 )
 

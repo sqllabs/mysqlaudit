@@ -20,7 +20,7 @@ package util
 import (
 	"bytes"
 
-	"github.com/hanchuanchuan/goInception/kv"
+	"github.com/sqllabs/sqlaudit/kv"
 	"github.com/pingcap/errors"
 )
 

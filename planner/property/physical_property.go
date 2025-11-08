@@ -16,8 +16,8 @@ package property
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	"github.com/hanchuanchuan/goInception/util/codec"
+	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/sqlaudit/util/codec"
 )
 
 // PhysicalProperty stands for the required physical property by parents.

@@ -1,3 +1,5 @@
+// Copyright (C) 2025 JustCoding247. All rights reserved.
+
 package server
 
 import (
@@ -5,8 +7,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/util/arena"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/util/arena"
 )
 
 func newTestClientConn(buffer *bytes.Buffer) *clientConn {

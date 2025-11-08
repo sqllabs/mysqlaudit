@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/sessionctx/stmtctx"
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/sqlaudit/types"
 	"github.com/pingcap/check"
 )
 

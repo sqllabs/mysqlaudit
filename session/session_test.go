@@ -21,30 +21,30 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/domain"
-	"github.com/hanchuanchuan/goInception/executor"
-	"github.com/hanchuanchuan/goInception/kv"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/parser"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/privilege/privileges"
-	"github.com/hanchuanchuan/goInception/session"
-	"github.com/hanchuanchuan/goInception/sessionctx"
-	"github.com/hanchuanchuan/goInception/sessionctx/variable"
-	"github.com/hanchuanchuan/goInception/store/mockstore"
-	"github.com/hanchuanchuan/goInception/store/mockstore/mocktikv"
-	"github.com/hanchuanchuan/goInception/table/tables"
-	"github.com/hanchuanchuan/goInception/terror"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/auth"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/domain"
+	"github.com/sqllabs/sqlaudit/executor"
+	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/parser"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/privilege/privileges"
+	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/sqlaudit/table/tables"
+	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/auth"
 
-	// "github.com/hanchuanchuan/goInception/util/logutil"
-	"github.com/hanchuanchuan/goInception/util/sqlexec"
-	"github.com/hanchuanchuan/goInception/util/testkit"
-	"github.com/hanchuanchuan/goInception/util/testleak"
-	"github.com/hanchuanchuan/goInception/util/testutil"
+	// "github.com/sqllabs/sqlaudit/util/logutil"
+	"github.com/sqllabs/sqlaudit/util/sqlexec"
+	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/sqlaudit/util/testutil"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/tipb/go-binlog"
 	"golang.org/x/net/context"
@@ -720,7 +720,7 @@ func (s *testSessionSuite) TestAutoIncrementID(c *C) {
 }
 
 func (s *testSessionSuite) TestAutoIncrementWithRetry(c *C) {
-	// test for https://github.com/hanchuanchuan/goInception/issues/827
+	// test for https://github.com/sqllabs/sqlaudit/issues/827
 
 	tk := testkit.NewTestKitWithInit(c, s.store)
 	tk1 := testkit.NewTestKitWithInit(c, s.store)
@@ -969,7 +969,7 @@ func (s *testSessionSuite) TestResultField(c *C) {
 }
 
 func (s *testSessionSuite) TestResultType(c *C) {
-	// Testcase for https://github.com/hanchuanchuan/goInception/issues/325
+	// Testcase for https://github.com/sqllabs/sqlaudit/issues/325
 	tk := testkit.NewTestKitWithInit(c, s.store)
 	rs, err := tk.Exec(`select cast(null as char(30))`)
 	c.Assert(err, IsNil)
@@ -1120,7 +1120,7 @@ func (s *testSessionSuite) TestISColumns(c *C) {
 }
 
 func (s *testSessionSuite) TestRetry(c *C) {
-	// For https://github.com/hanchuanchuan/goInception/issues/571
+	// For https://github.com/sqllabs/sqlaudit/issues/571
 	tk := testkit.NewTestKitWithInit(c, s.store)
 
 	tk.MustExec("begin")
@@ -1190,7 +1190,7 @@ func (s *testSessionSuite) TestDecimal(c *C) {
 func (s *testSessionSuite) TestParser(c *C) {
 	tk := testkit.NewTestKitWithInit(c, s.store)
 
-	// test for https://github.com/hanchuanchuan/goInception/pull/177
+	// test for https://github.com/sqllabs/sqlaudit/pull/177
 	tk.MustExec("CREATE TABLE `t1` ( `a` char(3) NOT NULL default '', `b` char(3) NOT NULL default '', `c` char(3) NOT NULL default '', PRIMARY KEY  (`a`,`b`,`c`)) ENGINE=InnoDB;")
 	tk.MustExec("CREATE TABLE `t2` ( `a` char(3) NOT NULL default '', `b` char(3) NOT NULL default '', `c` char(3) NOT NULL default '', PRIMARY KEY  (`a`,`b`,`c`)) ENGINE=InnoDB;")
 	tk.MustExec(`INSERT INTO t1 VALUES (1,1,1);`)
@@ -1205,7 +1205,7 @@ func (s *testSessionSuite) TestParser(c *C) {
 func (s *testSessionSuite) TestOnDuplicate(c *C) {
 	tk := testkit.NewTestKitWithInit(c, s.store)
 
-	// test for https://github.com/hanchuanchuan/goInception/pull/454
+	// test for https://github.com/sqllabs/sqlaudit/pull/454
 	tk.MustExec("drop table if exists t")
 	tk.MustExec("drop table if exists t1")
 	tk.MustExec("create table t1 (c1 int, c2 int, c3 int);")
@@ -1218,7 +1218,7 @@ func (s *testSessionSuite) TestOnDuplicate(c *C) {
 func (s *testSessionSuite) TestReplace(c *C) {
 	tk := testkit.NewTestKitWithInit(c, s.store)
 
-	// test for https://github.com/hanchuanchuan/goInception/pull/456
+	// test for https://github.com/sqllabs/sqlaudit/pull/456
 	tk.MustExec("drop table if exists t")
 	tk.MustExec("drop table if exists t1")
 	tk.MustExec("create table t1 (c1 int, c2 int, c3 int);")
@@ -1229,7 +1229,7 @@ func (s *testSessionSuite) TestReplace(c *C) {
 }
 
 func (s *testSessionSuite) TestDelete(c *C) {
-	// test for https://github.com/hanchuanchuan/goInception/pull/1135
+	// test for https://github.com/sqllabs/sqlaudit/pull/1135
 
 	tk := testkit.NewTestKitWithInit(c, s.store)
 	tk1 := testkit.NewTestKit(c, s.store)
@@ -1269,7 +1269,7 @@ func (s *testSessionSuite) TestDelete(c *C) {
 }
 
 func (s *testSessionSuite) TestUnique(c *C) {
-	// test for https://github.com/hanchuanchuan/goInception/pull/461
+	// test for https://github.com/sqllabs/sqlaudit/pull/461
 
 	tk := testkit.NewTestKitWithInit(c, s.store)
 	tk1 := testkit.NewTestKitWithInit(c, s.store)
@@ -1294,7 +1294,7 @@ func (s *testSessionSuite) TestUnique(c *C) {
 	c.Assert(terror.ErrorEqual(err, kv.ErrKeyExists), IsTrue, Commentf("err %v", err))
 	c.Assert(err.Error(), Equals, "[kv:1062]Duplicate entry '2' for key 'val'")
 
-	// Test for https://github.com/hanchuanchuan/goInception/issues/463
+	// Test for https://github.com/sqllabs/sqlaudit/issues/463
 	tk.MustExec("drop table test;")
 	tk.MustExec(`CREATE TABLE test (
 			id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1335,7 +1335,7 @@ func (s *testSessionSuite) TestUnique(c *C) {
 }
 
 func (s *testSessionSuite) TestSet(c *C) {
-	// Test for https://github.com/hanchuanchuan/goInception/issues/1114
+	// Test for https://github.com/sqllabs/sqlaudit/issues/1114
 
 	tk := testkit.NewTestKitWithInit(c, s.store)
 	tk.MustExec("set @tmp = 0")
@@ -1646,7 +1646,7 @@ func (s *testSchemaSuite) TestRetrySchemaChange(c *C) {
 	}
 
 	// In order to cover a bug that statement history is not updated during retry.
-	// See https://github.com/hanchuanchuan/goInception/pull/5202
+	// See https://github.com/sqllabs/sqlaudit/pull/5202
 	// Step1: when tk1 commit, it find schema changed and retry().
 	// Step2: during retry, hook() is called, tk update primary key.
 	// Step3: tk1 continue commit in retry() meet a retryable error(write conflict), retry again.

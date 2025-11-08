@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/util/execdetails"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/util/execdetails"
 )
 
 type slowQueryHeap struct {

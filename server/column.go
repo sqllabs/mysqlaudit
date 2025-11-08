@@ -14,7 +14,7 @@
 package server
 
 import (
-	"github.com/hanchuanchuan/goInception/mysql"
+	"github.com/sqllabs/sqlaudit/mysql"
 )
 
 // ColumnInfo contains information of a column

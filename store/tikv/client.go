@@ -21,9 +21,9 @@ import (
 	"time"
 
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/hanchuanchuan/goInception/config"
-	"github.com/hanchuanchuan/goInception/store/tikv/tikvrpc"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
+	"github.com/sqllabs/sqlaudit/terror"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/kvproto/pkg/tikvpb"

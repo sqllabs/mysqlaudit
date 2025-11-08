@@ -19,10 +19,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/format"
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/types/json"
-	"github.com/hanchuanchuan/goInception/util/charset"
+	"github.com/sqllabs/sqlaudit/format"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/types/json"
+	"github.com/sqllabs/sqlaudit/util/charset"
 )
 
 // UnspecifiedLength is unspecified length.

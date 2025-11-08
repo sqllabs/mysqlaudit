@@ -14,7 +14,7 @@
 package codec
 
 import (
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/types"
 	"github.com/pingcap/errors"
 )
 

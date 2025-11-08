@@ -14,8 +14,8 @@
 package executor
 
 import (
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/terror"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/terror"
 )
 
 // Error codes that are not mapping to mysql error codes.

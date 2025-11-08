@@ -16,7 +16,7 @@ package expression
 import (
 	"fmt"
 
-	"github.com/hanchuanchuan/goInception/model"
+	"github.com/sqllabs/sqlaudit/model"
 	. "github.com/pingcap/check"
 )
 

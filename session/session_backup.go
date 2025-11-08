@@ -10,8 +10,8 @@ import (
 	"unicode/utf8"
 
 	mysqlDriver "github.com/go-sql-driver/mysql"
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/mysql"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/mysql"
 	log "github.com/sirupsen/logrus"
 )
 

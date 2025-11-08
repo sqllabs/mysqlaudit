@@ -18,11 +18,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/hanchuanchuan/goInception/expression"
-	plannercore "github.com/hanchuanchuan/goInception/planner/core"
-	"github.com/hanchuanchuan/goInception/types"
-	"github.com/hanchuanchuan/goInception/util/chunk"
-	"github.com/hanchuanchuan/goInception/util/memory"
+	"github.com/sqllabs/sqlaudit/expression"
+	plannercore "github.com/sqllabs/sqlaudit/planner/core"
+	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/sqlaudit/util/memory"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )
