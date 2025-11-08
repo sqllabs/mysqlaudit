@@ -119,6 +119,7 @@ var defaultSysVars = []*SysVar{
 	{ScopeGlobal | ScopeSession, "ndbinfo_max_rows", ""},
 	{ScopeGlobal | ScopeSession, "ndb_index_stat_option", ""},
 	{ScopeGlobal | ScopeSession, OldPasswords, "0"},
+	{ScopeGlobal | ScopeSession, "default_authentication_plugin", mysql.AuthCachingSha2Password},
 	{ScopeNone, "innodb_version", "5.6.25"},
 	{ScopeGlobal, MaxConnections, "151"},
 	{ScopeGlobal | ScopeSession, BigTables, "0"},

@@ -48,6 +48,8 @@ docker pull hanchuanchuan/goinception
 ```bash
 git clone https://github.com/hanchuanchuan/goInception.git
 cd goInception
+cp config/config.toml.default config.toml
+# 根据需要修改 config.toml 中的监听地址、安全配置等
 go build -o goInception tidb-server/main.go
 
 ./goInception -config=config/config.toml
@@ -59,6 +61,22 @@ go build -o goInception tidb-server/main.go
 
 * [Archery](https://github.com/hhyo/Archery) `查询支持(MySQL/MsSQL/Redis/PostgreSQL)、MySQL优化(SQLAdvisor|SOAR|SQLTuning)、慢日志管理、表结构对比、会话管理、阿里云RDS管理等`
 
+#### 测试与验证
+
+- **认证链路**：使用 mysql 客户端与 go-sql-driver 客户端分别连接 goInception，验证 `caching_sha2_password`（MySQL 8.4 默认）和 `mysql_native_password` 的 Auth Switch 过程。
+- **远端 SQL**：通过脚本或 `mysql --comments` 提交 `/*--...*/inception_magic_start; ...` 控制块，在 MySQL 8.4 上执行 DDL/DML，例如：
+
+  ```bash
+  mysql --comments -h127.0.0.1 -P4000 <<'SQL'
+  /*--user=root;--password=***;--host=目标MySQL;--port=3306;--check=1;--execute=0;*/inception_magic_start;
+  use test;
+  create table t1(id int primary key);
+  inception_magic_commit;
+  SQL
+  ```
+
+- **pt-online-schema-change**：使用 `--recursion-method=none` 在 MySQL 8.4 环境测试通过，可确认 `caching_sha2_password` 认证正常。
+- **gh-ost**：当前版本（2024 年）仍执行 `SHOW SLAVE STATUS`，在 MySQL 8.4 会报语法错误（需 `SHOW REPLICA STATUS`）。待官方修复或使用兼容版本后再验证。
 
 #### 致谢
     goInception基于TiDB的语法解析器，和业内有名的inpcetion审核工具重构。

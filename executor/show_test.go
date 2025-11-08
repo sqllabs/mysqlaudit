@@ -432,7 +432,10 @@ func (s *testSuite) TestShowVisibility(c *C) {
 	tk1 := testkit.NewTestKit(c, s.store)
 	se, err := session.CreateSession4Test(s.store)
 	c.Assert(err, IsNil)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "show", Hostname: "%"}, nil, nil), IsTrue)
+	var ok bool
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "show", Hostname: "%"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	tk1.Se = se
 
 	// No ShowDatabases privilege, this user would see nothing except INFORMATION_SCHEMA.
@@ -566,7 +569,9 @@ func (s *testSuite) TestShow2(c *C) {
 	timeStr := time.Now().Format("2006-01-02 15:04:05")
 	r.Check(testkit.Rows(fmt.Sprintf("t InnoDB 10 Compact 100 100 100 100 100 100 100 %s %s %s utf8_general_ci   注释", create_time, timeStr, timeStr)))
 
-	tk.Se.Auth(&auth.UserIdentity{Username: "root", Hostname: "%"}, nil, []byte("012345678901234567890"))
+	ok, _, err := tk.Se.Auth(&auth.UserIdentity{Username: "root", Hostname: "%"}, nil, []byte("012345678901234567890"), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 
 	tk.MustQuery("show databases like 'test'").Check(testkit.Rows("test"))
 

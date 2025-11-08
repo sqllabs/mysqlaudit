@@ -296,8 +296,8 @@ func (tc *TiDBContext) Close() error {
 }
 
 // Auth implements QueryCtx Auth method.
-func (tc *TiDBContext) Auth(user *auth.UserIdentity, auth []byte, salt []byte) bool {
-	return tc.session.Auth(user, auth, salt)
+func (tc *TiDBContext) Auth(user *auth.UserIdentity, auth []byte, salt []byte, authPlugin string) (bool, string, error) {
+	return tc.session.Auth(user, auth, salt, authPlugin)
 }
 
 // FieldList implements QueryCtx FieldList method.

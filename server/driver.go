@@ -80,8 +80,8 @@ type QueryCtx interface {
 	// Close closes the QueryCtx.
 	Close() error
 
-	// Auth verifies user's authentication.
-	Auth(user *auth.UserIdentity, auth []byte, salt []byte) bool
+	// Auth verifies user's authentication and returns the plugin required for this user.
+	Auth(user *auth.UserIdentity, auth []byte, salt []byte, authPlugin string) (bool, string, error)
 
 	// ShowProcess shows the information about the session.
 	ShowProcess() util.ProcessInfo

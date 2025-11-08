@@ -12,6 +12,10 @@ path = "/tmp/tidb"
 # 忽略终端连接断开信号
 ignore_sighup = true
 
+[security]
+skip_grant_table = true
+auth_plugin = "caching_sha2_password" 
+
 [log]
 # 日志级别: debug, info, warn, error, fatal.
 level = "info"

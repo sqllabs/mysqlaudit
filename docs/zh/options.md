@@ -3,6 +3,8 @@
 
 goInception的审核规则都可以通过```inception show variables;```查看
 
+> 注意：使用 goInception 控制注释时，`/*--...*/` 必须与 `inception_magic_start` 写在同一语句中（示例：`/*--...*/inception_magic_start;`），否则 MySQL 客户端会把注释拆开，导致参数解析失败。
+
 ```sql
 inception show variables;
 ```
@@ -142,4 +144,3 @@ order_id |  stage  | error_level |   stage_status   |         error_message     
 
 从`V1.2.2`版本开始，支持在SQL语句内部动态设置审核选项，实现会话级变量设置.
 ([相关issue](https://github.com/hanchuanchuan/goInception/issues/166))
-

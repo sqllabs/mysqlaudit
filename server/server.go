@@ -93,6 +93,7 @@ type Server struct {
 
 	// osc进程列表
 	oscProcessList map[string]*util.OscProcessInfo
+	authPlugin     string
 }
 
 // ConnectionCount gets current connection count.
@@ -151,6 +152,7 @@ func NewServer(cfg *config.Config, driver IDriver) (*Server, error) {
 		stopListenerCh:    make(chan struct{}, 1),
 
 		oscProcessList: make(map[string]*util.OscProcessInfo),
+		authPlugin:     mysql.NormalizeAuthPlugin(cfg.Security.AuthPlugin),
 	}
 	s.loadTLSCertificates()
 

@@ -44,6 +44,8 @@ const (
 		Host				CHAR(64),
 		User				CHAR(32),
 		Password			CHAR(41),
+		authentication_string	TEXT,
+		plugin				CHAR(64) NOT NULL DEFAULT 'caching_sha2_password',
 		Select_priv			ENUM('N','Y') NOT NULL DEFAULT 'N',
 		Insert_priv			ENUM('N','Y') NOT NULL DEFAULT 'N',
 		Update_priv			ENUM('N','Y') NOT NULL DEFAULT 'N',
@@ -262,6 +264,7 @@ const (
 	version22 = 22
 	version23 = 23
 	version24 = 24
+	version25 = 25
 )
 
 func checkBootstrapped(s Session) (bool, error) {
@@ -414,6 +417,9 @@ func upgrade(s Session) {
 
 	if ver < version24 {
 		upgradeToVer24(s)
+	}
+	if ver < version25 {
+		upgradeToVer25(s)
 	}
 
 	updateBootstrapVer(s)
@@ -670,6 +676,13 @@ func upgradeToVer24(s Session) {
 	writeSystemTZ(s)
 }
 
+func upgradeToVer25(s Session) {
+	doReentrantDDL(s, "ALTER TABLE mysql.user ADD COLUMN `authentication_string` TEXT AFTER `Password`", infoschema.ErrColumnExists)
+	doReentrantDDL(s, "ALTER TABLE mysql.user ADD COLUMN `plugin` CHAR(64) NOT NULL DEFAULT 'caching_sha2_password' AFTER `authentication_string`", infoschema.ErrColumnExists)
+	mustExecute(s, "UPDATE HIGH_PRIORITY mysql.user SET authentication_string = Password WHERE (authentication_string IS NULL OR authentication_string = '') AND Password != ''")
+	mustExecute(s, "UPDATE HIGH_PRIORITY mysql.user SET plugin = 'caching_sha2_password' WHERE plugin='' OR plugin IS NULL")
+}
+
 // updateBootstrapVer updates bootstrap version variable in mysql.TiDB table.
 func updateBootstrapVer(s Session) {
 	// Update bootstrap version.
@@ -728,8 +741,9 @@ func doDMLWorks(s Session) {
 	mustExecute(s, "BEGIN")
 
 	// Insert a default user with empty password.
-	mustExecute(s, `INSERT HIGH_PRIORITY INTO mysql.user VALUES
-		("%", "root", "", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")`)
+	mustExecute(s, `INSERT HIGH_PRIORITY INTO mysql.user (Host,User,Password,authentication_string,plugin,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Process_priv,Grant_priv,References_priv,Alter_priv,Show_db_priv,Super_priv,Create_tmp_table_priv,Lock_tables_priv,Execute_priv,Create_view_priv,Show_view_priv,Create_routine_priv,Alter_routine_priv,Index_priv,Create_user_priv,Event_priv,Trigger_priv)
+		VALUES
+		("%", "root", "", "", "caching_sha2_password", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")`)
 
 	// Init global system variables table.
 	values := make([]string, 0, len(variable.SysVars))

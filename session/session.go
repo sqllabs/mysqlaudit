@@ -87,7 +87,7 @@ type Session interface {
 	SetCollation(coID int) error
 	SetSessionManager(util.SessionManager)
 	Close()
-	Auth(user *auth.UserIdentity, auth []byte, salt []byte) bool
+	Auth(user *auth.UserIdentity, auth []byte, salt []byte, authPlugin string) (bool, string, error)
 	ShowProcess() util.ProcessInfo
 	// PrePareTxnCtx is exported for test.
 	PrepareTxnCtx(context.Context)
@@ -1174,20 +1174,28 @@ func (s *session) GetSessionVars() *variable.SessionVars {
 	return s.sessionVars
 }
 
-func (s *session) Auth(user *auth.UserIdentity, authentication []byte, salt []byte) bool {
+func (s *session) Auth(user *auth.UserIdentity, authentication []byte, salt []byte, authPlugin string) (bool, string, error) {
 	pm := privilege.GetPrivilegeManager(s)
-
+	var plugin string
 	// Check IP.
 	var success bool
-	user.AuthUsername, user.AuthHostname, success = pm.ConnectionVerification(user.Username, user.Hostname, authentication, salt)
+	var err error
+	user.AuthUsername, user.AuthHostname, plugin, success, err = pm.ConnectionVerification(user.Username, user.Hostname, authentication, salt, authPlugin)
+	if err != nil {
+		return false, plugin, err
+	}
 	if success {
 		s.sessionVars.User = user
-		return true
+		return true, plugin, nil
 	}
 
 	// Check Hostname.
 	for _, addr := range getHostByIP(user.Hostname) {
-		u, h, success := pm.ConnectionVerification(user.Username, addr, authentication, salt)
+		var u, h string
+		u, h, plugin, success, err = pm.ConnectionVerification(user.Username, addr, authentication, salt, authPlugin)
+		if err != nil {
+			return false, plugin, err
+		}
 		if success {
 			s.sessionVars.User = &auth.UserIdentity{
 				Username:     user.Username,
@@ -1195,12 +1203,12 @@ func (s *session) Auth(user *auth.UserIdentity, authentication []byte, salt []by
 				AuthUsername: u,
 				AuthHostname: h,
 			}
-			return true
+			return true, plugin, nil
 		}
 	}
 
 	log.Errorf("User connection verification failed %s", user)
-	return false
+	return false, plugin, nil
 }
 
 func getHostByIP(ip string) []string {
@@ -1399,7 +1407,7 @@ func createSessionWithDomain(store kv.Storage, dom *domain.Domain) (*session, er
 
 const (
 	notBootstrapped         = 0
-	currentBootstrapVersion = 24
+	currentBootstrapVersion = 25
 )
 
 func getStoreBootstrapVersion(store kv.Storage) int64 {

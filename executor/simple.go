@@ -144,17 +144,18 @@ func (e *SimpleExec) executeCreateUser(s *ast.CreateUserStmt) error {
 			}
 			continue
 		}
-		pwd, ok := spec.EncodedPassword()
-		if !ok {
-			return errors.Trace(ErrPasswordFormat)
+		hash, plugin, err := encodePasswordForAuthOption(e.ctx.GetSessionVars(), spec.AuthOpt)
+		if err != nil {
+			return errors.Trace(err)
 		}
-		user := fmt.Sprintf(`("%s", "%s", "%s")`, spec.User.Hostname, spec.User.Username, pwd)
+		passwordCol, authString := passwordColumnsForPlugin(plugin, hash)
+		user := fmt.Sprintf(`("%s", "%s", "%s", "%s", "%s")`, spec.User.Hostname, spec.User.Username, passwordCol, authString, plugin)
 		users = append(users, user)
 	}
 	if len(users) == 0 {
 		return nil
 	}
-	sql := fmt.Sprintf(`INSERT INTO %s.%s (Host, User, Password) VALUES %s;`, mysql.SystemDB, mysql.UserTable, strings.Join(users, ", "))
+	sql := fmt.Sprintf(`INSERT INTO %s.%s (Host, User, Password, authentication_string, plugin) VALUES %s;`, mysql.SystemDB, mysql.UserTable, strings.Join(users, ", "))
 	_, err := e.ctx.(sqlexec.SQLExecutor).Execute(context.Background(), sql)
 	if err != nil {
 		return errors.Trace(err)
@@ -189,16 +190,13 @@ func (e *SimpleExec) executeAlterUser(s *ast.AlterUserStmt) error {
 			}
 			continue
 		}
-		pwd := ""
-		if spec.AuthOpt != nil {
-			if spec.AuthOpt.ByAuthString {
-				pwd = auth.EncodePassword(spec.AuthOpt.AuthString)
-			} else {
-				pwd = auth.EncodePassword(spec.AuthOpt.HashString)
-			}
+		hash, plugin, err := encodePasswordForAuthOption(e.ctx.GetSessionVars(), spec.AuthOpt)
+		if err != nil {
+			return errors.Trace(err)
 		}
-		sql := fmt.Sprintf(`UPDATE %s.%s SET Password = "%s" WHERE Host = "%s" and User = "%s";`,
-			mysql.SystemDB, mysql.UserTable, pwd, spec.User.Hostname, spec.User.Username)
+		passwordCol, authString := passwordColumnsForPlugin(plugin, hash)
+		sql := fmt.Sprintf(`UPDATE %s.%s SET Password = "%s", authentication_string = "%s", plugin = "%s" WHERE Host = "%s" and User = "%s";`,
+			mysql.SystemDB, mysql.UserTable, passwordCol, authString, plugin, spec.User.Hostname, spec.User.Username)
 		_, _, err = e.ctx.(sqlexec.RestrictedSQLExecutor).ExecRestrictedSQL(e.ctx, sql)
 		if err != nil {
 			failedUsers = append(failedUsers, spec.User.String())
@@ -300,8 +298,16 @@ func (e *SimpleExec) executeSetPwd(s *ast.SetPwdStmt) error {
 		return errors.Trace(ErrPasswordNoMatch)
 	}
 
-	// update mysql.user
-	sql := fmt.Sprintf(`UPDATE %s.%s SET password="%s" WHERE User="%s" AND Host="%s";`, mysql.SystemDB, mysql.UserTable, auth.EncodePassword(s.Password), s.User.Username, s.User.Hostname)
+	plugin, err := getUserAuthPlugin(e.ctx, s.User.Username, s.User.Hostname)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	hash, err := auth.EncodePasswordByPlugin(plugin, s.Password)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	passwordCol, authString := passwordColumnsForPlugin(plugin, hash)
+	sql := fmt.Sprintf(`UPDATE %s.%s SET password="%s", authentication_string="%s", plugin="%s" WHERE User="%s" AND Host="%s";`, mysql.SystemDB, mysql.UserTable, passwordCol, authString, plugin, s.User.Username, s.User.Hostname)
 	_, _, err = e.ctx.(sqlexec.RestrictedSQLExecutor).ExecRestrictedSQL(e.ctx, sql)
 	domain.GetDomain(e.ctx).NotifyUpdatePrivilege(e.ctx)
 	return errors.Trace(err)

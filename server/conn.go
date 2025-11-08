@@ -77,6 +77,7 @@ func newClientConn(s *Server) *clientConn {
 		collation:    mysql.DefaultCollationID,
 		alloc:        arena.NewAllocator(32 * 1024),
 		status:       connStatusDispatching,
+		authPlugin:   s.authPlugin,
 	}
 }
 
@@ -98,6 +99,7 @@ type clientConn struct {
 	ctx          QueryCtx          // an interface to execute sql statements.
 	attrs        map[string]string // attributes parsed from client handshake response, not used for now.
 	status       int32             // dispatching/reading/shutdown/waitshutdown
+	authPlugin   string            // negotiated authentication plugin
 
 	// mu is used for cancelling the execution of current transaction.
 	mu struct {
@@ -120,7 +122,15 @@ func (cc *clientConn) handshake() error {
 	if err := cc.writeInitialHandshake(); err != nil {
 		return errors.Trace(err)
 	}
-	if err := cc.readOptionalSSLRequestAndHandshakeResponse(); err != nil {
+	resp, err := cc.readOptionalSSLRequestAndHandshakeResponse()
+	if err != nil {
+		err1 := cc.writeError(err)
+		if err1 != nil {
+			log.Debug(err1)
+		}
+		return errors.Trace(err)
+	}
+	if err := cc.openSessionAndDoAuth(resp); err != nil {
 		err1 := cc.writeError(err)
 		if err1 != nil {
 			log.Debug(err1)
@@ -135,7 +145,7 @@ func (cc *clientConn) handshake() error {
 		data = append(data, 0, 0)
 	}
 
-	err := cc.writePacket(data)
+	err = cc.writePacket(data)
 	cc.pkt.sequence = 0
 	if err != nil {
 		return errors.Trace(err)
@@ -192,7 +202,7 @@ func (cc *clientConn) writeInitialHandshake() error {
 	data = append(data, cc.salt[8:]...)
 	data = append(data, 0)
 	// auth-plugin name
-	data = append(data, []byte("mysql_native_password")...)
+	data = append(data, []byte(cc.authPlugin)...)
 	data = append(data, 0)
 	err := cc.writePacket(data)
 	if err != nil {
@@ -216,6 +226,7 @@ type handshakeResponse41 struct {
 	DBName     string
 	Auth       []byte
 	Attrs      map[string]string
+	AuthPlugin string
 }
 
 // parseHandshakeResponseHeader parses the common header of SSLRequest and HandshakeResponse41.
@@ -286,8 +297,8 @@ func parseHandshakeResponseBody(packet *handshakeResponse41, data []byte, offset
 	}
 
 	if packet.Capability&mysql.ClientPluginAuth > 0 {
-		// TODO: Support mysql.ClientPluginAuth, skip it now
 		idx := bytes.IndexByte(data[offset:], 0)
+		packet.AuthPlugin = string(data[offset : offset+idx])
 		offset = offset + idx + 1
 	}
 
@@ -331,39 +342,39 @@ func parseAttrs(data []byte) (map[string]string, error) {
 	return attrs, nil
 }
 
-func (cc *clientConn) readOptionalSSLRequestAndHandshakeResponse() error {
+func (cc *clientConn) readOptionalSSLRequestAndHandshakeResponse() (*handshakeResponse41, error) {
 	// Read a packet. It may be a SSLRequest or HandshakeResponse.
 	data, err := cc.readPacket()
 	if err != nil {
-		return errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 
-	var resp handshakeResponse41
+	resp := &handshakeResponse41{}
 
-	pos, err := parseHandshakeResponseHeader(&resp, data)
+	pos, err := parseHandshakeResponseHeader(resp, data)
 	if err != nil {
-		return errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 
 	if (resp.Capability&mysql.ClientSSL > 0) && cc.server.tlsConfig != nil {
 		// The packet is a SSLRequest, let's switch to TLS.
 		if err = cc.upgradeToTLS(cc.server.tlsConfig); err != nil {
-			return errors.Trace(err)
+			return nil, errors.Trace(err)
 		}
 		// Read the following HandshakeResponse packet.
 		data, err = cc.readPacket()
 		if err != nil {
-			return errors.Trace(err)
+			return nil, errors.Trace(err)
 		}
-		pos, err = parseHandshakeResponseHeader(&resp, data)
+		pos, err = parseHandshakeResponseHeader(resp, data)
 		if err != nil {
-			return errors.Trace(err)
+			return nil, errors.Trace(err)
 		}
 	}
 
 	// Read the remaining part of the packet.
-	if err = parseHandshakeResponseBody(&resp, data, pos); err != nil {
-		return errors.Trace(err)
+	if err = parseHandshakeResponseBody(resp, data, pos); err != nil {
+		return nil, errors.Trace(err)
 	}
 
 	cc.capability = resp.Capability & cc.server.capability
@@ -371,20 +382,21 @@ func (cc *clientConn) readOptionalSSLRequestAndHandshakeResponse() error {
 	cc.dbname = resp.DBName
 	cc.collation = resp.Collation
 	cc.attrs = resp.Attrs
-	err = cc.openSessionAndDoAuth(resp.Auth)
-	return errors.Trace(err)
+	return resp, nil
 }
 
-func (cc *clientConn) openSessionAndDoAuth(authData []byte) error {
+func (cc *clientConn) openSessionAndDoAuth(resp *handshakeResponse41) error {
 	var tlsStatePtr *tls.ConnectionState
 	if cc.tlsConn != nil {
 		tlsState := cc.tlsConn.ConnectionState()
 		tlsStatePtr = &tlsState
 	}
 	var err error
-	cc.ctx, err = cc.server.driver.OpenCtx(uint64(cc.connectionID), cc.capability, cc.collation, cc.dbname, tlsStatePtr)
-	if err != nil {
-		return errors.Trace(err)
+	if cc.ctx == nil {
+		cc.ctx, err = cc.server.driver.OpenCtx(uint64(cc.connectionID), cc.capability, cc.collation, cc.dbname, tlsStatePtr)
+		if err != nil {
+			return errors.Trace(err)
+		}
 	}
 	if !cc.server.skipAuth() {
 		// Do Auth.
@@ -393,8 +405,8 @@ func (cc *clientConn) openSessionAndDoAuth(authData []byte) error {
 		if err1 != nil {
 			return errors.Trace(errAccessDenied.GenWithStackByArgs(cc.user, addr, "YES"))
 		}
-		if !cc.ctx.Auth(&auth.UserIdentity{Username: cc.user, Hostname: host}, authData, cc.salt) {
-			return errors.Trace(errAccessDenied.GenWithStackByArgs(cc.user, host, "YES"))
+		if err := cc.handleAuthentication(host, resp.Auth, resp.AuthPlugin); err != nil {
+			return errors.Trace(err)
 		}
 	}
 	if cc.dbname != "" {
@@ -405,6 +417,70 @@ func (cc *clientConn) openSessionAndDoAuth(authData []byte) error {
 	}
 	cc.ctx.SetSessionManager(cc.server)
 	return nil
+}
+
+func (cc *clientConn) handleAuthentication(host string, authData []byte, clientPlugin string) error {
+	currentPlugin := mysql.NormalizeAuthPlugin(clientPlugin)
+	if currentPlugin == "" {
+		currentPlugin = cc.authPlugin
+	}
+	userIdentity := &auth.UserIdentity{Username: cc.user, Hostname: host}
+	for retries := 0; retries < 2; retries++ {
+		success, requiredPlugin, err := cc.ctx.Auth(userIdentity, authData, cc.salt, currentPlugin)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		requiredPlugin = mysql.NormalizeAuthPlugin(requiredPlugin)
+		log.Infof("auth attempt user=%s current=%s required=%s success=%v len=%d", cc.user, currentPlugin, requiredPlugin, success, len(authData))
+		if success {
+			if requiredPlugin != "" {
+				cc.authPlugin = requiredPlugin
+			} else {
+				cc.authPlugin = currentPlugin
+			}
+			return nil
+		}
+		log.Infof("switch check user=%s current=%s required=%s cond=%v", cc.user, currentPlugin, requiredPlugin, requiredPlugin != "" && requiredPlugin != currentPlugin)
+		if requiredPlugin != "" && requiredPlugin != currentPlugin {
+			log.Infof("sending auth switch user=%s plugin=%s", cc.user, requiredPlugin)
+			if err := cc.writeAuthSwitchRequest(requiredPlugin); err != nil {
+				return errors.Trace(err)
+			}
+			data, err := cc.readPacket()
+			if err != nil {
+				log.Errorf("auth switch read error: %v", err)
+				return errors.Trace(err)
+			}
+			log.Infof("auth switch response len=%d plugin=%s", len(data), requiredPlugin)
+			authData = data
+			currentPlugin = requiredPlugin
+			continue
+		}
+		break
+	}
+	return errors.Trace(errAccessDenied.GenWithStackByArgs(cc.user, host, "YES"))
+}
+
+func (cc *clientConn) writeAuthSwitchRequest(plugin string) error {
+	authData := cc.salt
+	// mysql-native-password expects a null-terminated scramble in AuthSwitch packet.
+	needTerminator := mysql.AuthNativePassword == plugin
+	extra := 0
+	if needTerminator {
+		extra = 1
+	}
+	data := cc.alloc.AllocWithLen(4, 1+len(plugin)+1+len(authData)+extra)
+	data = append(data, mysql.AuthSwitchRequestHeader)
+	data = append(data, []byte(plugin)...)
+	data = append(data, 0)
+	data = append(data, authData...)
+	if needTerminator {
+		data = append(data, 0)
+	}
+	if err := cc.writePacket(data); err != nil {
+		return err
+	}
+	return cc.flush()
 }
 
 // Run reads client query and writes query result to client in for loop, if there is a panic during query handling,
@@ -1152,7 +1228,11 @@ func (cc *clientConn) handleChangeUser(data []byte) error {
 	if err != nil {
 		log.Debug(err)
 	}
-	err = cc.openSessionAndDoAuth(pass)
+	resp := &handshakeResponse41{
+		Auth:       pass,
+		AuthPlugin: cc.authPlugin,
+	}
+	err = cc.openSessionAndDoAuth(resp)
 	if err != nil {
 		return errors.Trace(err)
 	}

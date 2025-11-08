@@ -37,8 +37,8 @@ type Manager interface {
 	// priv should be a defined constant like CreatePriv, if pass AllPrivMask to priv,
 	// this means any privilege would be OK.
 	RequestVerification(db, table, column string, priv mysql.PrivilegeType) bool
-	// ConnectionVerification verifies user privilege for connection.
-	ConnectionVerification(user, host string, auth, salt []byte) (string, string, bool)
+	// ConnectionVerification verifies user privilege for connection and returns the matched auth plugin.
+	ConnectionVerification(user, host string, auth, salt []byte, authPlugin string) (string, string, string, bool, error)
 
 	// DBIsVisible returns true is the database is visible to current user.
 	DBIsVisible(db string) bool

@@ -50,10 +50,12 @@ func computePrivMask(privs []mysql.PrivilegeType) mysql.PrivilegeType {
 
 // UserRecord is used to represent a user record in privilege cache.
 type UserRecord struct {
-	Host       string // max length 60, primary key
-	User       string // max length 16, primary key
-	Password   string // max length 41
-	Privileges mysql.PrivilegeType
+	Host                 string // max length 60, primary key
+	User                 string // max length 16, primary key
+	Password             string // max length 41
+	AuthenticationString string // hashed password in mysql 8 format
+	Plugin               string
+	Privileges           mysql.PrivilegeType
 
 	// patChars is compiled from Host, cached for pattern match performance.
 	patChars []byte
@@ -156,7 +158,12 @@ func noSuchTable(err error) bool {
 
 // LoadUserTable loads the mysql.user table from database.
 func (p *MySQLPrivilege) LoadUserTable(ctx sessionctx.Context) error {
-	err := p.loadTable(ctx, "select HIGH_PRIORITY Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Process_priv,Grant_priv,References_priv,Alter_priv,Show_db_priv,Super_priv,Execute_priv,Index_priv,Create_user_priv,Trigger_priv from mysql.user;", p.decodeUserTableRow)
+	sql := "select HIGH_PRIORITY Host,User,Password,authentication_string,plugin,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Process_priv,Grant_priv,References_priv,Alter_priv,Show_db_priv,Super_priv,Execute_priv,Index_priv,Create_user_priv,Trigger_priv from mysql.user;"
+	err := p.loadTable(ctx, sql, p.decodeUserTableRow)
+	if err != nil && isUnknownColumnErr(err) {
+		oldSQL := "select HIGH_PRIORITY Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Process_priv,Grant_priv,References_priv,Alter_priv,Show_db_priv,Super_priv,Execute_priv,Index_priv,Create_user_priv,Trigger_priv from mysql.user;"
+		err = p.loadTable(ctx, oldSQL, p.decodeUserTableRow)
+	}
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -300,6 +307,10 @@ func (p *MySQLPrivilege) loadTable(sctx sessionctx.Context, sql string,
 	}
 }
 
+func isUnknownColumnErr(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "Unknown column")
+}
+
 func (p *MySQLPrivilege) decodeUserTableRow(row chunk.Row, fs []*ast.ResultField) error {
 	var value UserRecord
 	for i, f := range fs {
@@ -311,6 +322,10 @@ func (p *MySQLPrivilege) decodeUserTableRow(row chunk.Row, fs []*ast.ResultField
 			value.patChars, value.patTypes = stringutil.CompilePattern(value.Host, '\\')
 		case f.ColumnAsName.L == "password":
 			value.Password = row.GetString(i)
+		case f.ColumnAsName.L == "authentication_string":
+			value.AuthenticationString = row.GetString(i)
+		case f.ColumnAsName.L == "plugin":
+			value.Plugin = mysql.NormalizeAuthPlugin(row.GetString(i))
 		case f.Column.Tp == mysql.TypeEnum:
 			if row.GetEnum(i).String() != "Y" {
 				continue
@@ -419,6 +434,20 @@ func decodeSetToPrivilege(s types.Set) mysql.PrivilegeType {
 		ret |= priv
 	}
 	return ret
+}
+
+func (record *UserRecord) getAuthPlugin() string {
+	if record.Plugin != "" {
+		return record.Plugin
+	}
+	return mysql.AuthNativePassword
+}
+
+func (record *UserRecord) getAuthString() string {
+	if record.AuthenticationString != "" {
+		return record.AuthenticationString
+	}
+	return record.Password
 }
 
 func (record *UserRecord) match(user, host string) bool {

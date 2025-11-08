@@ -573,7 +573,9 @@ func (s *testSessionSuite) TestSession(c *C) {
 
 func (s *testSessionSuite) TestSessionAuth(c *C) {
 	tk := testkit.NewTestKitWithInit(c, s.store)
-	c.Assert(tk.Se.Auth(&auth.UserIdentity{Username: "Any not exist username with zero password!", Hostname: "anyhost"}, []byte(""), []byte("")), IsFalse)
+	ok, _, err := tk.Se.Auth(&auth.UserIdentity{Username: "Any not exist username with zero password!", Hostname: "anyhost"}, []byte(""), []byte(""), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
 }
 
 func (s *testSessionSuite) TestSkipWithGrant(c *C) {
@@ -581,11 +583,17 @@ func (s *testSessionSuite) TestSkipWithGrant(c *C) {
 	save2 := privileges.SkipWithGrant
 
 	privileges.SkipWithGrant = false
-	c.Assert(tk.Se.Auth(&auth.UserIdentity{Username: "user_not_exist"}, []byte("yyy"), []byte("zzz")), IsFalse)
+	ok, _, err := tk.Se.Auth(&auth.UserIdentity{Username: "user_not_exist"}, []byte("yyy"), []byte("zzz"), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
 
 	privileges.SkipWithGrant = true
-	c.Assert(tk.Se.Auth(&auth.UserIdentity{Username: "xxx", Hostname: `%`}, []byte("yyy"), []byte("zzz")), IsTrue)
-	c.Assert(tk.Se.Auth(&auth.UserIdentity{Username: "root", Hostname: `%`}, []byte(""), []byte("")), IsTrue)
+	ok, _, err = tk.Se.Auth(&auth.UserIdentity{Username: "xxx", Hostname: `%`}, []byte("yyy"), []byte("zzz"), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
+	ok, _, err = tk.Se.Auth(&auth.UserIdentity{Username: "root", Hostname: `%`}, []byte(""), []byte(""), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	tk.MustExec("create table t (id int)")
 
 	privileges.SkipWithGrant = save2

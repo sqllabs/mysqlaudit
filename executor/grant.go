@@ -71,13 +71,14 @@ func (e *GrantExec) Next(ctx context.Context, chk *chunk.Chunk) error {
 			return errors.Trace(err)
 		}
 		if !exists {
-			pwd, ok := user.EncodedPassword()
-			if !ok {
-				return errors.Trace(ErrPasswordFormat)
+			hash, plugin, err := encodePasswordForAuthOption(e.ctx.GetSessionVars(), user.AuthOpt)
+			if err != nil {
+				return errors.Trace(err)
 			}
-			user := fmt.Sprintf(`("%s", "%s", "%s")`, user.User.Hostname, user.User.Username, pwd)
-			sql := fmt.Sprintf(`INSERT INTO %s.%s (Host, User, Password) VALUES %s;`, mysql.SystemDB, mysql.UserTable, user)
-			_, err := e.ctx.(sqlexec.SQLExecutor).Execute(context.TODO(), sql)
+			passwordCol, authString := passwordColumnsForPlugin(plugin, hash)
+			userVal := fmt.Sprintf(`("%s", "%s", "%s", "%s", "%s")`, user.User.Hostname, user.User.Username, passwordCol, authString, plugin)
+			sql := fmt.Sprintf(`INSERT INTO %s.%s (Host, User, Password, authentication_string, plugin) VALUES %s;`, mysql.SystemDB, mysql.UserTable, userVal)
+			_, err = e.ctx.(sqlexec.SQLExecutor).Execute(context.TODO(), sql)
 			if err != nil {
 				return errors.Trace(err)
 			}

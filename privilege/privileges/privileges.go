@@ -70,57 +70,59 @@ func (p *UserPrivileges) RequestVerification(db, table, column string, priv mysq
 }
 
 // ConnectionVerification implements the Manager interface.
-func (p *UserPrivileges) ConnectionVerification(user, host string, authentication, salt []byte) (u string, h string, success bool) {
+func (p *UserPrivileges) ConnectionVerification(user, host string, authentication, salt []byte, clientPlugin string) (u string, h string, plugin string, success bool, err error) {
 
 	if SkipWithGrant {
 		p.user = user
 		p.host = host
 		success = true
-		return
+		return u, h, mysql.AuthNativePassword, success, nil
 	}
 
 	mysqlPriv := p.Handle.Get()
 	record := mysqlPriv.connectionVerification(user, host)
 	if record == nil {
 		log.Errorf("Get user privilege record fail: user %v, host %v", user, host)
-		return
+		return "", "", "", false, nil
 	}
 
 	u = record.User
 	h = record.Host
-
-	pwd := record.Password
-	if len(pwd) != 0 && len(pwd) != mysql.PWDHashLen+1 {
-		log.Errorf("User [%s] password from SystemDB not like a sha1sum", user)
-		return
+	plugin = record.getAuthPlugin()
+	if clientPlugin != "" && plugin != "" && mysql.NormalizeAuthPlugin(clientPlugin) != plugin {
+		log.Infof("plugin mismatch user=%s client=%s expected=%s", user, clientPlugin, plugin)
+		return u, h, plugin, false, nil
 	}
+
+	pwd := record.getAuthString()
+	log.Infof("auth plugin=%s authLen=%d storedLen=%d user=%s", plugin, len(authentication), len(pwd), user)
 
 	// empty password
 	if len(pwd) == 0 && len(authentication) == 0 {
 		p.user = user
 		p.host = host
 		success = true
-		return
+		return u, h, plugin, success, nil
 	}
 
 	if len(pwd) == 0 || len(authentication) == 0 {
-		return
+		return u, h, plugin, false, nil
 	}
 
-	hpwd, err := auth.DecodePassword(pwd)
+	ok, err := auth.VerifyPassword(plugin, pwd, authentication, salt)
 	if err != nil {
-		log.Errorf("Decode password string error %v", err)
-		return
+		log.Errorf("Verify password error %v", err)
+		return u, h, plugin, false, err
 	}
 
-	if !auth.CheckScrambledPassword(salt, hpwd, authentication) {
-		return
+	if !ok {
+		return u, h, plugin, false, nil
 	}
 
 	p.user = user
 	p.host = host
 	success = true
-	return
+	return u, h, plugin, success, nil
 }
 
 // DBIsVisible implements the Manager interface.

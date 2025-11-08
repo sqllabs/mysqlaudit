@@ -106,7 +106,9 @@ func (s *testPrivilegeSuite) TestCheckDBPrivilege(c *C) {
 	mustExec(c, rootSe, `FLUSH PRIVILEGES;`)
 
 	se := newSession(c, s.store, s.dbName)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "testcheck", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err := se.Auth(&auth.UserIdentity{Username: "testcheck", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	pc := privilege.GetPrivilegeManager(se)
 	c.Assert(pc.RequestVerification("test", "", "", mysql.SelectPriv), IsFalse)
 
@@ -126,7 +128,9 @@ func (s *testPrivilegeSuite) TestCheckTablePrivilege(c *C) {
 	mustExec(c, rootSe, `FLUSH PRIVILEGES;`)
 
 	se := newSession(c, s.store, s.dbName)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "test1", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err := se.Auth(&auth.UserIdentity{Username: "test1", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	pc := privilege.GetPrivilegeManager(se)
 	c.Assert(pc.RequestVerification("test", "test", "", mysql.SelectPriv), IsFalse)
 
@@ -241,15 +245,19 @@ func (s *testPrivilegeSuite) TestDropTablePriv(c *C) {
 	ctx, _ := se.(sessionctx.Context)
 	mustExec(c, se, `CREATE TABLE todrop(c int);`)
 	// ctx.GetSessionVars().User = "root@localhost"
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err := se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	mustExec(c, se, `CREATE USER 'drop'@'localhost';`)
 	mustExec(c, se, `GRANT Select ON test.todrop TO  'drop'@'localhost';`)
 	mustExec(c, se, `FLUSH PRIVILEGES;`)
 
 	// ctx.GetSessionVars().User = "drop@localhost"
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "drop", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "drop", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	mustExec(c, se, `SELECT * FROM todrop;`)
-	_, err := se.Execute(context.Background(), "DROP TABLE todrop;")
+	_, err = se.Execute(context.Background(), "DROP TABLE todrop;")
 	c.Assert(err, NotNil)
 
 	se = newSession(c, s.store, s.dbName)
@@ -265,18 +273,30 @@ func (s *testPrivilegeSuite) TestDropTablePriv(c *C) {
 func (s *testPrivilegeSuite) TestCheckAuthenticate(c *C) {
 
 	se := newSession(c, s.store, s.dbName)
+	var ok bool
+	var err error
 	mustExec(c, se, `CREATE USER 'u1'@'localhost';`)
 	mustExec(c, se, `CREATE USER 'u2'@'localhost' identified by 'abc';`)
 	mustExec(c, se, `CREATE USER 'u3@example.com'@'localhost';`)
 	mustExec(c, se, `CREATE USER u4@localhost;`)
 	mustExec(c, se, `FLUSH PRIVILEGES;`)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil), IsTrue)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, nil, nil), IsFalse)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
 	salt := []byte{85, 92, 45, 22, 58, 79, 107, 6, 122, 125, 58, 80, 12, 90, 103, 32, 90, 10, 74, 82}
 	authentication := []byte{24, 180, 183, 225, 166, 6, 81, 102, 70, 248, 199, 143, 91, 204, 169, 9, 161, 171, 203, 33}
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, authentication, salt), IsTrue)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u3@example.com", Hostname: "localhost"}, nil, nil), IsTrue)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u4", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, authentication, salt, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u3@example.com", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u4", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 
 	se1 := newSession(c, s.store, s.dbName)
 	mustExec(c, se1, "drop user 'u1'@'localhost'")
@@ -285,37 +305,57 @@ func (s *testPrivilegeSuite) TestCheckAuthenticate(c *C) {
 	mustExec(c, se1, "drop user u4@localhost")
 	mustExec(c, se1, `FLUSH PRIVILEGES;`)
 
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil), IsFalse)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, nil, nil), IsFalse)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u3@example.com", Hostname: "localhost"}, nil, nil), IsFalse)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u4", Hostname: "localhost"}, nil, nil), IsFalse)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u2", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u3@example.com", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u4", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsFalse)
 }
 
 func (s *testPrivilegeSuite) TestInformationSchema(c *C) {
 
 	// This test tests no privilege check for INFORMATION_SCHEMA database.
 	se := newSession(c, s.store, s.dbName)
+	var ok bool
+	var err error
 	mustExec(c, se, `CREATE USER 'u1'@'localhost';`)
 	mustExec(c, se, `FLUSH PRIVILEGES;`)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	mustExec(c, se, `select * from information_schema.tables`)
 	mustExec(c, se, `select * from information_schema.key_column_usage`)
 }
 
 func (s *testPrivilegeSuite) TestAdminCommand(c *C) {
 	se := newSession(c, s.store, s.dbName)
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil), IsTrue)
+	var ok bool
+	var err error
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	mustExec(c, se, `CREATE USER 'test_admin'@'localhost';`)
 	mustExec(c, se, `FLUSH PRIVILEGES;`)
 	mustExec(c, se, `CREATE TABLE t(a int)`)
 
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "test_admin", Hostname: "localhost"}, nil, nil), IsTrue)
-	_, err := se.Execute(context.Background(), "ADMIN SHOW DDL JOBS")
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "test_admin", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
+	_, err = se.Execute(context.Background(), "ADMIN SHOW DDL JOBS")
 	c.Assert(strings.Contains(err.Error(), "privilege check fail"), IsTrue)
 	_, err = se.Execute(context.Background(), "ADMIN CHECK TABLE t")
 	c.Assert(strings.Contains(err.Error(), "privilege check fail"), IsTrue)
 
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err = se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost"}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	_, err = se.Execute(context.Background(), "ADMIN SHOW DDL JOBS")
 	c.Assert(err, IsNil)
 }

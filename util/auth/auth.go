@@ -16,10 +16,12 @@ package auth
 import (
 	"bytes"
 	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 
 	. "github.com/hanchuanchuan/goInception/format"
+	"github.com/hanchuanchuan/goInception/mysql"
 	"github.com/hanchuanchuan/goInception/terror"
 	"github.com/pingcap/errors"
 )
@@ -84,19 +86,20 @@ func (role *RoleIdentity) String() string {
 
 // CheckScrambledPassword check scrambled password received from client.
 // The new authentication is performed in following manner:
-//   SERVER:  public_seed=create_random_string()
-//            send(public_seed)
-//   CLIENT:  recv(public_seed)
-//            hash_stage1=sha1("password")
-//            hash_stage2=sha1(hash_stage1)
-//            reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
-//            // this three steps are done in scramble()
-//            send(reply)
-//   SERVER:  recv(reply)
-//            hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
-//            candidate_hash2=sha1(hash_stage1)
-//            check(candidate_hash2==hash_stage2)
-//            // this three steps are done in check_scramble()
+//
+//	SERVER:  public_seed=create_random_string()
+//	         send(public_seed)
+//	CLIENT:  recv(public_seed)
+//	         hash_stage1=sha1("password")
+//	         hash_stage2=sha1(hash_stage1)
+//	         reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
+//	         // this three steps are done in scramble()
+//	         send(reply)
+//	SERVER:  recv(reply)
+//	         hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
+//	         candidate_hash2=sha1(hash_stage1)
+//	         check(candidate_hash2==hash_stage2)
+//	         // this three steps are done in check_scramble()
 func CheckScrambledPassword(salt, hpwd, auth []byte) bool {
 	crypt := sha1.New()
 	_, err := crypt.Write(salt)
@@ -120,14 +123,46 @@ func Sha1Hash(bs []byte) []byte {
 	return crypt.Sum(nil)
 }
 
+// Sha256Hash calculates sha256 hash.
+func Sha256Hash(bs []byte) []byte {
+	crypt := sha256.New()
+	_, err := crypt.Write(bs)
+	terror.Log(errors.Trace(err))
+	return crypt.Sum(nil)
+}
+
 // EncodePassword converts plaintext password to hashed hex string.
 func EncodePassword(pwd string) string {
 	if len(pwd) == 0 {
 		return ""
 	}
+	return encodePasswordSHA1(pwd)
+}
+
+// EncodePasswordByPlugin encodes password using the requested authentication plugin.
+func EncodePasswordByPlugin(plugin, pwd string) (string, error) {
+	if len(pwd) == 0 {
+		return "", nil
+	}
+	switch mysql.NormalizeAuthPlugin(plugin) {
+	case mysql.AuthNativePassword:
+		return encodePasswordSHA1(pwd), nil
+	case mysql.AuthCachingSha2Password:
+		return encodePasswordSHA256(pwd), nil
+	default:
+		return "", errors.Errorf("unsupported auth plugin %s", plugin)
+	}
+}
+
+func encodePasswordSHA1(pwd string) string {
 	hash1 := Sha1Hash([]byte(pwd))
 	hash2 := Sha1Hash(hash1)
+	return fmt.Sprintf("*%X", hash2)
+}
 
+func encodePasswordSHA256(pwd string) string {
+	hash1 := Sha256Hash([]byte(pwd))
+	hash2 := Sha256Hash(hash1)
 	return fmt.Sprintf("*%X", hash2)
 }
 
@@ -138,4 +173,49 @@ func DecodePassword(pwd string) ([]byte, error) {
 		return nil, errors.Trace(err)
 	}
 	return x, nil
+}
+
+// CheckCachingSha2Password validates caching_sha2_password tokens.
+func CheckCachingSha2Password(salt, hpwd, auth []byte) bool {
+	if len(auth) == 0 {
+		return len(hpwd) == 0
+	}
+	hash := sha256.New()
+	_, err := hash.Write(hpwd)
+	terror.Log(errors.Trace(err))
+	_, err = hash.Write(salt)
+	terror.Log(errors.Trace(err))
+	message := hash.Sum(nil)
+	if len(message) != len(auth) {
+		return false
+	}
+	candidate := make([]byte, len(auth))
+	for i := range auth {
+		candidate[i] = auth[i] ^ message[i]
+	}
+	hash.Reset()
+	_, err = hash.Write(candidate)
+	terror.Log(errors.Trace(err))
+	stage2 := hash.Sum(nil)
+	return bytes.Equal(stage2, hpwd)
+}
+
+// VerifyPassword verifies the authentication data with the stored password and plugin.
+func VerifyPassword(plugin, stored string, authentication, salt []byte) (bool, error) {
+	plugin = mysql.NormalizeAuthPlugin(plugin)
+	if len(stored) == 0 {
+		return len(authentication) == 0, nil
+	}
+	hpwd, err := DecodePassword(stored)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+	switch plugin {
+	case mysql.AuthNativePassword:
+		return CheckScrambledPassword(salt, hpwd, authentication), nil
+	case mysql.AuthCachingSha2Password:
+		return CheckCachingSha2Password(salt, hpwd, authentication), nil
+	default:
+		return false, errors.Errorf("unsupported auth plugin %s", plugin)
+	}
 }

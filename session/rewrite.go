@@ -72,13 +72,11 @@ func (rw *Rewrite) RewriteDML2Select() error {
 // delete2Select 将 Delete 语句改写成 Select
 func delete2Select(stmt *sqlparser.Delete) string {
 	newSQL := &sqlparser.Select{
-		SelectExprs: []sqlparser.SelectExpr{
-			new(sqlparser.StarExpr),
-		},
-		From:    stmt.TableExprs,
-		Where:   stmt.Where,
-		OrderBy: stmt.OrderBy,
-		Limit:   stmt.Limit,
+		SelectExprs: newSelectExprs(new(sqlparser.StarExpr)),
+		From:        stmt.TableExprs,
+		Where:       stmt.Where,
+		OrderBy:     stmt.OrderBy,
+		Limit:       stmt.Limit,
 	}
 	return sqlparser.String(newSQL)
 }
@@ -86,13 +84,11 @@ func delete2Select(stmt *sqlparser.Delete) string {
 // update2Select 将 Update 语句改写成 Select
 func update2Select(stmt *sqlparser.Update) string {
 	newSQL := &sqlparser.Select{
-		SelectExprs: []sqlparser.SelectExpr{
-			new(sqlparser.StarExpr),
-		},
-		From:    stmt.TableExprs,
-		Where:   stmt.Where,
-		OrderBy: stmt.OrderBy,
-		Limit:   stmt.Limit,
+		SelectExprs: newSelectExprs(new(sqlparser.StarExpr)),
+		From:        stmt.TableExprs,
+		Where:       stmt.Where,
+		OrderBy:     stmt.OrderBy,
+		Limit:       stmt.Limit,
 	}
 	return sqlparser.String(newSQL)
 }
@@ -127,17 +123,16 @@ func (rw *Rewrite) select2Count() string {
 		}
 
 		newSQL := &sqlparser.Select{
-			SelectExprs: []sqlparser.SelectExpr{
+			SelectExprs: newSelectExprs(
 				&sqlparser.AliasedExpr{
 					Expr: &sqlparser.FuncExpr{
-						// Name: sqlparser.NewColIdent("count"),
 						Name: sqlparser.NewIdentifierCI("count"),
-						Exprs: []sqlparser.SelectExpr{
-							new(sqlparser.StarExpr),
+						Exprs: []sqlparser.Expr{
+							sqlparser.NewIntLiteral("1"),
 						},
 					},
 				},
-			},
+			),
 			Distinct: stmt.Distinct,
 			From:     stmt.From,
 			Where:    stmt.Where,
@@ -151,9 +146,7 @@ func (rw *Rewrite) select2Count() string {
 		//what we exactly want is 'select count(*) from (select 1 from table where id < 100 limit 10)'
 		if stmt.Limit != nil {
 			newSQL.Limit = stmt.Limit
-			newSQL.SelectExprs = []sqlparser.SelectExpr{
-				new(sqlparser.StarExpr),
-			}
+			newSQL.SelectExprs = newSelectExprs(new(sqlparser.StarExpr))
 			return fmt.Sprintf("SELECT COUNT(1) FROM (%s)t", sqlparser.String(newSQL))
 		}
 
@@ -163,4 +156,8 @@ func (rw *Rewrite) select2Count() string {
 	default:
 		return fmt.Sprintf("SELECT COUNT(1) FROM (%s)t", rw.SQL)
 	}
+}
+
+func newSelectExprs(exprs ...sqlparser.SelectExpr) *sqlparser.SelectExprs {
+	return &sqlparser.SelectExprs{Exprs: exprs}
 }

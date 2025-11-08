@@ -109,6 +109,11 @@ type Security struct {
 	ClusterSSLCA   string `toml:"cluster-ssl-ca" json:"cluster-ssl-ca"`
 	ClusterSSLCert string `toml:"cluster-ssl-cert" json:"cluster-ssl-cert"`
 	ClusterSSLKey  string `toml:"cluster-ssl-key" json:"cluster-ssl-key"`
+	AuthPlugin     string `toml:"auth_plugin" json:"auth_plugin"`
+}
+
+func (s *Security) normalize() {
+	s.AuthPlugin = mysql.NormalizeAuthPlugin(s.AuthPlugin)
 }
 
 // ToTLSConfig generates tls's config based on security section of the config.
@@ -689,8 +694,9 @@ var defaultConf = Config{
 	// 为配置方便,在config节点也添加相同参数
 	SkipGrantTable: true,
 	IgnoreSighup:   true,
-	Security: Security{
+Security: Security{
 		SkipGrantTable: true,
+		AuthPlugin:     mysql.AuthCachingSha2Password,
 	},
 	Inc: Inc{
 		EnableZeroDate:        true,
@@ -808,6 +814,8 @@ func (c *Config) Load(confFile string) error {
 	for i, k := range c.Inc.CustomKeywords {
 		c.Inc.CustomKeywords[i] = strings.ToUpper(k)
 	}
+
+	c.Security.normalize()
 
 	return errors.Trace(err)
 }

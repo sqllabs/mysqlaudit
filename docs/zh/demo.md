@@ -15,8 +15,7 @@ import pymysql
 import prettytable as pt
 tb = pt.PrettyTable()
 
-sql = '''/*--user=root;--password=root;--host=127.0.0.1;--check=1;--port=3306;*/
-inception_magic_start;
+sql = '''/*--user=root;--password=root;--host=127.0.0.1;--check=1;--port=3306;*/inception_magic_start;
 use test_inc;
 create table t1(id int primary key,c1 int);
 insert into t1(id,c1,c2) values(1,1,1);
@@ -35,6 +34,8 @@ for row in result:
     tb.add_row(row)
 print(tb)
 ```
+
+> 注意：控制注释必须与 `inception_magic_start` 写在同一个语句中（如示例所示），否则 MySQL 客户端会将两者拆成不同语句，goInception 将无法解析远端连接参数。
 
 返回结果：
 
@@ -67,8 +68,7 @@ func main() {
 	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:4000)/")
 	defer db.Close()
 
-	sql := `/*--user=test;--password=test;--host=127.0.0.1;--port=3306;--check=1;*/
-    inception_magic_start;
+sql := `/*--user=test;--password=test;--host=127.0.0.1;--port=3306;--check=1;*/inception_magic_start;
     use  test;
     create table t1(id int primary key);
     alter table t1 add index idx_id (id);
@@ -152,6 +152,3 @@ inception show processlist;
 ```sql
 kill 2;
 ```
-
-
-

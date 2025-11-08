@@ -1,5 +1,17 @@
 # goInception Changelog
 
+## [Unreleased]
+
+### New Features
+* Added support for MySQL 8.4 authentication: default `caching_sha2_password`, Auth Switch packet fix, and handshake tests.
+* Session bootstrap now initializes root user and mysql.user schema with `caching_sha2_password`, plus inline control comment parsing test.
+
+### Fixes
+* Hardened control-comment parsing to require `/*--...*/inception_magic_start;` in a single statement, with friendlier error messages.
+
+### Notes
+* `pt-online-schema-change` verified against MySQL 8.4 (`--recursion-method=none`); `gh-ost` pending update due to MySQL 8.4 replacing `SHOW SLAVE STATUS` with `SHOW REPLICA STATUS`.
+
 ## [v1.2.5]-2021-10-31
 
 ### Fix
@@ -628,3 +640,14 @@ When the dml statements are similar, the explain results can be reused according
 
 ## [v0.1-beta]-2019-1-25
 #### goInception officially released
+# [Unreleased]
+
+### New Features
+* Added support for MySQL 8.4 authentication: default `caching_sha2_password`, Auth Switch packet fix, and handshake tests.
+* Session bootstrap now initializes root user and mysql.user schema with `caching_sha2_password`, plus inline control comment parsing test.
+
+### Fixes
+* Hardened control-comment parsing to require `/*--...*/inception_magic_start;` in a single statement, with friendlier error messages.
+
+### Notes
+* `pt-online-schema-change` verified against MySQL 8.4 (`--recursion-method=none`); `gh-ost` pending update due to MySQL 8.4 replacing `SHOW SLAVE STATUS` with `SHOW REPLICA STATUS`.

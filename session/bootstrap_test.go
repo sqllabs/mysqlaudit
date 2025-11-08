@@ -56,9 +56,11 @@ func (s *testBootstrapSuite) TestBootstrap(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(chk.NumRows() == 0, IsFalse)
 	datums := ast.RowToDatums(chk.GetRow(0), r.Fields())
-	match(c, datums, []byte(`%`), []byte("root"), []byte(""), "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")
+	match(c, datums, []byte(`%`), []byte("root"), []byte(""), []byte(""), "caching_sha2_password", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")
 
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "root", Hostname: "anyhost"}, []byte(""), []byte("")), IsTrue)
+	ok, _, err := se.Auth(&auth.UserIdentity{Username: "root", Hostname: "anyhost"}, []byte(""), []byte(""), "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 	mustExecSQL(c, se, "USE test;")
 	// Check privilege tables.
 	mustExecSQL(c, se, "SELECT * from mysql.db;")

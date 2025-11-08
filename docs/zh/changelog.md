@@ -1,5 +1,17 @@
 # goInception 更新日志
 
+## [未发布]
+
+### 新功能
+* 支持 MySQL 8.4 认证：默认启用 `caching_sha2_password`，修复 Auth Switch 报文并增加握手测试。
+* Session bootstrap 使用 `caching_sha2_password` 初始化 root 账号及 mysql.user 表，并新增控制注释同行解析测试。
+
+### 修复
+* 控制注释解析必须与 `inception_magic_start` 同语句，错误提示更友好。
+
+### 说明
+* `pt-online-schema-change` 在 MySQL 8.4（`--recursion-method=none`）下验证通过；`gh-ost` 因语法仍使用 `SHOW SLAVE STATUS`，待官方支持 `SHOW REPLICA STATUS` 后再验证。
+
 ## [v1.2.5] - 2021-10-31
 
 ### Fix
@@ -635,4 +647,3 @@ dml语句相似时，可以根据相同的指纹ID复用explain结果，以减�
 
 ## [v0.1-beta] - 2019-1-25
 #### goInception正式发布
-

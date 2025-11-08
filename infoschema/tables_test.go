@@ -76,10 +76,12 @@ func (s *testSuite) TestInfoschemaFieldValue(c *C) {
 
 	tk1 := testkit.NewTestKit(c, store)
 	tk1.MustExec("use test")
-	c.Assert(tk1.Se.Auth(&auth.UserIdentity{
+	ok, _, err := tk1.Se.Auth(&auth.UserIdentity{
 		Username: "xxx",
 		Hostname: "127.0.0.1",
-	}, nil, nil), IsTrue)
+	}, nil, nil, "")
+	c.Assert(err, IsNil)
+	c.Assert(ok, IsTrue)
 
 	tk1.MustQuery("select distinct(table_schema) from information_schema.tables").Check(testkit.Rows("INFORMATION_SCHEMA"))
 }

@@ -251,7 +251,9 @@ func (s *testSuite) TestFlushPrivileges(c *C) {
 	se, err := session.CreateSession4Test(s.store)
 	c.Check(err, IsNil)
 	defer se.Close()
-	c.Assert(se.Auth(&auth.UserIdentity{Username: "testflush", Hostname: "localhost"}, nil, nil), IsTrue)
+	ok, _, err := se.Auth(&auth.UserIdentity{Username: "testflush", Hostname: "localhost"}, nil, nil, "")
+	c.Check(err, IsNil)
+	c.Assert(ok, IsTrue)
 
 	ctx := context.Background()
 	// Before flush.

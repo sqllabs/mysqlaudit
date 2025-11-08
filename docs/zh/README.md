@@ -10,6 +10,10 @@
 
 goInception是一个集审核、执行、备份及生成回滚语句于一身的MySQL运维工具， 通过对执行SQL的语法解析，返回基于自定义规则的审核结果，并提供执行和备份及生成回滚语句的功能。
 
+> 兼容性说明：goInception 基于 TiDB 协议栈，与 MySQL 5.6+ 兼容，已针对 MySQL 8.4（含默认的 `caching_sha2_password` 认证）完成认证与 DDL/DML 全链路验证。
+
+> 兼容性说明：goInception 基于 TiDB 协议栈，与 MySQL 5.6+ 兼容，并已针对 MySQL 8.4（含 `caching_sha2_password` 默认认证）完成认证及 DDL/DML 验证。
+
 ## 架构
 
 ![审核流程](./images/process.png)
@@ -21,12 +25,13 @@ goInception是一个集审核、执行、备份及生成回滚语句于一身的
 goInception延用inception的使用方式，在审核的sql开始前添加注释来指定远端服务器，并在sql的前后添加特殊标识以区分待审核语句，示例如下：
 
 ```sql
-/*--user=root;--password=root;--host=127.0.0.1;--check=1;--port=3306;*/
-inception_magic_start;
+/*--user=root;--password=root;--host=127.0.0.1;--check=1;--port=3306;*/inception_magic_start;
 use test;
 create table t1(id int primary key);
 inception_magic_commit;
 ```
+
+> 控制注释必须与 `inception_magic_start` 写在同一个语句中，否则客户端会把两者拆开，导致 goInception 无法识别远端连接参数。
 
 ## 做了什么
 
@@ -41,9 +46,6 @@ goInception基于TiDB的语法解析器，和业内有名的inception审核工�
 
 * [Inception - 审核工具](https://github.com/hanchuanchuan/inception)
 * [TiDB](https://github.com/pingcap/tidb)
-
-
-
 
 
 

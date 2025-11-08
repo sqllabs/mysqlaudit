@@ -350,7 +350,7 @@ func (s *session) executeInc(ctx context.Context, sql string) (recordSets []sqle
 					/****************/
 
 					if !s.haveBegin {
-						s.appendErrorMsg("Must start as begin statement.")
+						s.appendErrorNo(ER_START_AS_BEGIN)
 						if s.opt != nil && (s.opt.Print || s.opt.Masking) {
 							s.printSets.Append(2, "", "", strings.TrimSpace(s.myRecord.Buf.String()))
 						} else if s.opt != nil && s.opt.split {
@@ -384,7 +384,7 @@ func (s *session) executeInc(ctx context.Context, sql string) (recordSets []sqle
 
 					if !s.haveBegin && need {
 						// log.Warnf("%#v", stmtNode)
-						s.appendErrorMsg("Must start as begin statement.")
+						s.appendErrorNo(ER_START_AS_BEGIN)
 						if s.opt != nil && (s.opt.Print || s.opt.Masking) {
 							s.printSets.Append(2, "", "", strings.TrimSpace(s.myRecord.Buf.String()))
 						} else if s.opt != nil && s.opt.split {
@@ -450,7 +450,7 @@ func (s *session) executeInc(ctx context.Context, sql string) (recordSets []sqle
 
 				if !s.haveBegin && s.needDataSource(stmtNode) {
 					log.Warnf("%#v", stmtNode)
-					s.appendErrorMsg("Must start as begin statement.")
+					s.appendErrorNo(ER_START_AS_BEGIN)
 					if s.opt != nil && (s.opt.Print || s.opt.Masking) {
 						s.printSets.Append(2, "", "", strings.TrimSpace(s.myRecord.Buf.String()))
 					} else if s.opt != nil && s.opt.split {
@@ -8162,7 +8162,7 @@ func (s *session) queryIndexFromDB(db string, tableName string, reportNotExists 
 }
 
 func (s *session) appendErrorMsg(msg string) {
-	s.appendErrorMsgf(msg)
+	s.appendErrorMsgf("%s", msg)
 }
 
 func (s *session) appendErrorMsgf(format string, args ...interface{}) {

@@ -16,6 +16,8 @@
 
 goInception is a MySQL maintenance tool, which can be used to review, implement, backup, and generate SQL statements for rollback. It parses SQL syntax and returns the result of the review based on custom rules.
 
+> Compatibility: goInception works with MySQL 5.6+ and has been verified against MySQL 8.4 (including the default `caching_sha2_password` authentication).
+
 **Documentation:**
 **[[Document]](https://hanchuanchuan.github.io/goInception/)**
 **[[中文文档]](https://hanchuanchuan.github.io/goInception/zh/)**
@@ -46,6 +48,8 @@ docker pull hanchuanchuan/goinception
 ```bash
 git clone https://github.com/hanchuanchuan/goInception.git
 cd goInception
+cp config/config.toml.default config.toml
+# edit config.toml as needed (listen host/port, security, etc.)
 go build -o goInception tidb-server/main.go
 
 ./goInception -config=config/config.toml
@@ -57,6 +61,23 @@ go build -o goInception tidb-server/main.go
 
 * [Archery](https://github.com/hhyo/Archery) `Query support (MySQL/MsSQL/Redis/PostgreSQL), MySQL optimization (SQLAdvisor|SOAR|SQLTuning), slow log management, table structure comparison, session management, Alibaba Cloud RDS management, etc.`
 
+
+#### Testing & verification
+
+- **Authentication** – use both the MySQL CLI and go-sql-driver clients to connect to goInception with `caching_sha2_password` (default in MySQL 8.4) and `mysql_native_password`, ensuring Auth Switch handshakes succeed.
+- **Remote SQL** – submit control-comment blocks (`/*--...*/inception_magic_start; ...`) via CLI/Go helper to exercise DDL/DML against a MySQL 8.4 server, for example:
+
+  ```bash
+  mysql --comments -h127.0.0.1 -P4000 <<'SQL'
+  /*--user=root;--password=***;--host=your.mysql.host;--port=3306;--check=1;--execute=0;*/inception_magic_start;
+  use test;
+  create table t1(id int primary key);
+  inception_magic_commit;
+  SQL
+  ```
+
+- **pt-online-schema-change** – verified against MySQL 8.4 using `--recursion-method=none`, confirming caching_sha2 authentication works.
+- **gh-ost** – current release (as of 2024) still issues `SHOW SLAVE STATUS`, which MySQL 8.4 rejects (`SHOW REPLICA STATUS` is required). Once upstream fixes or a compatible build is available, rerun the OSC validation.
 
 #### Acknowledgments
     GoInception reconstructs from the Inception which is a well-known MySQL auditing tool and uses TiDB SQL parser.

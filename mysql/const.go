@@ -40,6 +40,8 @@ const (
 	ErrHeader         byte = 0xff
 	EOFHeader         byte = 0xfe
 	LocalInFileHeader byte = 0xfb
+	// AuthSwitchRequestHeader shares the same value with EOFHeader but serves a different purpose during handshake.
+	AuthSwitchRequestHeader byte = 0xfe
 )
 
 // Server information.
@@ -161,7 +163,11 @@ const (
 
 // Auth name information.
 const (
-	AuthName = "mysql_native_password"
+	AuthNativePassword      = "mysql_native_password"
+	AuthCachingSha2Password = "caching_sha2_password"
+	AuthDefaultPlugin       = AuthCachingSha2Password
+	// AuthName is kept for backward compatibility and equals to AuthNativePassword.
+	AuthName = AuthNativePassword
 )
 
 // MySQL database and tables.

@@ -144,8 +144,8 @@ func (s *session) checkAutoIncrementOp(colDef *ast.ColumnDef, num int) (bool, er
 		}
 		for _, op := range colDef.Options[num+1:] {
 			if op.Tp == ast.ColumnOptionDefaultValue && !op.Expr.GetDatum().IsNull() {
-				return hasAutoIncrement,
-					errors.Errorf(fmt.Sprintf(s.getErrorMessage(ER_INVALID_DEFAULT), colDef.Name.Name.O))
+				msg := fmt.Sprintf(s.getErrorMessage(ER_INVALID_DEFAULT), colDef.Name.Name.O)
+				return hasAutoIncrement, errors.Errorf("%s", msg)
 			}
 		}
 	}
@@ -155,8 +155,8 @@ func (s *session) checkAutoIncrementOp(colDef *ast.ColumnDef, num int) (bool, er
 		}
 		for _, op := range colDef.Options[num+1:] {
 			if op.Tp == ast.ColumnOptionAutoIncrement {
-				return hasAutoIncrement,
-					errors.Errorf(fmt.Sprintf(s.getErrorMessage(ER_INVALID_DEFAULT), colDef.Name.Name.O))
+				msg := fmt.Sprintf(s.getErrorMessage(ER_INVALID_DEFAULT), colDef.Name.Name.O)
+				return hasAutoIncrement, errors.Errorf("%s", msg)
 			}
 		}
 	}

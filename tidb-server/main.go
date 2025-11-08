@@ -378,6 +378,7 @@ func setGlobalVars() {
 
 	variable.SysVars[variable.TIDBMemQuotaQuery].Value = strconv.FormatInt(cfg.MemQuotaQuery, 10)
 	variable.SysVars["lower_case_table_names"].Value = strconv.Itoa(cfg.LowerCaseTableNames)
+	variable.SysVars["default_authentication_plugin"].Value = cfg.Security.AuthPlugin
 
 	plannercore.SetPreparedPlanCache(cfg.PreparedPlanCache.Enabled)
 	if plannercore.PreparedPlanCacheEnabled() {

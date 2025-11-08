@@ -7,6 +7,8 @@ All goInception audit rules can check with ```inception show variables;```.
 inception show variables;
 ```
 
+> Note: when using goInception control comments, make sure `/*--...*/` and `inception_magic_start` are in the same SQL statement (for example `/*--...*/inception_magic_start;`). Otherwise clients may split them and goInception cannot parse the parameters.
+
 Modify in two ways:
 
 - one at ```inception set ```

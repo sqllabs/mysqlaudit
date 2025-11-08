@@ -289,7 +289,7 @@ func (s *testSessionIncSuite) TestBegin(c *C) {
 
 	for _, row := range s.rows {
 		c.Assert(row[2], Equals, "2")
-		c.Assert(row[4], Equals, "Must start as begin statement.")
+		c.Assert(row[4], Equals, "Must start as begin statement. If you are using goInception control comments, ensure /*--...*/ and inception_magic_start are in the same statement.")
 	}
 }
 
@@ -315,6 +315,17 @@ func (s *testSessionIncSuite) TestNoSourceInfo2(c *C) {
 		c.Assert(row[2], Equals, "2")
 		c.Assert(row[4], Equals, "Invalid source infomation(主机名为空,端口为0,用户名为空).")
 	}
+}
+
+func (s *testSessionIncSuite) TestInlineControlComment(c *C) {
+	res := s.tk.MustQueryInc(fmt.Sprintf(`/*%s;--check=1;--backup=0;--ignore-warnings=1;*/inception_magic_start;
+use test_inc;
+create table t_inline(id int);
+inception_magic_commit;`, s.getAddr()))
+	rows := res.Rows()
+	c.Assert(len(rows), GreaterEqual, 3)
+	last := rows[len(rows)-1]
+	c.Assert(last[2], Equals, "0", Commentf("%v", rows))
 }
 
 func (s *testSessionIncSuite) TestWrongDBName(c *C) {
