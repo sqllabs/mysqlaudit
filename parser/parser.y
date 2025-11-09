@@ -29,13 +29,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanchuanchuan/goInception/mysql"
-	"github.com/hanchuanchuan/goInception/ast"
-	"github.com/hanchuanchuan/goInception/model"
-	"github.com/hanchuanchuan/goInception/parser/opcode"
-	"github.com/hanchuanchuan/goInception/util/auth"
-	"github.com/hanchuanchuan/goInception/util/charset"
-	"github.com/hanchuanchuan/goInception/types"
+	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/sqlaudit/parser/opcode"
+	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/sqlaudit/types"
 )
 
 %}
