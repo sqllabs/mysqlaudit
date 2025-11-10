@@ -57,6 +57,8 @@ enable_set_engine = true
 enable_timestamp_type=true
 enable_change_column = true
 enable_enum_set_bit = true
+enable_set_charset = true
+enable_set_collation = true
 
 check_timestamp_count = false
 check_table_comment = false
@@ -73,7 +75,7 @@ enable_ddl_instant = true
 check_index_column_repeat = false
 
 # 是否允许使用关键字，包括MYSQL关键字与自定义关键字（配置项：custom_keywords）
-enable_identifer_keyword = false
+enable_identifer_keyword = true
 # 额外的自定义关键字
 custom_keywords = []
 
