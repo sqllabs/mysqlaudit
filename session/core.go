@@ -24,6 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jinzhu/gorm"
+	"github.com/pingcap/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/sqllabs/sqlaudit/ast"
 	"github.com/sqllabs/sqlaudit/config"
 	"github.com/sqllabs/sqlaudit/parser"
@@ -31,9 +34,6 @@ import (
 	"github.com/sqllabs/sqlaudit/util"
 	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	"github.com/sqllabs/sqlaudit/util/timeutil"
-	"github.com/jinzhu/gorm"
-	"github.com/pingcap/errors"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	// "vitess.io/vitess/go/vt/sqlparser"
 )
@@ -118,8 +118,12 @@ func (s *session) init() {
 		if tmp := s.processInfo.Load(); tmp != nil {
 			if pi, ok := tmp.(util.ProcessInfo); ok {
 				if pi.User != "root" {
-					log.Warnf("Insufficient permissions to enable any statement! user: %s", pi.User)
-					s.inc.EnableAnyStatement = false
+					if !s.inc.AllowNonRootAnyStatement {
+						log.Warnf("Insufficient permissions to enable any statement! user: %s (set allow_non_root_any_statement=true to override)", pi.User)
+						s.inc.EnableAnyStatement = false
+					} else {
+						log.Infof("Non-root user '%s' is using EnableAnyStatement (allowed by configuration)", pi.User)
+					}
 				}
 			}
 		}

@@ -732,6 +732,15 @@ func (s *session) processCommand(ctx context.Context, stmtNode ast.StmtNode,
 	case *ast.SetStmt:
 		s.checkSetStmt(node)
 
+	case *ast.BeginStmt:
+		log.Debug("Processing BEGIN/START TRANSACTION statement")
+
+	case *ast.CommitStmt:
+		log.Debug("Processing COMMIT statement")
+
+	case *ast.RollbackStmt:
+		log.Debug("Processing ROLLBACK statement")
+
 	default:
 		log.Warnf("无匹配类型:%T\n", stmtNode)
 		if !s.inc.EnableAnyStatement {

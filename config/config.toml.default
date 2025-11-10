@@ -61,6 +61,9 @@ enable_set_charset = true
 enable_set_collation = true
 enable_json_type = true
 enable_foreign_key = true
+enable_any_statement = true
+# Allow non-root users to use enable_any_statement (default false for safety; flip to true only if you accept the risk)
+allow_non_root_any_statement = true
 
 check_timestamp_count = false
 check_table_comment = false

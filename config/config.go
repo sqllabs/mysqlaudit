@@ -276,7 +276,9 @@ type Inc struct {
 	DisableTypes        string `toml:"disable_types" json:"disable_types"`
 	EnableAlterDatabase bool   `toml:"enable_alter_database" json:"enable_alter_database"`
 	// 允许执行任意语法类型.该设置有安全要求,仅支持配置文件方式设置
-	EnableAnyStatement          bool `toml:"enable_any_statement" json:"enable_any_statement"`
+	EnableAnyStatement bool `toml:"enable_any_statement" json:"enable_any_statement"`
+	// AllowNonRootAnyStatement controls whether non-root users may enable the any-statement mode.
+	AllowNonRootAnyStatement    bool `toml:"allow_non_root_any_statement" json:"allow_non_root_any_statement"`
 	EnableAutoIncrementUnsigned bool `toml:"enable_autoincrement_unsigned" json:"enable_autoincrement_unsigned"`
 	// 允许blob,text,json列设置为NOT NULL
 	EnableBlobNotNull   bool `toml:"enable_blob_not_null" json:"enable_blob_not_null"`
@@ -699,28 +701,29 @@ var defaultConf = Config{
 		AuthPlugin:     mysql.AuthCachingSha2Password,
 	},
 	Inc: Inc{
-		EnableZeroDate:        true,
-		EnableNullable:        true,
-		EnableDropTable:       false,
-		EnableSetEngine:       true,
-		CheckTableComment:     false,
-		CheckColumnComment:    false,
-		EnableAnyStatement:    false,
-		EnableChangeColumn:    true,
-		EnableEnumSetBit:      true,
-		CheckTimestampCount:   false,
-		EnableTimeStampType:   true,
-		CheckFloatDouble:      false,
-		CheckIdentifierUpper:  false,
-		CheckIdentifierLower:  false,
-		CheckReadOnly:         true,
-		EnableDDLInstant:      true,
-		SqlSafeUpdates:        -1,
-		LockWaitTimeout:       -1,
-		SupportCharset:        "utf8,utf8mb4",
-		SupportEngine:         "innodb",
-		Lang:                  "en-US",
-		CheckColumnTypeChange: true,
+		EnableZeroDate:           true,
+		EnableNullable:           true,
+		EnableDropTable:          false,
+		EnableSetEngine:          true,
+		CheckTableComment:        false,
+		CheckColumnComment:       false,
+		EnableAnyStatement:       false,
+		AllowNonRootAnyStatement: false,
+		EnableChangeColumn:       true,
+		EnableEnumSetBit:         true,
+		CheckTimestampCount:      false,
+		EnableTimeStampType:      true,
+		CheckFloatDouble:         false,
+		CheckIdentifierUpper:     false,
+		CheckIdentifierLower:     false,
+		CheckReadOnly:            true,
+		EnableDDLInstant:         true,
+		SqlSafeUpdates:           -1,
+		LockWaitTimeout:          -1,
+		SupportCharset:           "utf8,utf8mb4",
+		SupportEngine:            "innodb",
+		Lang:                     "en-US",
+		CheckColumnTypeChange:    true,
 
 		// 连接服务器选项
 		DefaultCharset:   "utf8mb4",
