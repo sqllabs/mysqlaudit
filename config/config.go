@@ -22,9 +22,9 @@ import (
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
+	"github.com/pingcap/errors"
 	"github.com/sqllabs/sqlaudit/mysql"
 	"github.com/sqllabs/sqlaudit/util/logutil"
-	"github.com/pingcap/errors"
 )
 
 // Config number limitations
@@ -694,7 +694,7 @@ var defaultConf = Config{
 	// 为配置方便,在config节点也添加相同参数
 	SkipGrantTable: true,
 	IgnoreSighup:   true,
-Security: Security{
+	Security: Security{
 		SkipGrantTable: true,
 		AuthPlugin:     mysql.AuthCachingSha2Password,
 	},
@@ -707,7 +707,8 @@ Security: Security{
 		CheckColumnComment:    false,
 		EnableAnyStatement:    false,
 		EnableChangeColumn:    true,
-		CheckTimestampCount:   true,
+		EnableEnumSetBit:      true,
+		CheckTimestampCount:   false,
 		EnableTimeStampType:   true,
 		CheckFloatDouble:      false,
 		CheckIdentifierUpper:  false,

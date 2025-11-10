@@ -21,6 +21,11 @@ import (
 	"time"
 
 	mysqlDriver "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"github.com/percona/go-mysql/query"
+	"github.com/pingcap/errors"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"github.com/sqllabs/sqlaudit/ast"
 	"github.com/sqllabs/sqlaudit/config"
 	"github.com/sqllabs/sqlaudit/executor"
@@ -35,11 +40,6 @@ import (
 	"github.com/sqllabs/sqlaudit/util/charset"
 	"github.com/sqllabs/sqlaudit/util/sqlexec"
 	"github.com/sqllabs/sqlaudit/util/stringutil"
-	"github.com/jinzhu/gorm"
-	"github.com/percona/go-mysql/query"
-	"github.com/pingcap/errors"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 )
 
@@ -1648,13 +1648,23 @@ func (s *session) executeRemoteStatementAndBackup(record *Record) {
 func (s *session) mysqlFetchMasterBinlogPosition() *MasterStatus {
 	log.Debug("mysqlFetchMasterBinlogPosition")
 
-	sql := "SHOW MASTER STATUS;"
+	sql := "SHOW BINARY LOG STATUS;"
 	if s.isMiddleware() {
 		sql = s.opt.middlewareExtend + sql
 	}
 
 	var r MasterStatus
 	rows, err := s.raw(sql)
+	if err != nil {
+		if s.shouldFallbackToShowMasterStatus(err) {
+			log.Warnf("con:%d fallback to SHOW MASTER STATUS due to %v", s.sessionVars.ConnectionID, err)
+			sql = "SHOW MASTER STATUS;"
+			if s.isMiddleware() {
+				sql = s.opt.middlewareExtend + sql
+			}
+			rows, err = s.raw(sql)
+		}
+	}
 	if rows != nil {
 		defer rows.Close()
 	}
@@ -1674,6 +1684,23 @@ func (s *session) mysqlFetchMasterBinlogPosition() *MasterStatus {
 	}
 
 	return nil
+}
+
+func (s *session) shouldFallbackToShowMasterStatus(err error) bool {
+	myErr, ok := err.(*mysqlDriver.MySQLError)
+	if !ok {
+		return false
+	}
+
+	switch myErr.Number {
+	case 1064, // ER_PARSE_ERROR
+		1235, // ER_NOT_SUPPORTED_YET
+		1295: // ER_UNSUPPORTED_PS
+		return true
+	}
+
+	message := strings.ToLower(myErr.Message)
+	return strings.Contains(message, "show binary log status")
 }
 
 func (s *session) checkBinlogFormatIsRow() bool {
@@ -4649,9 +4676,13 @@ func (s *session) mysqlCheckField(t *TableInfo, field *ast.ColumnDef, alterTable
 		}
 	}
 
-	//不可设置default值的部分字段类型
-	if hasDefaultValue && !defaultValue.IsNull() && (field.Tp.Tp == mysql.TypeJSON || types.IsTypeBlob(field.Tp.Tp)) {
-		s.appendErrorNo(ER_BLOB_CANT_HAVE_DEFAULT, field.Name.Name.O)
+	// 检查不允许设置默认值的类型，同时允许合法的 JSON 默认值
+	if hasDefaultValue && !defaultValue.IsNull() {
+		if types.IsTypeBlob(field.Tp.Tp) {
+			s.appendErrorNo(ER_BLOB_CANT_HAVE_DEFAULT, field.Name.Name.O)
+		} else if field.Tp.Tp == mysql.TypeJSON && !s.isValidJSONDefault(defaultExpr, defaultValue) {
+			s.appendErrorNo(ER_INVALID_DEFAULT, field.Name.Name.O)
+		}
 	}
 	//是否使用 text\blob\json 字段类型
 	//当EnableNullable=false，不强制text\blob\json使用NOT NULL
@@ -4766,6 +4797,42 @@ func (s *session) mysqlCheckField(t *TableInfo, field *ast.ColumnDef, alterTable
 	//        my_error(ER_INVALID_DEFAULT, MYF(0), field->field_name);
 	//        mysql_errmsg_append(thd);
 	//    }
+}
+
+func (s *session) isValidJSONDefault(defaultExpr ast.ExprNode, defaultValue *types.Datum) bool {
+	if defaultExpr == nil || defaultValue == nil {
+		return false
+	}
+
+	// 仅在字面量场景尝试解析 JSON，其余表达式交给后端数据库校验
+	if _, ok := defaultExpr.(*ast.ValueExpr); !ok {
+		return true
+	}
+
+	switch defaultValue.Kind() {
+	case types.KindMysqlJSON,
+		types.KindInt64,
+		types.KindUint64,
+		types.KindFloat64,
+		types.KindMysqlDecimal:
+		return true
+	case types.KindString,
+		types.KindBytes,
+		types.KindBinaryLiteral:
+		str := defaultValue.GetString()
+		if str == "" {
+			return false
+		}
+		return json.Valid([]byte(str))
+	case types.KindNull:
+		return false
+	default:
+		str := defaultValue.GetString()
+		if str == "" {
+			return false
+		}
+		return json.Valid([]byte(str))
+	}
 }
 
 func (s *session) checkIndexAttr(tp ast.ConstraintType, name string,

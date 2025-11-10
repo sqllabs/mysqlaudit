@@ -16,6 +16,7 @@ package session
 import (
 	"fmt"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/sqlaudit/ast"
 	"github.com/sqllabs/sqlaudit/domain"
 	"github.com/sqllabs/sqlaudit/kv"
@@ -25,7 +26,6 @@ import (
 	"github.com/sqllabs/sqlaudit/sessionctx/variable"
 	"github.com/sqllabs/sqlaudit/util/auth"
 	"github.com/sqllabs/sqlaudit/util/testleak"
-	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )
 
@@ -56,7 +56,7 @@ func (s *testBootstrapSuite) TestBootstrap(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(chk.NumRows() == 0, IsFalse)
 	datums := ast.RowToDatums(chk.GetRow(0), r.Fields())
-	match(c, datums, []byte(`%`), []byte("root"), []byte(""), []byte(""), "caching_sha2_password", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")
+	match(c, datums, []byte(`%`), []byte("root"), []byte(""), []byte(""), []byte("caching_sha2_password"), "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y")
 
 	ok, _, err := se.Auth(&auth.UserIdentity{Username: "root", Hostname: "anyhost"}, []byte(""), []byte(""), "")
 	c.Assert(err, IsNil)

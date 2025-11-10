@@ -56,8 +56,9 @@ enable_drop_table = false
 enable_set_engine = true
 enable_timestamp_type=true
 enable_change_column = true
+enable_enum_set_bit = true
 
-check_timestamp_count = true
+check_timestamp_count = false
 check_table_comment = false
 check_column_comment = false
 
