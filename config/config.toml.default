@@ -59,6 +59,8 @@ enable_change_column = true
 enable_enum_set_bit = true
 enable_set_charset = true
 enable_set_collation = true
+enable_json_type = true
+enable_foreign_key = true
 
 check_timestamp_count = false
 check_table_comment = false
