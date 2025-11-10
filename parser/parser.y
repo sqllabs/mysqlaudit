@@ -2265,6 +2265,10 @@ DefaultValueExpr:
 	NowSymOptionFractionParentheses
 |	SignedLiteral
 |	BuiltinFunction
+|	'(' SignedLiteral ')'
+	{
+		$$ = $2
+	}
 
 BuiltinFunction:
 	'(' BuiltinFunction ')'
