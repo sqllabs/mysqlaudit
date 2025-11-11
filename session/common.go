@@ -13,9 +13,9 @@ import (
 	"strconv"
 	"strings"
 
-	// "github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/types"
+	// "github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/jinzhu/copier"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"

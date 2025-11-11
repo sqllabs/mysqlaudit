@@ -14,7 +14,7 @@
 package mock
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	"github.com/pingcap/tipb/go-tipb"
 	"golang.org/x/net/context"
 )

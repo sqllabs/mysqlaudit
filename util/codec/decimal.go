@@ -14,7 +14,7 @@
 package codec
 
 import (
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 )
 

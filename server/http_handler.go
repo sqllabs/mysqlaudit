@@ -24,20 +24,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/meta"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/tablecodec"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/meta"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/store/tikv/tikvrpc"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/kvproto/pkg/metapb"
@@ -176,7 +176,7 @@ func (t *tikvHandlerTool) getMvccByStartTs(startTS uint64, startKey, endKey []by
 func (t *tikvHandlerTool) getMvccByIdxValue(idx table.Index, values url.Values, idxCols []*model.ColumnInfo, handleStr string) (*kvrpcpb.MvccGetByKeyResponse, error) {
 	sc := new(stmtctx.StatementContext)
 	// HTTP request is not a database session, set timezone to UTC directly here.
-	// See https://github.com/sqllabs/sqlaudit/blob/master/docs/tidb_http_api.md for more details.
+	// See https://github.com/sqllabs/mysqlaudit/blob/master/docs/tidb_http_api.md for more details.
 	sc.TimeZone = time.UTC
 	idxRow, err := t.formValue2DatumRow(sc, values, idxCols)
 	if err != nil {

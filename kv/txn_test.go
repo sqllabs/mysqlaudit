@@ -16,7 +16,7 @@ package kv
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

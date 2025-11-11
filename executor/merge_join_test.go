@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"strings"
 
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/util/testkit"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

@@ -14,12 +14,12 @@
 package privileges_test
 
 import (
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/privilege/privileges"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/privilege/privileges"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
 	. "github.com/pingcap/check"
 )
 

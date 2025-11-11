@@ -14,15 +14,15 @@
 package core_test
 
 import (
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/parser"
-	"github.com/sqllabs/sqlaudit/planner"
-	"github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/parser"
+	"github.com/sqllabs/mysqlaudit/planner"
+	"github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

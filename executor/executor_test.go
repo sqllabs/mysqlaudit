@@ -27,38 +27,38 @@ import (
 
 	// gofail "github.com/etcd-io/gofail/runtime"
 	"github.com/golang/protobuf/proto"
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/executor"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/meta/autoid"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/parser"
-	"github.com/sqllabs/sqlaudit/planner"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
-	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
-	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/table/tables"
-	"github.com/sqllabs/sqlaudit/tablecodec"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/admin"
-	"github.com/sqllabs/sqlaudit/util/codec"
-	"github.com/sqllabs/sqlaudit/util/logutil"
-	"github.com/sqllabs/sqlaudit/util/mock"
-	"github.com/sqllabs/sqlaudit/util/testkit"
-	"github.com/sqllabs/sqlaudit/util/testleak"
-	"github.com/sqllabs/sqlaudit/util/testutil"
-	"github.com/sqllabs/sqlaudit/util/timeutil"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/executor"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/meta/autoid"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/parser"
+	"github.com/sqllabs/mysqlaudit/planner"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/store/tikv/tikvrpc"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/table/tables"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/admin"
+	"github.com/sqllabs/mysqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/util/logutil"
+	"github.com/sqllabs/mysqlaudit/util/mock"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/util/testutil"
+	"github.com/sqllabs/mysqlaudit/util/timeutil"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	pb "github.com/pingcap/kvproto/pkg/kvrpcpb"
@@ -779,7 +779,7 @@ func (s *testSuite) TestOrderBy(c *C) {
 	tk.MustExec("create table t (c1 int, c2 int, c3 varchar(20))")
 	tk.MustExec("insert into t values (1, 2, 'abc'), (2, 1, 'bcd')")
 
-	// Fix issue https://github.com/sqllabs/sqlaudit/issues/337
+	// Fix issue https://github.com/sqllabs/mysqlaudit/issues/337
 	tk.MustQuery("select c1 as a, c1 as b from t order by c1").Check(testkit.Rows("1 1", "2 2"))
 
 	tk.MustQuery("select c1 as a, t.c1 as a from t order by a desc").Check(testkit.Rows("2 2", "1 1"))
@@ -825,7 +825,7 @@ func (s *testSuite) TestSelectErrorRow(c *C) {
 	c.Assert(err, NotNil)
 }
 
-// TestIssue2612 is related with https://github.com/sqllabs/sqlaudit/issues/2612
+// TestIssue2612 is related with https://github.com/sqllabs/mysqlaudit/issues/2612
 func (s *testSuite) TestIssue2612(c *C) {
 	tk := testkit.NewTestKit(c, s.store)
 	tk.MustExec("use test")
@@ -842,7 +842,7 @@ func (s *testSuite) TestIssue2612(c *C) {
 	c.Assert(chk.GetRow(0).GetDuration(0, 0).String(), Equals, "-46:09:02")
 }
 
-// TestIssue345 is related with https://github.com/sqllabs/sqlaudit/issues/345
+// TestIssue345 is related with https://github.com/sqllabs/mysqlaudit/issues/345
 func (s *testSuite) TestIssue345(c *C) {
 	tk := testkit.NewTestKit(c, s.store)
 	tk.MustExec("use test")
@@ -1999,7 +1999,7 @@ func (s *testSuite) TestTimestampTimeZone(c *C) {
 		tk.MustQuery("select * from t").Check(testkit.Rows(tt.expect))
 	}
 
-	// For issue https://github.com/sqllabs/sqlaudit/issues/3467
+	// For issue https://github.com/sqllabs/mysqlaudit/issues/3467
 	tk.MustExec("drop table if exists t1")
 	tk.MustExec(`CREATE TABLE t1 (
  	      id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -2018,7 +2018,7 @@ func (s *testSuite) TestTimestampTimeZone(c *C) {
 	r = tk.MustQuery("select * from t1 where datetime='2014-03-31 08:57:10';")
 	r.Check(testkit.Rows("123381351 1734 2014-03-31 08:57:10 127.0.0.1")) // Cover IndexLookupExec
 
-	// For issue https://github.com/sqllabs/sqlaudit/issues/3485
+	// For issue https://github.com/sqllabs/mysqlaudit/issues/3485
 	tk.MustExec("set time_zone = 'Asia/Shanghai'")
 	tk.MustExec("drop table if exists t1")
 	tk.MustExec(`CREATE TABLE t1 (
@@ -2150,7 +2150,7 @@ func (s *testSuite) TestEmptyEnum(c *C) {
 	tk.MustQuery("select * from t").Check(testkit.Rows("", "", "<nil>"))
 }
 
-// TestIssue4024 This tests https://github.com/sqllabs/sqlaudit/issues/4024
+// TestIssue4024 This tests https://github.com/sqllabs/mysqlaudit/issues/4024
 func (s *testSuite) TestIssue4024(c *C) {
 	tk := testkit.NewTestKit(c, s.store)
 	tk.MustExec("create database test2")

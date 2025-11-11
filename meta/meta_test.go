@@ -19,10 +19,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/meta"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/meta"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

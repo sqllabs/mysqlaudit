@@ -20,14 +20,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/charset"
 	"modernc.org/mathutil"
 )
 

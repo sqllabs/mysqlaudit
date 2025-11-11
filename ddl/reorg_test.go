@@ -16,10 +16,10 @@ package ddl
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/meta"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/meta"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/types"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

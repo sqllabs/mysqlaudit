@@ -14,7 +14,7 @@
 package tables
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/ast"
 	. "github.com/pingcap/check"
 )
 

@@ -16,10 +16,10 @@ package parser_test
 import (
 	. "github.com/pingcap/check"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/parser"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/parser"
 )
 
 var _ = Suite(&testHintParserSuite{})

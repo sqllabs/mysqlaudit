@@ -36,10 +36,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/util"
-	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/util"
+	"github.com/sqllabs/mysqlaudit/util/auth"
 
 	"github.com/hanchuanchuan/gh-ost/go/base"
 	"github.com/hanchuanchuan/gh-ost/go/logic"

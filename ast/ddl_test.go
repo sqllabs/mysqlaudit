@@ -14,7 +14,7 @@
 package ast_test
 
 import (
-	. "github.com/sqllabs/sqlaudit/ast"
+	. "github.com/sqllabs/mysqlaudit/ast"
 	. "github.com/pingcap/check"
 )
 

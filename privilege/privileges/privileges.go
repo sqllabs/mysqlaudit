@@ -16,12 +16,12 @@ package privileges
 import (
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/privilege"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/auth"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/privilege"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/auth"
 	log "github.com/sirupsen/logrus"
 )
 

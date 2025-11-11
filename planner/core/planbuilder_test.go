@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/model"
 	. "github.com/pingcap/check"
 )
 

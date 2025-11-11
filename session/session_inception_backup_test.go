@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/config"
 	. "github.com/pingcap/check"
 	log "github.com/sirupsen/logrus"
 )

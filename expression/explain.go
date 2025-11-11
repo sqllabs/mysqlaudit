@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 )
 
 // ExplainInfo implements the Expression interface.

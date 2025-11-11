@@ -19,11 +19,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/meta"
-	"github.com/sqllabs/sqlaudit/meta/autoid"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/meta"
+	"github.com/sqllabs/mysqlaudit/meta/autoid"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

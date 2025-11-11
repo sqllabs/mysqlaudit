@@ -18,10 +18,10 @@ package ast
 import (
 	"io"
 
-	. "github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	. "github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"golang.org/x/net/context"
 )
 

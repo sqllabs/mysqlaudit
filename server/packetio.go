@@ -38,8 +38,8 @@ import (
 	"bufio"
 	"io"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/terror"
 	"github.com/pingcap/errors"
 )
 

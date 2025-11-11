@@ -16,7 +16,7 @@ package domain
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/terror"
 	. "github.com/pingcap/check"
 )
 

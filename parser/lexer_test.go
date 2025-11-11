@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 	. "github.com/pingcap/check"
 )
 

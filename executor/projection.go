@@ -16,9 +16,9 @@ package executor
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

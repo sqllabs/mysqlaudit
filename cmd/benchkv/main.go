@@ -24,9 +24,9 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/terror"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

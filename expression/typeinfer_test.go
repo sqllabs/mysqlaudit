@@ -16,17 +16,17 @@ package expression_test
 import (
 	"math"
 
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/parser"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/charset"
-	"github.com/sqllabs/sqlaudit/util/printer"
-	"github.com/sqllabs/sqlaudit/util/testkit"
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/parser"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/util/printer"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

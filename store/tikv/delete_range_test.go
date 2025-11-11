@@ -19,7 +19,7 @@ import (
 	"math/rand"
 	"sort"
 
-	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/mysqlaudit/store/mockstore/mocktikv"
 	. "github.com/pingcap/check"
 )
 

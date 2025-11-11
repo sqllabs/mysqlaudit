@@ -16,9 +16,9 @@ package aggregation
 import (
 	"math"
 
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 )
 

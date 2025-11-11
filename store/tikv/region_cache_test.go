@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/mysqlaudit/store/mockstore/mocktikv"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

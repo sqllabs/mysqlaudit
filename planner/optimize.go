@@ -14,11 +14,11 @@
 package planner
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/infoschema"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/privilege"
-	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/privilege"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 )
 

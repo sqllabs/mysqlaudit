@@ -17,12 +17,12 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/ddl"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/ddl"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

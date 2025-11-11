@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/store/mockoracle"
-	"github.com/sqllabs/sqlaudit/store/tikv/tikvrpc"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/store/mockoracle"
+	"github.com/sqllabs/mysqlaudit/store/tikv/tikvrpc"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	pb "github.com/pingcap/kvproto/pkg/kvrpcpb"

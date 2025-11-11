@@ -16,7 +16,7 @@ package util
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/model"
 )
 
 // Event is an event that a ddl operation happened.

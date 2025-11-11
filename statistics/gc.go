@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
-	"github.com/sqllabs/sqlaudit/util/sqlexec"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/util/sqlexec"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 	"modernc.org/mathutil"

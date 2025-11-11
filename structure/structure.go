@@ -14,8 +14,8 @@
 package structure
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/terror"
 )
 
 // structure error codes.

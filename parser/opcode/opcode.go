@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"io"
 
-	. "github.com/sqllabs/sqlaudit/format"
+	. "github.com/sqllabs/mysqlaudit/format"
 	"github.com/pingcap/errors"
 )
 

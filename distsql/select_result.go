@@ -14,13 +14,13 @@
 package distsql
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/statistics"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/codec"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-tipb"
 	"golang.org/x/net/context"

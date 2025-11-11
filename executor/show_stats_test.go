@@ -14,9 +14,9 @@
 package executor_test
 
 import (
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/statistics"
-	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

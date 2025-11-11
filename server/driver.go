@@ -18,10 +18,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/util"
-	"github.com/sqllabs/sqlaudit/util/auth"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/util"
+	"github.com/sqllabs/mysqlaudit/util/auth"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"golang.org/x/net/context"
 )
 

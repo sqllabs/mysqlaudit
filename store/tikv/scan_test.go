@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

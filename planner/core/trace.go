@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/ast"
 )
 
 // Trace represents a trace plan.

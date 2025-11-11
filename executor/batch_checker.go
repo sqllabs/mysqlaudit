@@ -14,13 +14,13 @@
 package executor
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/table/tables"
-	"github.com/sqllabs/sqlaudit/tablecodec"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/table/tables"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 )
 

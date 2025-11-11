@@ -17,8 +17,8 @@ import (
 	"encoding/binary"
 	"unsafe"
 
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/types/json"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/types/json"
 	"modernc.org/mathutil"
 )
 

@@ -16,12 +16,12 @@ package executor_test
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/executor"
-	"github.com/sqllabs/sqlaudit/parser"
-	"github.com/sqllabs/sqlaudit/planner"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/executor"
+	"github.com/sqllabs/mysqlaudit/parser"
+	"github.com/sqllabs/mysqlaudit/planner"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

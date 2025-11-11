@@ -42,10 +42,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/hack"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/hack"
 	"github.com/pingcap/errors"
 )
 

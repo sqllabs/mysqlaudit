@@ -17,11 +17,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/util/charset"
 )
 
 // ScopeFlag is for system variable whether can be changed in global/session dynamically or not.

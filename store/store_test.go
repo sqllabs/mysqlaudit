@@ -21,10 +21,10 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
-	"github.com/sqllabs/sqlaudit/util/logutil"
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/util/logutil"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )

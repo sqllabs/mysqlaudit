@@ -16,7 +16,7 @@ package statistics
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
 	. "github.com/pingcap/check"
 )
 

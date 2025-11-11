@@ -16,11 +16,11 @@ import (
 	"math"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/testleak"
-	"github.com/sqllabs/sqlaudit/util/testutil"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/util/testutil"
 	. "github.com/pingcap/check"
 )
 

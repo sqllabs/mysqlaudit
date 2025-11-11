@@ -21,8 +21,8 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/model"
 )
 
 type yyhintSymType struct {

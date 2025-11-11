@@ -16,12 +16,12 @@ package executor
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/planner"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/planner"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

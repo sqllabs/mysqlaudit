@@ -18,11 +18,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/expression"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/memory"
+	"github.com/sqllabs/mysqlaudit/expression"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/memory"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )

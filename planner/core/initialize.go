@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/planner/property"
-	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/planner/property"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
 )
 
 const (

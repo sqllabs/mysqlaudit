@@ -5,7 +5,7 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/sqllabs/sqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/session"
 )
 
 type ErrorLevel struct {

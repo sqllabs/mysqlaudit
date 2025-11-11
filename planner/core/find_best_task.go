@@ -16,13 +16,13 @@ package core
 import (
 	"math"
 
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/planner/property"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/planner/property"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"github.com/pingcap/errors"
 )
 

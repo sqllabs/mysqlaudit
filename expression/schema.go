@@ -16,7 +16,7 @@ package expression
 import (
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/pingcap/errors"
 )
 

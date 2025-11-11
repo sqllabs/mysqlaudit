@@ -22,9 +22,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/terror"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

@@ -18,7 +18,7 @@
 package session
 
 import (
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 )
 
 // 数据库类型

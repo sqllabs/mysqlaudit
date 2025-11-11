@@ -16,8 +16,8 @@ package property
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/util/codec"
 )
 
 // PhysicalProperty stands for the required physical property by parents.

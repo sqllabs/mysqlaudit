@@ -16,8 +16,8 @@ package core
 import (
 	"math"
 
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/planner/property"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/planner/property"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

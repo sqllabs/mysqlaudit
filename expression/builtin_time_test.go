@@ -19,18 +19,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/charset"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/mock"
-	"github.com/sqllabs/sqlaudit/util/testleak"
-	"github.com/sqllabs/sqlaudit/util/testutil"
-	"github.com/sqllabs/sqlaudit/util/timeutil"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/mock"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/util/testutil"
+	"github.com/sqllabs/mysqlaudit/util/timeutil"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )
@@ -545,7 +545,7 @@ func (s *testEvaluatorSuite) TestDayOfYear(c *C) {
 func (s *testEvaluatorSuite) TestDateFormat(c *C) {
 	defer testleak.AfterTest(c)()
 
-	// Test case for https://github.com/sqllabs/sqlaudit/issues/2908
+	// Test case for https://github.com/sqllabs/mysqlaudit/issues/2908
 	// SELECT DATE_FORMAT(null,'%Y-%M-%D')
 	args := []types.Datum{types.NewDatum(nil), types.NewStringDatum("%Y-%M-%D")}
 	fc := funcs[ast.DateFormat]
@@ -1534,7 +1534,7 @@ func (s *testEvaluatorSuite) TestUnixTimestamp(c *C) {
 	c.Assert(d.GetInt64()-time.Now().Unix(), GreaterEqual, int64(-1))
 	c.Assert(d.GetInt64()-time.Now().Unix(), LessEqual, int64(1))
 
-	// https://github.com/sqllabs/sqlaudit/issues/2496
+	// https://github.com/sqllabs/mysqlaudit/issues/2496
 	// Test UNIX_TIMESTAMP(NOW()).
 	now, isNull, err := evalNowWithFsp(s.ctx, 0)
 	c.Assert(err, IsNil)
@@ -1550,7 +1550,7 @@ func (s *testEvaluatorSuite) TestUnixTimestamp(c *C) {
 	c.Assert(val-time.Now().Unix(), GreaterEqual, int64(-1))
 	c.Assert(val-time.Now().Unix(), LessEqual, int64(1))
 
-	// https://github.com/sqllabs/sqlaudit/issues/2852
+	// https://github.com/sqllabs/mysqlaudit/issues/2852
 	// Test UNIX_TIMESTAMP(NULL).
 	args = []types.Datum{types.NewDatum(nil)}
 	f, err = fc.getFunction(s.ctx, s.datumsToConstants(args))

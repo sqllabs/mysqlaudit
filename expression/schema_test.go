@@ -16,7 +16,7 @@ package expression
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/model"
 	. "github.com/pingcap/check"
 )
 

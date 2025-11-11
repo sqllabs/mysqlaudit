@@ -16,7 +16,7 @@ package mockstore
 import (
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/config"
 	. "github.com/pingcap/check"
 )
 

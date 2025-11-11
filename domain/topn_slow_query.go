@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/util/execdetails"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/util/execdetails"
 )
 
 type slowQueryHeap struct {

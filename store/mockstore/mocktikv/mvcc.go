@@ -21,7 +21,7 @@ import (
 	"sort"
 
 	"github.com/google/btree"
-	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/util/codec"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 )

@@ -24,7 +24,7 @@ import (
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/clientv3/concurrency"
-	"github.com/sqllabs/sqlaudit/owner"
+	"github.com/sqllabs/mysqlaudit/owner"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"

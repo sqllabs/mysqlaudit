@@ -14,8 +14,8 @@
 package ddl
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/table"
 	"github.com/pingcap/errors"
 )
 

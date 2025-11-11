@@ -16,11 +16,11 @@ package executor
 import (
 	"time"
 
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/statistics"
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 )
 

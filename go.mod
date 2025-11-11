@@ -1,4 +1,4 @@
-module github.com/sqllabs/sqlaudit
+module github.com/sqllabs/mysqlaudit
 
 go 1.25.1
 

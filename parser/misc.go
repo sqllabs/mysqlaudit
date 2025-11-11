@@ -16,7 +16,7 @@ package parser
 import (
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/util/charset"
 )
 
 func isLetter(ch rune) bool {

@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

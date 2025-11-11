@@ -13,7 +13,7 @@
 
 package ast
 
-import "github.com/sqllabs/sqlaudit/types"
+import "github.com/sqllabs/mysqlaudit/types"
 
 // node is the struct implements node interface except for Accept method.
 // Node implementations should embed it in.

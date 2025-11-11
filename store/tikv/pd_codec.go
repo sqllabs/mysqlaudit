@@ -14,7 +14,7 @@
 package tikv
 
 import (
-	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/util/codec"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"github.com/pingcap/pd/client"

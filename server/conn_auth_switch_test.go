@@ -7,8 +7,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/util/arena"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/util/arena"
 )
 
 func newTestClientConn(buffer *bytes.Buffer) *clientConn {

@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/util/execdetails"
-	"github.com/sqllabs/sqlaudit/util/memory"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/util/execdetails"
+	"github.com/sqllabs/mysqlaudit/util/memory"
 )
 
 const (

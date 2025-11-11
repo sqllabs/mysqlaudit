@@ -16,7 +16,7 @@ package executor_test
 import (
 	"context"
 
-	"github.com/sqllabs/sqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
 	. "github.com/pingcap/check"
 )
 

@@ -17,12 +17,12 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sqllabs/sqlaudit/meta"
-	"github.com/sqllabs/sqlaudit/meta/autoid"
-	"github.com/sqllabs/sqlaudit/model"
-	// "github.com/sqllabs/sqlaudit/perfschema"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/table/tables"
+	"github.com/sqllabs/mysqlaudit/meta"
+	"github.com/sqllabs/mysqlaudit/meta/autoid"
+	"github.com/sqllabs/mysqlaudit/model"
+	// "github.com/sqllabs/mysqlaudit/perfschema"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/table/tables"
 	"github.com/pingcap/errors"
 )
 

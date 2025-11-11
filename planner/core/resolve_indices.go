@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/model"
 )
 
 // ResolveIndices implements Plan interface.

@@ -16,8 +16,8 @@ package mocktikv
 import (
 	"container/heap"
 
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-tipb"
 )

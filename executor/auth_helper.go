@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/util/auth"
-	"github.com/sqllabs/sqlaudit/util/sqlexec"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/util/auth"
+	"github.com/sqllabs/mysqlaudit/util/sqlexec"
 	"github.com/pingcap/errors"
 )
 

@@ -20,7 +20,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 	. "github.com/pingcap/check"
 )
 

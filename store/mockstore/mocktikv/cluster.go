@@ -19,7 +19,7 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/sqllabs/sqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"golang.org/x/net/context"

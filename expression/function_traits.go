@@ -14,7 +14,7 @@
 package expression
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/ast"
 )
 
 // UnCacheableFunctions stores functions which can not be cached to plan cache.

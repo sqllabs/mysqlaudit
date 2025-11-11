@@ -14,8 +14,8 @@
 package executor
 
 import (
-	"github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	"golang.org/x/net/context"
 	"modernc.org/mathutil"
 )

@@ -27,11 +27,11 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

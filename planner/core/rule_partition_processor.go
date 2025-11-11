@@ -13,10 +13,10 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/table/tables"
-	"github.com/sqllabs/sqlaudit/util/ranger"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/table/tables"
+	"github.com/sqllabs/mysqlaudit/util/ranger"
 	"github.com/pingcap/errors"
 )
 

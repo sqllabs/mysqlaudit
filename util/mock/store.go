@@ -14,8 +14,8 @@
 package mock
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
 )
 
 // Store implements kv.Storage interface.

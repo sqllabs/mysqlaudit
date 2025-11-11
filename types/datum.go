@@ -22,12 +22,12 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/types/json"
-	"github.com/sqllabs/sqlaudit/util/charset"
-	"github.com/sqllabs/sqlaudit/util/hack"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/types/json"
+	"github.com/sqllabs/mysqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/util/hack"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -1138,8 +1138,8 @@ func ProduceDecWithSpecifiedTp(dec *MyDecimal, tp *FieldType, sc *stmtctx.Statem
 			}
 			if !dec.IsZero() && frac > decimal && dec.Compare(&old) != 0 {
 				if sc.InInsertStmt || sc.InUpdateOrDeleteStmt {
-					// fix https://github.com/sqllabs/sqlaudit/issues/3895
-					// fix https://github.com/sqllabs/sqlaudit/issues/5532
+					// fix https://github.com/sqllabs/mysqlaudit/issues/3895
+					// fix https://github.com/sqllabs/mysqlaudit/issues/5532
 					sc.AppendWarning(ErrTruncated)
 					err = nil
 				} else {

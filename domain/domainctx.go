@@ -13,7 +13,7 @@
 
 package domain
 
-import "github.com/sqllabs/sqlaudit/sessionctx"
+import "github.com/sqllabs/mysqlaudit/sessionctx"
 
 // domainKeyType is a dummy type to avoid naming collision in context.
 type domainKeyType int

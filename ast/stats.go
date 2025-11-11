@@ -14,8 +14,8 @@
 package ast
 
 import (
-	. "github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/model"
+	. "github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/model"
 	"github.com/pingcap/errors"
 )
 

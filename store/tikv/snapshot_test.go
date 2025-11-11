@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	. "github.com/pingcap/check"
 	pb "github.com/pingcap/kvproto/pkg/kvrpcpb"
 	log "github.com/sirupsen/logrus"

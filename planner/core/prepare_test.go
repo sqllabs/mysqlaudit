@@ -14,9 +14,9 @@
 package core_test
 
 import (
-	"github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/util/testkit"
-	"github.com/sqllabs/sqlaudit/util/testleak"
+	"github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/util/testkit"
+	"github.com/sqllabs/mysqlaudit/util/testleak"
 	. "github.com/pingcap/check"
 )
 

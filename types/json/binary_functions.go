@@ -22,7 +22,7 @@ import (
 	"unicode/utf8"
 	"unsafe"
 
-	"github.com/sqllabs/sqlaudit/util/hack"
+	"github.com/sqllabs/mysqlaudit/util/hack"
 	"github.com/pingcap/errors"
 )
 

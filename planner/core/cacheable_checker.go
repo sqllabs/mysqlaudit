@@ -14,8 +14,8 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/expression"
 )
 
 // Cacheable checks whether the input ast is cacheable.

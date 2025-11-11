@@ -16,12 +16,12 @@ package core
 import (
 	"math"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/infoschema"
-	"github.com/sqllabs/sqlaudit/planner/property"
-	"github.com/sqllabs/sqlaudit/privilege"
-	"github.com/sqllabs/sqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/infoschema"
+	"github.com/sqllabs/mysqlaudit/planner/property"
+	"github.com/sqllabs/mysqlaudit/privilege"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
 	"github.com/pingcap/errors"
 )
 

@@ -14,13 +14,13 @@
 package session
 
 import (
-	"github.com/sqllabs/sqlaudit/executor"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/sessionctx/binloginfo"
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/executor"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/binloginfo"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/pingcap/errors"
 	binlog "github.com/pingcap/tipb/go-binlog"
 	log "github.com/sirupsen/logrus"

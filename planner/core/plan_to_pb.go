@@ -14,13 +14,13 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/expression"
-	"github.com/sqllabs/sqlaudit/expression/aggregation"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/sessionctx"
-	"github.com/sqllabs/sqlaudit/table"
-	"github.com/sqllabs/sqlaudit/tablecodec"
-	"github.com/sqllabs/sqlaudit/util/ranger"
+	"github.com/sqllabs/mysqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/expression/aggregation"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/sessionctx"
+	"github.com/sqllabs/mysqlaudit/table"
+	"github.com/sqllabs/mysqlaudit/tablecodec"
+	"github.com/sqllabs/mysqlaudit/util/ranger"
 	"github.com/pingcap/errors" // ToPB implements PhysicalPlan ToPB interface.
 	"github.com/pingcap/tipb/go-tipb"
 )

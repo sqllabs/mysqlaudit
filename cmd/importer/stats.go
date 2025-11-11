@@ -19,11 +19,11 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/model"
-	stats "github.com/sqllabs/sqlaudit/statistics"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/chunk"
-	"github.com/sqllabs/sqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/model"
+	stats "github.com/sqllabs/mysqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/util/codec"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 )

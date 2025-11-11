@@ -24,12 +24,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/charset"
 	"github.com/pingcap/errors"
 )
 
@@ -336,7 +336,7 @@ func (s *session) checkColumn(colDef *ast.ColumnDef, tableCharset string, alterT
 		cs := tp.Charset
 		// TODO: TableDefaultCharset-->DatabaseDefaultCharset-->SystemDefaultCharset.
 		// TODO: Change TableOption parser to parse collate.
-		// Reference https://github.com/sqllabs/sqlaudit/blob/b091e828cfa1d506b014345fb8337e424a4ab905/ddl/ddl_api.go#L185-L204
+		// Reference https://github.com/sqllabs/mysqlaudit/blob/b091e828cfa1d506b014345fb8337e424a4ab905/ddl/ddl_api.go#L185-L204
 		if len(tp.Charset) == 0 {
 			if tableCharset != "" {
 				if strings.Contains(tableCharset, "_") {

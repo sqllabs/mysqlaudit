@@ -15,7 +15,7 @@ package tikv
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	"github.com/pingcap/errors"
 	pd "github.com/pingcap/pd/client"
 )

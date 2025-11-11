@@ -14,7 +14,7 @@
 package server
 
 import (
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 )
 
 // ColumnInfo contains information of a column

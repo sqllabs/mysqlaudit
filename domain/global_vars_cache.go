@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 )
 
 // GlobalVariableCache caches global variables.

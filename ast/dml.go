@@ -16,10 +16,10 @@ package ast
 import (
 	"strings"
 
-	. "github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/util/auth"
+	. "github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/util/auth"
 	"github.com/pingcap/errors"
 )
 

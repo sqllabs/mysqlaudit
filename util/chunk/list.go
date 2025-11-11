@@ -14,8 +14,8 @@
 package chunk
 
 import (
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util/memory"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util/memory"
 	"github.com/pingcap/errors"
 )
 

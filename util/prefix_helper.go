@@ -20,7 +20,7 @@ package util
 import (
 	"bytes"
 
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	"github.com/pingcap/errors"
 )
 

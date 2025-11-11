@@ -23,26 +23,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/ddl"
-	"github.com/sqllabs/sqlaudit/domain"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/mysql"
-	plannercore "github.com/sqllabs/sqlaudit/planner/core"
-	"github.com/sqllabs/sqlaudit/privilege/privileges"
-	"github.com/sqllabs/sqlaudit/server"
-	"github.com/sqllabs/sqlaudit/session"
-	"github.com/sqllabs/sqlaudit/sessionctx/binloginfo"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/statistics"
-	"github.com/sqllabs/sqlaudit/store/mockstore"
-	"github.com/sqllabs/sqlaudit/store/tikv"
-	"github.com/sqllabs/sqlaudit/store/tikv/gcworker"
-	"github.com/sqllabs/sqlaudit/terror"
-	"github.com/sqllabs/sqlaudit/util"
-	"github.com/sqllabs/sqlaudit/util/logutil"
-	"github.com/sqllabs/sqlaudit/util/printer"
-	"github.com/sqllabs/sqlaudit/util/signal"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/ddl"
+	"github.com/sqllabs/mysqlaudit/domain"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	plannercore "github.com/sqllabs/mysqlaudit/planner/core"
+	"github.com/sqllabs/mysqlaudit/privilege/privileges"
+	"github.com/sqllabs/mysqlaudit/server"
+	"github.com/sqllabs/mysqlaudit/session"
+	"github.com/sqllabs/mysqlaudit/sessionctx/binloginfo"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/store/mockstore"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/store/tikv/gcworker"
+	"github.com/sqllabs/mysqlaudit/terror"
+	"github.com/sqllabs/mysqlaudit/util"
+	"github.com/sqllabs/mysqlaudit/util/logutil"
+	"github.com/sqllabs/mysqlaudit/util/printer"
+	"github.com/sqllabs/mysqlaudit/util/signal"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tipb/go-binlog"
 	goMysqlLog "github.com/siddontang/go-log/log"
@@ -145,7 +145,7 @@ func main() {
 		fmt.Println("\tenable_json_type")
 		fmt.Println("\tenable_enum_set_bit")
 		fmt.Println("\tenable_timestamp_type")
-		fmt.Println("https://github.com/sqllabs/sqlaudit/pull/418")
+		fmt.Println("https://github.com/sqllabs/mysqlaudit/pull/418")
 		fmt.Println("################################################")
 	}
 	runServer()

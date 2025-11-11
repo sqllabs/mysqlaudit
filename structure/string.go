@@ -16,7 +16,7 @@ package structure
 import (
 	"strconv"
 
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	"github.com/pingcap/errors"
 )
 

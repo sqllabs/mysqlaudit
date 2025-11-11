@@ -14,8 +14,8 @@
 package ast
 
 import (
-	. "github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/util/auth"
+	. "github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/util/auth"
 )
 
 var (

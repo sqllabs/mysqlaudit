@@ -1,8 +1,8 @@
-# SQL Audit
+# MySQL Audit
 
 ## Overview
 
-SQL Audit is a SQL auditing tool.
+MySQL Audit is a MySQL auditing tool.
 
 ## License
 

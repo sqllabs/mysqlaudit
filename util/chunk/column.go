@@ -16,8 +16,8 @@ package chunk
 import (
 	"unsafe"
 
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/types/json"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/types/json"
 )
 
 func (c *column) appendDuration(dur types.Duration) {

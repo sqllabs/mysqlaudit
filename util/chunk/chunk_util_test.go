@@ -17,7 +17,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/types"
 )
 
 func getChk() (*Chunk, *Chunk, []bool) {

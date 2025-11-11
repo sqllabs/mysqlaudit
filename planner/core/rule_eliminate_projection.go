@@ -14,7 +14,7 @@
 package core
 
 import (
-	"github.com/sqllabs/sqlaudit/expression"
+	"github.com/sqllabs/mysqlaudit/expression"
 )
 
 // canProjectionBeEliminatedLoose checks whether a projection can be eliminated,

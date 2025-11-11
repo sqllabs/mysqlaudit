@@ -14,7 +14,7 @@
 package variable_test
 
 import (
-	"github.com/sqllabs/sqlaudit/util/mock"
+	"github.com/sqllabs/mysqlaudit/util/mock"
 	. "github.com/pingcap/check"
 )
 

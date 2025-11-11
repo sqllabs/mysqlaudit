@@ -16,9 +16,9 @@ package session
 import (
 	"testing"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/parser"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/parser"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
 )
 
 func Test_checkDDLInstantMySQL(t *testing.T) {

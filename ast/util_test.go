@@ -17,11 +17,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/ast"
-	. "github.com/sqllabs/sqlaudit/ast"
-	. "github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/parser"
-	// "github.com/sqllabs/sqlaudit/types/parser_driver"
+	"github.com/sqllabs/mysqlaudit/ast"
+	. "github.com/sqllabs/mysqlaudit/ast"
+	. "github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/parser"
+	// "github.com/sqllabs/mysqlaudit/types/parser_driver"
 	. "github.com/pingcap/check"
 )
 

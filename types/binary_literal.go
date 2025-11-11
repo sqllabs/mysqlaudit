@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/sessionctx/stmtctx"
+	"github.com/sqllabs/mysqlaudit/sessionctx/stmtctx"
 	"github.com/pingcap/errors"
 )
 

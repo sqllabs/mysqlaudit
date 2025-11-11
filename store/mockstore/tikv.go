@@ -17,10 +17,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/kv"
-	"github.com/sqllabs/sqlaudit/store/mockstore/mocktikv"
-	"github.com/sqllabs/sqlaudit/store/tikv"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/store/mockstore/mocktikv"
+	"github.com/sqllabs/mysqlaudit/store/tikv"
 	"github.com/pingcap/errors" // MockDriver is in memory mock TiKV driver.
 	"github.com/pingcap/pd/client"
 )

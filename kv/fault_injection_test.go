@@ -14,7 +14,7 @@
 package kv_test
 
 import (
-	"github.com/sqllabs/sqlaudit/kv"
+	"github.com/sqllabs/mysqlaudit/kv"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 )

@@ -16,7 +16,7 @@ package property
 import (
 	"fmt"
 
-	"github.com/sqllabs/sqlaudit/statistics"
+	"github.com/sqllabs/mysqlaudit/statistics"
 )
 
 // StatsInfo stores the basic information of statistics for the plan's output. It is used for cost estimation.

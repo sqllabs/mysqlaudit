@@ -14,7 +14,7 @@
 package set
 
 import (
-	"github.com/sqllabs/sqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/types"
 )
 
 // DecimalSet is a decimal set.

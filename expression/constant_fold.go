@@ -14,8 +14,8 @@
 package expression
 
 import (
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/util/chunk"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/util/chunk"
 	log "github.com/sirupsen/logrus"
 )
 

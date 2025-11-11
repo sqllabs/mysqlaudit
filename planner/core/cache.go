@@ -17,11 +17,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/util/codec"
-	"github.com/sqllabs/sqlaudit/util/hack"
-	"github.com/sqllabs/sqlaudit/util/kvcache"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/util/codec"
+	"github.com/sqllabs/mysqlaudit/util/hack"
+	"github.com/sqllabs/mysqlaudit/util/kvcache"
 )
 
 var (

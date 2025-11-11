@@ -16,7 +16,7 @@ package variable
 import (
 	"os"
 
-	"github.com/sqllabs/sqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/mysql"
 )
 
 /*

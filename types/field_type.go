@@ -19,10 +19,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/types/json"
-	"github.com/sqllabs/sqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/types/json"
+	"github.com/sqllabs/mysqlaudit/util/charset"
 )
 
 // UnspecifiedLength is unspecified length.

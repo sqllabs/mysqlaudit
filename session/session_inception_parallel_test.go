@@ -21,7 +21,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sqllabs/sqlaudit/util"
+	"github.com/sqllabs/mysqlaudit/util"
 	. "github.com/pingcap/check"
 )
 

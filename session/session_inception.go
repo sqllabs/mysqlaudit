@@ -26,20 +26,20 @@ import (
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/sqllabs/sqlaudit/ast"
-	"github.com/sqllabs/sqlaudit/config"
-	"github.com/sqllabs/sqlaudit/executor"
-	"github.com/sqllabs/sqlaudit/format"
-	"github.com/sqllabs/sqlaudit/model"
-	"github.com/sqllabs/sqlaudit/mysql"
-	"github.com/sqllabs/sqlaudit/parser/opcode"
-	"github.com/sqllabs/sqlaudit/sessionctx/variable"
-	"github.com/sqllabs/sqlaudit/types"
-	"github.com/sqllabs/sqlaudit/util"
-	"github.com/sqllabs/sqlaudit/util/auth"
-	"github.com/sqllabs/sqlaudit/util/charset"
-	"github.com/sqllabs/sqlaudit/util/sqlexec"
-	"github.com/sqllabs/sqlaudit/util/stringutil"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/config"
+	"github.com/sqllabs/mysqlaudit/executor"
+	"github.com/sqllabs/mysqlaudit/format"
+	"github.com/sqllabs/mysqlaudit/model"
+	"github.com/sqllabs/mysqlaudit/mysql"
+	"github.com/sqllabs/mysqlaudit/parser/opcode"
+	"github.com/sqllabs/mysqlaudit/sessionctx/variable"
+	"github.com/sqllabs/mysqlaudit/types"
+	"github.com/sqllabs/mysqlaudit/util"
+	"github.com/sqllabs/mysqlaudit/util/auth"
+	"github.com/sqllabs/mysqlaudit/util/charset"
+	"github.com/sqllabs/mysqlaudit/util/sqlexec"
+	"github.com/sqllabs/mysqlaudit/util/stringutil"
 	"golang.org/x/net/context"
 )
 
@@ -4781,7 +4781,7 @@ func (s *session) mysqlCheckField(t *TableInfo, field *ast.ColumnDef, alterTable
 			s.appendErrorNo(ER_TIMESTAMP_DEFAULT, field.Name.Name.O)
 		} else if hasDefaultValue {
 			// v5.6在使用default null后即使指定on update仍会报错
-			// https://github.com/sqllabs/sqlaudit/issues/406
+			// https://github.com/sqllabs/mysqlaudit/issues/406
 			if _, ok := defaultExpr.(*ast.ValueExpr); ok &&
 				defaultValue.IsNull() && !notNullFlag && s.dbVersion < 50700 {
 				//有默认值，且为NULL，且有NOT NULL约束，如(not null default null)

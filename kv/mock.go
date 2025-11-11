@@ -14,7 +14,7 @@
 package kv
 
 import (
-	"github.com/sqllabs/sqlaudit/store/tikv/oracle"
+	"github.com/sqllabs/mysqlaudit/store/tikv/oracle"
 	"github.com/pingcap/errors"
 	"golang.org/x/net/context"
 )
