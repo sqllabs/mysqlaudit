@@ -64,6 +64,8 @@ enable_foreign_key = true
 enable_any_statement = true
 # Allow non-root users to use enable_any_statement (default false for safety; flip to true only if you accept the risk)
 allow_non_root_any_statement = true
+# Allow SELECT * statements to pass the audit; true lets them through, false raises the “select *” error
+enable_select_star = true
 
 check_timestamp_count = false
 check_table_comment = false
