@@ -88,6 +88,7 @@ custom_keywords = []
 
 # 审核列类型变更
 check_column_type_change = true
+check_dml_where = true
 
 # 表名/索引名前缀
 index_prefix = "idx_"

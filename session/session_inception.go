@@ -7786,6 +7786,8 @@ func (s *session) checkUpdate(node *ast.UpdateStmt, sql string) {
 		// log.Infof("%#v", node.Where)
 		if !s.checkVaildWhere(node.Where) {
 			s.appendErrorNo(ErrUseValueExpr)
+		} else if !s.whereClauseHasReference(node.Where) {
+			s.appendErrorNo(ER_NO_WHERE_CONDITION)
 		}
 	}
 
@@ -8140,6 +8142,8 @@ func (s *session) checkDelete(node *ast.DeleteStmt, sql string) {
 	} else {
 		if !s.checkVaildWhere(node.Where) {
 			s.appendErrorNo(ErrUseValueExpr)
+		} else if !s.whereClauseHasReference(node.Where) {
+			s.appendErrorNo(ER_NO_WHERE_CONDITION)
 		}
 	}
 
@@ -9109,6 +9113,21 @@ func (s *session) checkVaildWhere(expr ast.ExprNode) bool {
 		return true
 	}
 	return true
+}
+
+func (s *session) whereClauseHasReference(expr ast.ExprNode) bool {
+	if expr == nil {
+		return false
+	}
+	ast.SetFlag(expr)
+	flag := expr.GetFlag()
+	if flag&ast.FlagHasReference > 0 {
+		return true
+	}
+	if flag&ast.FlagHasSubquery > 0 {
+		return true
+	}
+	return false
 }
 
 func (s *session) initDisableTypes() {

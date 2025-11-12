@@ -21,10 +21,10 @@ import (
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/session"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
-	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )
 
@@ -2098,6 +2098,24 @@ func (s *testSessionIncSuite) TestUpdate(c *C) {
 	sql = "create table t1(id int,c1 int);update t1 set c1 = 1;"
 	s.testErrorCode(c, sql,
 		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where 1=1;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where true;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where (1=1);"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where 1;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where 1<2;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);update t1 set c1 = 1 where now();"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
 
 	sql = `create table t1(id int,c1 int);
 	create table t2(id int,c1 int);`
@@ -2379,6 +2397,24 @@ func (s *testSessionIncSuite) TestDelete(c *C) {
 	// where
 	config.GetGlobalConfig().Inc.CheckDMLWhere = true
 	sql = "create table t1(id int,c1 int);delete from t1;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where 1=1;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where true;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where (1=1);"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where 1;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where 1<2;"
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ER_NO_WHERE_CONDITION))
+	sql = "create table t1(id int,c1 int);delete from t1 where now();"
 	s.testErrorCode(c, sql,
 		session.NewErr(session.ER_NO_WHERE_CONDITION))
 
