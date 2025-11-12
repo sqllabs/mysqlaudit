@@ -111,8 +111,6 @@ github.com/hanchuanchuan/go-mysql v0.0.0-20200114082439-6d0d8d3a982e h1:IjLlaPxs
 github.com/hanchuanchuan/go-mysql v0.0.0-20200114082439-6d0d8d3a982e/go.mod h1:HJV3Ej7p/Ck/htb5F5VwYAHDL02jA4J6uAufArtmsos=
 github.com/hanchuanchuan/golib v0.0.0-20200113085747-47643bc243f1 h1:h4yTn7Lu9roQdSZezhf8BwMi3R/KWikL6xV02rmZj6Q=
 github.com/hanchuanchuan/golib v0.0.0-20200113085747-47643bc243f1/go.mod h1:6V4x6V71pCU4o9UfPmemdrU9sEhSF6AmXt+PiFr8x4Q=
-github.com/imroc/req v0.2.3 h1:ElMCifcqg/1GonGloyyTUrj6D6IITL6EiNEKHUl4xZM=
-github.com/imroc/req v0.2.3/go.mod h1:J9FsaNHDTIVyW/b5r6/Df5qKEEEq2WzZKIgKSajd1AE=
 github.com/jinzhu/copier v0.3.5 h1:GlvfUwHk62RokgqVNvYsku0TATCF7bAHVwEXoBh3iJg=
 github.com/jinzhu/copier v0.3.5/go.mod h1:DfbEm0FYsaqBcKcFuvmOZb218JkPGtvSHsKg8S8hyyg=
 github.com/jinzhu/gorm v1.9.16 h1:+IyIjPEABKRpsu/F8OvDPy9fyQlgsg2luMV2ZIH5i5o=
