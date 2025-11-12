@@ -717,6 +717,7 @@ var defaultConf = Config{
 		CheckIdentifierUpper:     false,
 		CheckIdentifierLower:     false,
 		CheckReadOnly:            true,
+		CheckDMLWhere:            true,
 		EnableDDLInstant:         true,
 		SqlSafeUpdates:           -1,
 		LockWaitTimeout:          -1,
