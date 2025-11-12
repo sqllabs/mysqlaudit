@@ -17,11 +17,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
+	"github.com/pingcap/errors"
 	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/sqllabs/mysqlaudit/model"
 	"github.com/sqllabs/mysqlaudit/sessionctx"
-	"github.com/pingcap/errors"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/net/context"
 )
 

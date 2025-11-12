@@ -18,7 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
+	. "github.com/pingcap/check"
+	log "github.com/sirupsen/logrus"
 	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/sqllabs/mysqlaudit/infoschema"
 	"github.com/sqllabs/mysqlaudit/kv"
@@ -31,8 +32,7 @@ import (
 	"github.com/sqllabs/mysqlaudit/util"
 	"github.com/sqllabs/mysqlaudit/util/logutil"
 	"github.com/sqllabs/mysqlaudit/util/mock"
-	. "github.com/pingcap/check"
-	log "github.com/sirupsen/logrus"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/net/context"
 )
 

@@ -18,16 +18,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/clientv3/concurrency"
+	"github.com/pingcap/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/ddl"
 	"github.com/sqllabs/mysqlaudit/mysql"
 	"github.com/sqllabs/mysqlaudit/owner"
 	"github.com/sqllabs/mysqlaudit/util/hack"
 	"github.com/sqllabs/mysqlaudit/util/printer"
-	"github.com/pingcap/errors"
-	log "github.com/sirupsen/logrus"
+	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.etcd.io/etcd/client/v3/concurrency"
 	"golang.org/x/net/context"
 )
 

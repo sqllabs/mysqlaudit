@@ -22,11 +22,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/clientv3/concurrency"
-	"github.com/sqllabs/mysqlaudit/owner"
 	"github.com/pingcap/errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/sqllabs/mysqlaudit/owner"
+	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.etcd.io/etcd/client/v3/concurrency"
 	"golang.org/x/net/context"
 )
 

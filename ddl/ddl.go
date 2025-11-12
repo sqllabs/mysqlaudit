@@ -22,8 +22,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
 	"github.com/gofrs/uuid"
+	"github.com/ngaut/pools"
+	"github.com/pingcap/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/sqllabs/mysqlaudit/ddl/util"
 	"github.com/sqllabs/mysqlaudit/infoschema"
@@ -38,9 +40,7 @@ import (
 	"github.com/sqllabs/mysqlaudit/table"
 	"github.com/sqllabs/mysqlaudit/terror"
 	tidbutil "github.com/sqllabs/mysqlaudit/util"
-	"github.com/ngaut/pools"
-	"github.com/pingcap/errors"
-	log "github.com/sirupsen/logrus"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"golang.org/x/net/context"
 )
 
