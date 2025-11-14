@@ -14,11 +14,11 @@ import (
 	"strings"
 
 	// "github.com/sqllabs/mysqlaudit/types"
-	"github.com/sqllabs/mysqlaudit/ast"
-	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/jinzhu/copier"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"github.com/sqllabs/mysqlaudit/ast"
+	"github.com/sqllabs/mysqlaudit/types"
 )
 
 // HTML escaping.
@@ -232,6 +232,15 @@ type FieldInfo struct {
 	Tp *types.FieldType `gorm:"-"`
 }
 
+// CheckConstraintInfo describes a check constraint definition.
+type CheckConstraintInfo struct {
+	Name       string
+	ColumnName string
+	Expression string
+	Enforced   bool
+	Level      string
+}
+
 // MaskingFieldInfo 脱敏功能的字段信息
 type MaskingFieldInfo struct {
 	Index  uint16 `json:"index"`
@@ -275,6 +284,9 @@ type TableInfo struct {
 
 	// 分区信息
 	Partitions []*PartitionInfo
+
+	// Check constraints defined on this table.
+	Checks []CheckConstraintInfo
 
 	// 是否已删除
 	IsDeleted bool
@@ -386,6 +398,64 @@ func (t *TableInfo) ValidFieldCount() (count int) {
 	return count
 }
 
+// FindCheckConstraint returns the index and pointer of the named check constraint.
+func (t *TableInfo) FindCheckConstraint(name string) (int, *CheckConstraintInfo) {
+	if name == "" {
+		return -1, nil
+	}
+	for i := range t.Checks {
+		if strings.EqualFold(t.Checks[i].Name, name) {
+			return i, &t.Checks[i]
+		}
+	}
+	return -1, nil
+}
+
+// RemoveCheckConstraint removes the named check constraint from the table.
+func (t *TableInfo) RemoveCheckConstraint(name string) (CheckConstraintInfo, bool) {
+	if name == "" {
+		return CheckConstraintInfo{}, false
+	}
+	for i := range t.Checks {
+		if strings.EqualFold(t.Checks[i].Name, name) {
+			removed := t.Checks[i]
+			t.Checks = append(t.Checks[:i], t.Checks[i+1:]...)
+			return removed, true
+		}
+	}
+	return CheckConstraintInfo{}, false
+}
+
+// RemoveColumnChecks removes all column-level check constraints for the given column.
+func (t *TableInfo) RemoveColumnChecks(column string) []CheckConstraintInfo {
+	if column == "" {
+		return nil
+	}
+	var removed []CheckConstraintInfo
+	dst := t.Checks[:0]
+	for _, chk := range t.Checks {
+		if strings.EqualFold(chk.ColumnName, column) {
+			removed = append(removed, chk)
+			continue
+		}
+		dst = append(dst, chk)
+	}
+	t.Checks = dst
+	return removed
+}
+
+// RenameColumnChecks rewrites column names for column-level check constraints.
+func (t *TableInfo) RenameColumnChecks(oldName, newName string) {
+	if oldName == "" || newName == "" {
+		return
+	}
+	for i := range t.Checks {
+		if strings.EqualFold(t.Checks[i].ColumnName, oldName) {
+			t.Checks[i].ColumnName = newName
+		}
+	}
+}
+
 func (t *TableInfo) copy() *TableInfo {
 	p := &TableInfo{}
 
@@ -427,6 +497,11 @@ func (t *TableInfo) copy() *TableInfo {
 				p.Indexes = append(p.Indexes, &newIndexes[i])
 			}
 		}
+	}
+
+	if len(t.Checks) > 0 {
+		p.Checks = make([]CheckConstraintInfo, len(t.Checks))
+		copy(p.Checks, t.Checks)
 	}
 
 	return p

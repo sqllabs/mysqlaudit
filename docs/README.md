@@ -35,6 +35,12 @@ SELECT * FROM numbers;
 
 The auditor also validates recursive CTEs for `WITH RECURSIVE`, `UNION/UNION ALL`, and matching column lists so problem queries surface actionable diagnostics.
 
+## CHECK constraint auditing
+
+- Column-level and table-level `CHECK` clauses (including `NOT ENFORCED`) are now preserved end to end, so CREATE/ALTER statements round-trip without losing constraint expressions.
+- The auditing pipeline surfaces informational entries for enforced checks and warnings for `NOT ENFORCED` ones, making disabled constraints stand out in review results.
+- `ALTER TABLE ... ADD/DROP/ALTER CHECK` statements are tracked together with rollback SQL snippets, guaranteeing backups capture the constraint changes explicitly.
+
 
 ## Architecture
 

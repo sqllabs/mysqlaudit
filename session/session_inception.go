@@ -1601,6 +1601,9 @@ func (s *session) sqlStatisticsIncrement(record *Record) {
 			case ast.AlterTableModifyColumn, ast.AlterTableChangeColumn:
 				s.statistics.changecolumn += 1
 
+			case ast.AlterTableAlterCheck, ast.AlterTableDropCheck:
+				s.statistics.alteroption += 1
+
 			case ast.AlterTableRenameTable:
 				s.statistics.rename += 1
 
@@ -3534,6 +3537,95 @@ func (s *session) checkColumnsMustHaveindex(table *TableInfo) {
 
 }
 
+func exprNodeToString(expr ast.ExprNode) string {
+	if expr == nil {
+		return ""
+	}
+	var builder strings.Builder
+	if err := expr.Restore(format.NewRestoreCtx(format.DefaultRestoreFlags, &builder)); err == nil {
+		return builder.String()
+	}
+	return expr.Text()
+}
+
+func (s *session) attachColumnCheckConstraints(t *TableInfo, columnName string, options []*ast.ColumnOption) {
+	if t == nil || len(options) == 0 {
+		return
+	}
+	for _, op := range options {
+		if op.Tp != ast.ColumnOptionCheck {
+			continue
+		}
+		exprStr := exprNodeToString(op.Expr)
+		info := CheckConstraintInfo{
+			ColumnName: columnName,
+			Expression: exprStr,
+			Enforced:   true,
+			Level:      "COLUMN",
+		}
+		t.Checks = append(t.Checks, info)
+		scope := fmt.Sprintf("COLUMN `%s`", columnName)
+		s.noteCheckConstraint(scope, info.Name, exprStr, true)
+	}
+}
+
+func (s *session) updateColumnCheckConstraints(t *TableInfo, columnName string, options []*ast.ColumnOption) {
+	if t == nil || len(options) == 0 {
+		return
+	}
+	hasCheck := false
+	for _, op := range options {
+		if op.Tp == ast.ColumnOptionCheck {
+			hasCheck = true
+			break
+		}
+	}
+	if !hasCheck {
+		return
+	}
+	t.RemoveColumnChecks(columnName)
+	s.attachColumnCheckConstraints(t, columnName, options)
+}
+
+func (s *session) addTableCheckConstraint(t *TableInfo, constraint *ast.Constraint, scope string) {
+	if t == nil || constraint == nil || constraint.Expr == nil {
+		return
+	}
+	if scope == "" {
+		scope = fmt.Sprintf("TABLE `%s`", t.Name)
+	}
+	if constraint.Name != "" {
+		if _, chk := t.FindCheckConstraint(constraint.Name); chk != nil {
+			s.appendErrorNo(ER_DUP_KEYNAME, constraint.Name)
+			return
+		}
+	}
+	exprStr := exprNodeToString(constraint.Expr)
+	info := CheckConstraintInfo{
+		Name:       constraint.Name,
+		Expression: exprStr,
+		Enforced:   constraint.Enforced,
+		Level:      "TABLE",
+	}
+	t.Checks = append(t.Checks, info)
+	s.noteCheckConstraint(scope, constraint.Name, exprStr, constraint.Enforced)
+}
+
+func (s *session) addCheckConstraint(t *TableInfo, constraint *ast.Constraint) {
+	if constraint == nil {
+		return
+	}
+	scope := fmt.Sprintf("TABLE `%s`", t.Name)
+	newTable := s.cacheTableSnapshot(t)
+	s.addTableCheckConstraint(newTable, constraint, scope)
+	if s.hasError() {
+		return
+	}
+	if constraint.Name != "" {
+		s.mysqlAddCheckRollback(constraint.Name)
+	}
+}
+
 func (s *session) buildTableInfo(node *ast.CreateTableStmt) *TableInfo {
 	log.Debug("buildTableInfo")
 
@@ -3570,6 +3662,14 @@ func (s *session) buildTableInfo(node *ast.CreateTableStmt) *TableInfo {
 	for _, field := range node.Cols {
 		c := s.buildNewColumnToCache(table, field)
 		table.Fields = append(table.Fields, *c)
+		s.attachColumnCheckConstraints(table, field.Name.Name.O, field.Options)
+	}
+
+	for _, constraint := range node.Constraints {
+		if constraint.Tp != ast.ConstraintCheck {
+			continue
+		}
+		s.addTableCheckConstraint(table, constraint, fmt.Sprintf("TABLE `%s`", table.Name))
 	}
 
 	return table
@@ -3817,6 +3917,11 @@ func (s *session) checkAlterTable(node *ast.AlterTableStmt, sql string, mergeOnl
 
 		case ast.AlterTableDropForeignKey:
 			s.checkDropForeignKey(table, alter)
+
+		case ast.AlterTableAlterCheck:
+			s.checkAlterTableAlterCheck(table, alter)
+		case ast.AlterTableDropCheck:
+			s.checkAlterTableDropCheck(table, alter)
 
 		case ast.AlterTableModifyColumn:
 			s.checkModifyColumn(table, alter)
@@ -4350,6 +4455,7 @@ func (s *session) checkModifyColumn(t *TableInfo, c *ast.AlterTableSpec) {
 
 					t.Fields[foundIndexOld] = *(s.buildNewColumnToCache(t, nc))
 					newField := t.Fields[foundIndexOld]
+					s.updateColumnCheckConstraints(t, nc.Name.Name.O, nc.Options)
 
 					if c.Position.Tp == ast.ColumnPositionFirst {
 						tmp := make([]FieldInfo, 0, len(t.Fields))
@@ -4396,6 +4502,7 @@ func (s *session) checkModifyColumn(t *TableInfo, c *ast.AlterTableSpec) {
 					}
 				} else {
 					t.Fields[foundIndexOld] = *(s.buildNewColumnToCache(t, nc))
+					s.updateColumnCheckConstraints(t, nc.Name.Name.O, nc.Options)
 				}
 
 				if s.opt.Execute {
@@ -4480,6 +4587,8 @@ func (s *session) checkModifyColumn(t *TableInfo, c *ast.AlterTableSpec) {
 
 				// t.Fields[foundIndexOld].Field = nc.Name.Name.O
 				t.Fields[foundIndexOld] = *(s.buildNewColumnToCache(t, nc))
+				t.RenameColumnChecks(c.OldColumnName.Name.String(), nc.Name.Name.String())
+				s.updateColumnCheckConstraints(t, nc.Name.Name.O, nc.Options)
 				newField := t.Fields[foundIndexOld]
 
 				// 修改列名后标记有新列
@@ -4751,6 +4860,7 @@ func (s *session) checkRenameColumn(t *TableInfo, c *ast.AlterTableSpec) {
 
 		foundField.Field = c.NewColumnName.Name.String()
 		t.Fields[foundIndexOld] = foundField
+		t.RenameColumnChecks(c.OldColumnName.Name.String(), c.NewColumnName.Name.String())
 
 		// 修改列名后标记有新列
 		t.IsNewColumns = true
@@ -5559,6 +5669,8 @@ func (s *session) checkAddColumn(t *TableInfo, c *ast.AlterTableSpec) {
 					fmt.Sprintf("%s.%s", t.Name, nc.Name.Name))
 			}
 
+			s.attachColumnCheckConstraints(t, newColumn.Field, nc.Options)
+
 			if s.opt.Execute {
 				s.alterRollbackBuffer = append(s.alterRollbackBuffer,
 					fmt.Sprintf("DROP COLUMN `%s`,",
@@ -5607,6 +5719,7 @@ func (s *session) checkDropColumn(t *TableInfo, c *ast.AlterTableSpec) {
 				// 在新的快照上删除字段
 				newTable := s.cacheTableSnapshot(t)
 				(&(newTable.Fields[i])).IsDeleted = true
+				newTable.RemoveColumnChecks(field.Field)
 			} else {
 				s.appendErrorNo(ErrCantRemoveAllFields)
 			}
@@ -5617,6 +5730,59 @@ func (s *session) checkDropColumn(t *TableInfo, c *ast.AlterTableSpec) {
 	if !found {
 		s.appendErrorNo(ER_COLUMN_NOT_EXISTED,
 			fmt.Sprintf("%s.%s", t.Name, c.OldColumnName.Name.O))
+	}
+}
+
+func (s *session) checkAlterTableAlterCheck(t *TableInfo, c *ast.AlterTableSpec) {
+	if c.Constraint == nil || c.Constraint.Name == "" {
+		s.appendErrorMsg("ALTER CHECK requires a constraint name")
+		return
+	}
+	if _, chk := t.FindCheckConstraint(c.Constraint.Name); chk == nil {
+		s.appendErrorMsg(fmt.Sprintf("CHECK constraint '%s' does not exist", c.Constraint.Name))
+		return
+	}
+
+	newTable := s.cacheTableSnapshot(t)
+	_, chk := newTable.FindCheckConstraint(c.Constraint.Name)
+	if chk == nil {
+		return
+	}
+	oldStatus := chk.Enforced
+	chk.Enforced = c.Constraint.Enforced
+	scope := fmt.Sprintf("TABLE `%s`", newTable.Name)
+	statusMsg := "ENFORCED"
+	if !chk.Enforced {
+		statusMsg = "NOT ENFORCED"
+	}
+	s.appendInfoMessage(fmt.Sprintf("ALTER CHECK `%s` %s", c.Constraint.Name, statusMsg))
+	s.noteCheckConstraint(scope, c.Constraint.Name, chk.Expression, chk.Enforced)
+	if s.opt.Execute {
+		s.mysqlAlterCheckRollback(c.Constraint.Name, oldStatus)
+	}
+}
+
+func (s *session) checkAlterTableDropCheck(t *TableInfo, c *ast.AlterTableSpec) {
+	if c.Constraint == nil || c.Constraint.Name == "" {
+		s.appendErrorMsg("DROP CHECK requires a constraint name")
+		return
+	}
+	if _, chk := t.FindCheckConstraint(c.Constraint.Name); chk == nil {
+		s.appendErrorMsg(fmt.Sprintf("CHECK constraint '%s' does not exist", c.Constraint.Name))
+		return
+	}
+
+	newTable := s.cacheTableSnapshot(t)
+	info, ok := newTable.RemoveCheckConstraint(c.Constraint.Name)
+	if !ok {
+		return
+	}
+	s.appendInfoMessage(fmt.Sprintf("DROP CHECK `%s`", c.Constraint.Name))
+	if info.Expression != "" {
+		s.appendInfoMessage(fmt.Sprintf("Removed CHECK `%s`: %s", c.Constraint.Name, info.Expression))
+	}
+	if s.opt.Execute {
+		s.mysqlDropCheckRollback(info)
 	}
 }
 
@@ -5658,6 +5824,47 @@ func (s *session) mysqlDropColumnRollback(field FieldInfo) {
 
 	// s.myRecord.DDLRollback += buf.String()
 	s.alterRollbackBuffer = append(s.alterRollbackBuffer, buf.String())
+}
+
+func (s *session) mysqlAddCheckRollback(name string) {
+	if s.opt.Check || name == "" {
+		return
+	}
+	s.alterRollbackBuffer = append(s.alterRollbackBuffer,
+		fmt.Sprintf("DROP CHECK `%s`,", name))
+}
+
+func (s *session) mysqlDropCheckRollback(info CheckConstraintInfo) {
+	if s.opt.Check {
+		return
+	}
+	var builder strings.Builder
+	builder.WriteString("ADD ")
+	if info.Name != "" {
+		builder.WriteString("CONSTRAINT `")
+		builder.WriteString(info.Name)
+		builder.WriteString("` ")
+	}
+	builder.WriteString("CHECK (")
+	builder.WriteString(info.Expression)
+	builder.WriteString(")")
+	if !info.Enforced {
+		builder.WriteString(" NOT ENFORCED")
+	}
+	builder.WriteString(",")
+	s.alterRollbackBuffer = append(s.alterRollbackBuffer, builder.String())
+}
+
+func (s *session) mysqlAlterCheckRollback(name string, enforced bool) {
+	if s.opt.Check || name == "" {
+		return
+	}
+	status := "ENFORCED"
+	if !enforced {
+		status = "NOT ENFORCED"
+	}
+	s.alterRollbackBuffer = append(s.alterRollbackBuffer,
+		fmt.Sprintf("ALTER CHECK `%s` %s,", name, status))
 }
 
 func (s *session) checkDropIndex(node *ast.DropIndexStmt, sql string) {
@@ -6055,6 +6262,8 @@ func (s *session) checkAddConstraint(t *TableInfo, c *ast.AlterTableSpec) {
 			c.Constraint.Keys, c.Constraint.Option, t, true, c.Constraint.Tp)
 	case ast.ConstraintForeignKey:
 		s.checkCreateForeignKey(t, c.Constraint)
+	case ast.ConstraintCheck:
+		s.addCheckConstraint(t, c.Constraint)
 	default:
 		s.appendErrorNo(ER_NOT_SUPPORTED_YET)
 		log.Info("con:", s.sessionVars.ConnectionID, " 未定义的解析: ", c.Constraint.Tp)
@@ -8577,6 +8786,53 @@ func (s *session) queryIndexFromDB(db string, tableName string, reportNotExists 
 	return rows
 }
 
+func (s *session) queryCheckConstraintsFromDB(db string, tableName string) []CheckConstraintInfo {
+	if db == "" {
+		db = s.dbName
+	}
+	if db == "" || tableName == "" {
+		return nil
+	}
+
+	type constraintRow struct {
+		ConstraintName string         `gorm:"column:CONSTRAINT_NAME"`
+		CheckClause    string         `gorm:"column:CHECK_CLAUSE"`
+		Enforced       sql.NullString `gorm:"column:ENFORCED"`
+	}
+
+	const withEnforced = `SELECT tc.CONSTRAINT_NAME, cc.CHECK_CLAUSE, tc.ENFORCED
+FROM information_schema.TABLE_CONSTRAINTS tc
+JOIN information_schema.CHECK_CONSTRAINTS cc
+ON tc.CONSTRAINT_NAME = cc.CONSTRAINT_NAME AND tc.CONSTRAINT_SCHEMA = cc.CONSTRAINT_SCHEMA
+WHERE tc.TABLE_SCHEMA = ? AND tc.TABLE_NAME = ? AND tc.CONSTRAINT_TYPE = 'CHECK'`
+
+	rows := make([]constraintRow, 0)
+	if err := s.rawDB(&rows, withEnforced, db, tableName); err != nil {
+		if myErr, ok := err.(*mysqlDriver.MySQLError); ok {
+			// Unknown column or table => skip silently.
+			if myErr.Number == 1054 || myErr.Number == 1146 {
+				return nil
+			}
+		}
+		s.appendErrorMsg(err.Error() + ".")
+		return nil
+	}
+	checks := make([]CheckConstraintInfo, 0, len(rows))
+	for _, row := range rows {
+		enforced := true
+		if row.Enforced.Valid {
+			enforced = !strings.EqualFold(row.Enforced.String, "NOT ENFORCED")
+		}
+		checks = append(checks, CheckConstraintInfo{
+			Name:       row.ConstraintName,
+			Expression: row.CheckClause,
+			Enforced:   enforced,
+			Level:      "TABLE",
+		})
+	}
+	return checks
+}
+
 func (s *session) appendErrorMsg(msg string) {
 	s.appendErrorMsgf("%s", msg)
 }
@@ -8604,6 +8860,45 @@ func (s *session) appendWarningMessage(msg string) {
 	}
 	s.myRecord.appendWarningMessage(msg)
 	s.recordSets.MaxLevel = uint8(Max(int(s.recordSets.MaxLevel), int(s.myRecord.ErrLevel)))
+}
+
+func (s *session) appendInfoMessage(msg string) {
+	if s.myRecord == nil {
+		return
+	}
+	if s.stage != StageCheck && s.recordSets.MaxLevel == 0 {
+		if s.stage == StageBackup {
+			s.myRecord.Buf.WriteString("Backup: ")
+		} else if s.stage == StageExec {
+			s.myRecord.Buf.WriteString("Execute: ")
+		}
+	}
+	if s.myRecord.Buf == nil {
+		s.myRecord.Buf = new(bytes.Buffer)
+	}
+	s.myRecord.Buf.WriteString(msg)
+	if !strings.HasSuffix(msg, "\n") {
+		s.myRecord.Buf.WriteString("\n")
+	}
+}
+
+func (s *session) noteCheckConstraint(scope, name, expr string, enforced bool) {
+	displayName := strings.TrimSpace(name)
+	if displayName != "" {
+		displayName = fmt.Sprintf("`%s`", displayName)
+	} else {
+		displayName = "(unnamed)"
+	}
+	status := "ENFORCED"
+	if !enforced {
+		status = "NOT ENFORCED"
+	}
+	msg := fmt.Sprintf("%s CHECK constraint %s: %s [%s]", scope, displayName, expr, status)
+	if enforced {
+		s.appendInfoMessage(msg)
+	} else {
+		s.appendWarningMessage(msg)
+	}
 }
 
 func (s *session) appendWarning(number ErrorCode, values ...interface{}) {
@@ -8895,6 +9190,9 @@ func (s *session) getTableFromCache(db string, tableName string, reportNotExists
 		}
 		if rows := s.queryIndexFromDB(db, tableName, reportNotExists); rows != nil {
 			newT.Indexes = rows
+		}
+		if checks := s.queryCheckConstraintsFromDB(db, tableName); len(checks) > 0 {
+			newT.Checks = checks
 		}
 		s.tableCacheList[key] = newT
 

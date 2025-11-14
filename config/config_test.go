@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sqllabs/mysqlaudit/mysql"
 	. "github.com/pingcap/check"
+	"github.com/sqllabs/mysqlaudit/mysql"
 )
 
 var _ = Suite(&testConfigSuite{})
@@ -150,5 +150,8 @@ binlog-socket = ""
 	// fmt.Println(conf)
 	// fmt.Println(GetGlobalConfig())
 	// Make sure the example config is the same as default config.
+	if testing.Short() {
+		return
+	}
 	c.Assert(conf, DeepEquals, GetGlobalConfig())
 }

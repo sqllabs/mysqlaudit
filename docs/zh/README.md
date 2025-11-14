@@ -36,6 +36,12 @@ SELECT * FROM numbers;
 
 审核器会检查递归 CTE 是否显式声明 `WITH RECURSIVE`、是否使用 `UNION/UNION ALL` 以及列清单是否匹配期望列数，以便在问题 SQL 上给出明确的诊断信息。
 
+## CHECK 约束审核
+
+- SQL 解析与审计全链路都会保留列级与表级 `CHECK`（含 `NOT ENFORCED`），保证 `CREATE/ALTER TABLE` 语句在回显时不会丢失约束表达式。
+- 审核结果会对正常生效的 CHECK 输出提示，对 `NOT ENFORCED` 约束给出警告，方便发现被禁用的约束。
+- `ALTER TABLE ... ADD/DROP/ALTER CHECK` 会与回滚 SQL 一起记录，备份/回滚脚本中可以明确看到约束的增删改。
+
 ## 架构
 
 ![审核流程](./images/process.png)
@@ -68,5 +74,4 @@ goInception基于TiDB的语法解析器，和业内有名的inception审核工�
 
 * [Inception - 审核工具](https://github.com/hanchuanchuan/inception)
 * [TiDB](https://github.com/pingcap/tidb)
-
 

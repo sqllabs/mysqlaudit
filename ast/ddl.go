@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pingcap/errors"
 	"github.com/sqllabs/mysqlaudit/format"
 	. "github.com/sqllabs/mysqlaudit/format"
 	"github.com/sqllabs/mysqlaudit/model"
@@ -24,7 +25,6 @@ import (
 	"github.com/sqllabs/mysqlaudit/terror"
 	"github.com/sqllabs/mysqlaudit/types"
 	"github.com/sqllabs/mysqlaudit/util/auth"
-	"github.com/pingcap/errors"
 )
 
 var (
@@ -464,6 +464,16 @@ func (n *ColumnOption) Restore(ctx *RestoreCtx) error {
 		if err := n.Expr.Restore(ctx); err != nil {
 			return errors.Annotate(err, "An error occurred while splicing ColumnOption COMMENT Expr")
 		}
+	case ColumnOptionCheck:
+		ctx.WriteKeyWord("CHECK ")
+		ctx.WritePlain("(")
+		if n.Expr == nil {
+			return errors.New("An error occurred while splicing ColumnOption CHECK Expr: empty")
+		}
+		if err := n.Expr.Restore(ctx); err != nil {
+			return errors.Annotate(err, "An error occurred while splicing ColumnOption CHECK Expr")
+		}
+		ctx.WritePlain(")")
 	case ColumnOptionGenerated:
 		ctx.WriteKeyWord("GENERATED ALWAYS AS")
 		ctx.WritePlain("(")
@@ -660,6 +670,25 @@ func (n *Constraint) Restore(ctx *RestoreCtx) error {
 	switch n.Tp {
 	case ConstraintNoConstraint:
 		return nil
+	case ConstraintCheck:
+		if n.Name != "" {
+			ctx.WriteKeyWord("CONSTRAINT ")
+			ctx.WriteName(n.Name)
+			ctx.WritePlain(" ")
+		}
+		ctx.WriteKeyWord("CHECK ")
+		ctx.WritePlain("(")
+		if n.Expr == nil {
+			return errors.New("An error occurred while splicing Constraint Check Expr: empty")
+		}
+		if err := n.Expr.Restore(ctx); err != nil {
+			return errors.Annotate(err, "An error occurred while splicing Constraint Check Expr")
+		}
+		ctx.WritePlain(")")
+		if !n.Enforced {
+			ctx.WriteKeyWord(" NOT ENFORCED")
+		}
+		return nil
 	case ConstraintPrimaryKey:
 		ctx.WriteKeyWord("PRIMARY KEY")
 	case ConstraintKey:
@@ -743,6 +772,13 @@ func (n *Constraint) Accept(v Visitor) (Node, bool) {
 			return n, false
 		}
 		n.Option = node.(*IndexOption)
+	}
+	if n.Expr != nil {
+		node, ok := n.Expr.Accept(v)
+		if !ok {
+			return n, false
+		}
+		n.Expr = node.(ExprNode)
 	}
 	return v.Leave(n)
 }

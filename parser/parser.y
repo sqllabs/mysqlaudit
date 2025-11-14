@@ -123,8 +123,9 @@ import (
 	drop              "DROP"
 	dual              "DUAL"
 	elseKwd           "ELSE"
-	enclosed          "ENCLOSED"
-	escaped           "ESCAPED"
+		enclosed          "ENCLOSED"
+		enforced          "ENFORCED"
+		escaped           "ESCAPED"
 	exists            "EXISTS"
 	explain           "EXPLAIN"
 	falseKwd          "FALSE"
@@ -710,6 +711,7 @@ import (
 	ColumnOption                  "column definition option"
 	ColumnOptionList              "column definition option list"
 	VirtualOrStored               "indicate generated column is stored or not"
+	EnforcedOpt                   "optional ENFORCED clause for CHECK"
 	ColumnOptionListOpt           "optional column definition option list"
 	Constraint                    "table constraint"
 	ConstraintElem                "table constraint element"
@@ -1246,6 +1248,15 @@ AlterTableSpec:
 			Name:           $4.([]model.CIStr)[0].String(),
 		}
 	}
+|	"DROP" "CHECK" Symbol
+	{
+		$$ = &ast.AlterTableSpec{
+			Tp: ast.AlterTableDropCheck,
+			Constraint: &ast.Constraint{
+				Name: $3.(string),
+			},
+		}
+	}
 //|	"DROP" "PARTITION" Identifier
 //	{
 //		$$ = &ast.AlterTableSpec{
@@ -1389,6 +1400,16 @@ AlterTableSpec:
 		$$ = &ast.AlterTableSpec{
 			Tp:         ast.AlterTableAlterColumn,
 			NewColumns: []*ast.ColumnDef{colDef},
+		}
+	}
+|	"ALTER" "CHECK" Symbol EnforcedOpt
+	{
+		$$ = &ast.AlterTableSpec{
+			Tp: ast.AlterTableAlterCheck,
+			Constraint: &ast.Constraint{
+				Name:     $3.(string),
+				Enforced: $4.(bool),
+			},
 		}
 	}
 |	"RENAME" "COLUMN" Identifier "TO" Identifier
@@ -2105,9 +2126,14 @@ ColumnOption:
 	}
 |	"CHECK" '(' Expression ')'
 	{
-		// See https://dev.mysql.com/doc/refman/5.7/en/create-table.html
-		// The CHECK clause is parsed but ignored by all storage engines.
-		$$ = &ast.ColumnOption{}
+		startOffset := parser.startOffset(&yyS[yypt-2])
+		endOffset := parser.endOffset(&yyS[yypt-1])
+		expr := $3
+		expr.SetText(parser.src[startOffset:endOffset])
+		$$ = &ast.ColumnOption{
+			Tp:   ast.ColumnOptionCheck,
+			Expr: expr,
+		}
 	}
 |	GeneratedAlways "AS" '(' Expression ')' VirtualOrStored
 	{
@@ -2150,9 +2176,22 @@ VirtualOrStored:
 	{
 		$$ = false
 	}
-|	"STORED"
+	|	"STORED"
+		{
+			$$ = true
+		}
+
+EnforcedOpt:
 	{
 		$$ = true
+	}
+|	enforced
+	{
+		$$ = true
+	}
+|	NotSym enforced
+	{
+		$$ = false
 	}
 
 ColumnOptionList:
@@ -2261,6 +2300,18 @@ ConstraintElem:
 			Keys:        $6.([]*ast.IndexColName),
 			Name:        $4.(string),
 			Refer:       $8.(*ast.ReferenceDef),
+		}
+	}
+|	"CHECK" '(' Expression ')' EnforcedOpt
+	{
+		startOffset := parser.startOffset(&yyS[yypt-2])
+		endOffset := parser.endOffset(&yyS[yypt-1])
+		expr := $3
+		expr.SetText(parser.src[startOffset:endOffset])
+		$$ = &ast.Constraint{
+			Tp:       ast.ConstraintCheck,
+			Expr:     expr,
+			Enforced: $5.(bool),
 		}
 	}
 
@@ -8262,11 +8313,6 @@ TableElement:
 |	Constraint
 	{
 		$$ = $1.(*ast.Constraint)
-	}
-|	"CHECK" '(' Expression ')'
-	{
-		/* Nothing to do now */
-		$$ = nil
 	}
 
 TableElementList:
