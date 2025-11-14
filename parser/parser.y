@@ -276,6 +276,7 @@ import (
 	where             "WHERE"
 	write             "WRITE"
 	with              "WITH"
+	recursive         "RECURSIVE"
 	window            "WINDOW"
 	xor               "XOR"
 	yearMonth         "YEAR_MONTH"
@@ -657,6 +658,7 @@ import (
 	LockTablesStmt       "Lock tables statement"
 	PreparedStmt         "PreparedStmt"
 	SelectStmt           "SELECT statement"
+	SelectStmtWithClause "SELECT statement with WITH clause"
 	RenameTableStmt      "rename table statement"
 	ReplaceIntoStmt      "REPLACE INTO statement"
 	RevokeStmt           "Revoke statement"
@@ -700,6 +702,8 @@ import (
 	ColumnList                    "column list"
 	ColumnNameListOpt             "column name list opt"
 	ColumnNameListOptWithBrackets "column name list opt with brackets"
+	IdentListWithParenOpt         "identifier list with optional parentheses"
+	IdentList                     "identifier list"
 	ColumnSetValue                "insert statement set value by column name"
 	ColumnSetValueList            "insert statement set value by column name list"
 	CompareOp                     "Compare opcode"
@@ -711,6 +715,9 @@ import (
 	ConstraintElem                "table constraint element"
 	ConstraintKeywordOpt          "Constraint Keyword or empty"
 	CreateTableOptionListOpt      "create table option list opt"
+	WithClause                    "WITH clause"
+	WithList                      "WITH clause expression list"
+	CommonTableExpr               "Common table expression definition"
 	CreateTableSelectOpt          "Select/Union statement in CREATE TABLE ... SELECT"
 	CreateViewSelectOpt           "Select/Union statement in CREATE VIEW ... AS SELECT"
 	DatabaseOption                "CREATE Database specification"
@@ -1790,6 +1797,26 @@ ColumnNameListOptWithBrackets:
 |	'(' ColumnNameListOpt ')'
 	{
 		$$ = $2.([]*ast.ColumnName)
+	}
+
+IdentListWithParenOpt:
+	/* EMPTY */
+	{
+		$$ = []model.CIStr{}
+	}
+|	'(' IdentList ')'
+	{
+		$$ = $2.([]model.CIStr)
+	}
+
+IdentList:
+	Identifier
+	{
+		$$ = []model.CIStr{model.NewCIStr($1)}
+	}
+|	IdentList ',' Identifier
+	{
+		$$ = append($1.([]model.CIStr), model.NewCIStr($3))
 	}
 
 CommitStmt:
@@ -3508,6 +3535,10 @@ CreateTableSelectOpt:
 	{
 		$$ = &ast.CreateTableStmt{Select: $1}
 	}
+|	SelectStmtWithClause
+	{
+		$$ = &ast.CreateTableStmt{Select: $1}
+	}
 |	UnionStmt
 	{
 		$$ = &ast.CreateTableStmt{Select: $1}
@@ -3523,11 +3554,19 @@ CreateViewSelectOpt:
 	{
 		$$ = $1.(*ast.SelectStmt)
 	}
+|	SelectStmtWithClause
+	{
+		$$ = $1.(*ast.SelectStmt)
+	}
 |	UnionStmt
 	{
 		$$ = $1.(*ast.UnionStmt)
 	}
 |	'(' SelectStmt ')'
+	{
+		$$ = $2.(*ast.SelectStmt)
+	}
+|	'(' SelectStmtWithClause ')'
 	{
 		$$ = $2.(*ast.SelectStmt)
 	}
@@ -4795,6 +4834,14 @@ InsertValues:
 	{
 		$$ = &ast.InsertStmt{Columns: $2.([]*ast.ColumnName), Select: $4.(*ast.UnionStmt)}
 	}
+|	'(' ColumnNameListOpt ')' SelectStmtWithClause
+	{
+		$$ = &ast.InsertStmt{Columns: $2.([]*ast.ColumnName), Select: $4.(*ast.SelectStmt)}
+	}
+|	'(' ColumnNameListOpt ')' '(' SelectStmtWithClause ')'
+	{
+		$$ = &ast.InsertStmt{Columns: $2.([]*ast.ColumnName), Select: $5.(*ast.SelectStmt)}
+	}
 |	ValueSym ValuesList %prec insertValues
 	{
 		$$ = &ast.InsertStmt{Lists: $2.([][]ast.ExprNode)}
@@ -4803,7 +4850,15 @@ InsertValues:
 	{
 		$$ = &ast.InsertStmt{Select: $2.(*ast.SelectStmt)}
 	}
+|	'(' SelectStmtWithClause ')'
+	{
+		$$ = &ast.InsertStmt{Select: $2.(*ast.SelectStmt)}
+	}
 |	SelectStmt
+	{
+		$$ = &ast.InsertStmt{Select: $1.(*ast.SelectStmt)}
+	}
+|	SelectStmtWithClause
 	{
 		$$ = &ast.InsertStmt{Select: $1.(*ast.SelectStmt)}
 	}
@@ -7031,6 +7086,54 @@ SelectStmtGroup:
 	}
 |	GroupByClause
 
+SelectStmtWithClause:
+	WithClause SelectStmt
+	{
+		sel := $2.(*ast.SelectStmt)
+		sel.With = $1.(*ast.WithClause)
+		$$ = sel
+	}
+
+WithClause:
+	"WITH" WithList
+	{
+		$$ = $2.(*ast.WithClause)
+	}
+|	"WITH" recursive WithList
+	{
+		ws := $3.(*ast.WithClause)
+		ws.IsRecursive = true
+		for _, cte := range ws.CTEs {
+			cte.IsRecursive = true
+		}
+		$$ = ws
+	}
+
+WithList:
+	WithList ',' CommonTableExpr
+	{
+		ws := $1.(*ast.WithClause)
+		ws.CTEs = append(ws.CTEs, $3.(*ast.CommonTableExpression))
+		$$ = ws
+	}
+|	CommonTableExpr
+	{
+		ws := &ast.WithClause{}
+		ws.CTEs = make([]*ast.CommonTableExpression, 0, 4)
+		ws.CTEs = append(ws.CTEs, $1.(*ast.CommonTableExpression))
+		$$ = ws
+	}
+
+CommonTableExpr:
+	Identifier IdentListWithParenOpt "AS" SubSelect
+	{
+		cte := &ast.CommonTableExpression{}
+		cte.Name = model.NewCIStr($1)
+		cte.ColNameList = $2.([]model.CIStr)
+		cte.Query = $4.(*ast.SubqueryExpr)
+		$$ = cte
+	}
+
 // See https://dev.mysql.com/doc/refman/5.7/en/subqueries.html
 SubSelect:
 	'(' SelectStmt ')'
@@ -7043,11 +7146,28 @@ SubSelect:
 		s.SetText(src[yyS[yypt-1].offset:yyS[yypt].offset])
 		$$ = &ast.SubqueryExpr{Query: s}
 	}
+|	'(' SelectStmtWithClause ')'
+	{
+		s := $2.(*ast.SelectStmt)
+		endOffset := parser.endOffset(&yyS[yypt])
+		parser.setLastSelectFieldText(s, endOffset)
+		src := parser.src
+		s.SetText(src[yyS[yypt-1].offset:yyS[yypt].offset])
+		$$ = &ast.SubqueryExpr{Query: s}
+	}
 |	'(' UnionStmt ')'
 	{
 		s := $2.(*ast.UnionStmt)
 		src := parser.src
 		// See the implementation of yyParse function
+		s.SetText(src[yyS[yypt-1].offset:yyS[yypt].offset])
+		$$ = &ast.SubqueryExpr{Query: s}
+	}
+|	'(' WithClause UnionStmt ')'
+	{
+		s := $3.(*ast.UnionStmt)
+		s.With = $2.(*ast.WithClause)
+		src := parser.src
 		s.SetText(src[yyS[yypt-1].offset:yyS[yypt].offset])
 		$$ = &ast.SubqueryExpr{Query: s}
 	}
@@ -8049,6 +8169,7 @@ Statement:
 |	ReplaceIntoStmt
 |	RevokeStmt
 |	SelectStmt
+|	SelectStmtWithClause
 |	UnionStmt
 |	SetStmt
 |	ShowStmt
@@ -8061,12 +8182,31 @@ Statement:
 |	TraceStmt
 |	TruncateTableStmt
 |	UpdateStmt
+|	WithClause UpdateStmt
+	{
+		stmt := $2.(*ast.UpdateStmt)
+		stmt.With = $1.(*ast.WithClause)
+		$$ = stmt
+	}
 |	UseStmt
 |	UnlockTablesStmt
 |	LockTablesStmt
+|	WithClause DeleteFromStmt
+	{
+		stmt := $2.(*ast.DeleteStmt)
+		stmt.With = $1.(*ast.WithClause)
+		$$ = stmt
+	}
+|	WithClause UnionStmt
+	{
+		stmt := $2.(*ast.UnionStmt)
+		stmt.With = $1.(*ast.WithClause)
+		$$ = stmt
+	}
 
 TraceableStmt:
 	SelectStmt
+|	SelectStmtWithClause
 |	DeleteFromStmt
 |	UpdateStmt
 |	InsertIntoStmt
@@ -8075,6 +8215,7 @@ TraceableStmt:
 
 ExplainableStmt:
 	SelectStmt
+|	SelectStmtWithClause
 |	DeleteFromStmt
 |	UpdateStmt
 |	InsertIntoStmt

@@ -2040,6 +2040,227 @@ func (s *testSessionIncSuite) TestSubSelect(c *C) {
 	s.testErrorCode(c, sql)
 }
 
+func (s *testSessionIncSuite) TestCTEAudit(c *C) {
+	config.GetGlobalConfig().Inc.EnableSelectStar = false
+	s.mustRunExec(c, `drop table if exists users,orders;
+create table users(id int primary key,status varchar(20));
+create table orders(id int primary key,user_id int,amount int);`)
+
+	sql = `
+WITH active_users AS (
+    SELECT id FROM users WHERE status = 'active'
+),
+user_orders AS (
+    SELECT u.id AS user_id, COUNT(o.id) AS order_count
+    FROM active_users u
+    LEFT JOIN orders o ON u.id = o.user_id
+    GROUP BY u.id
+)
+SELECT user_id FROM user_orders WHERE order_count > 0;`
+	s.testErrorCode(c, sql)
+
+	sql = `
+WITH active_users(id, name) AS (
+    SELECT id FROM users
+)
+SELECT id FROM active_users;`
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ErrCTEColumnNumberNotMatch, "active_users", 2, 1))
+
+	sql = `
+WITH numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 5
+)
+SELECT n FROM numbers;`
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ErrCTERecursiveRequireKeyword, "numbers"))
+
+	sql = `
+WITH RECURSIVE broken(n) AS (
+    SELECT n + 1 FROM broken WHERE n < 5
+)
+SELECT n FROM broken;`
+	s.testErrorCode(c, sql,
+		session.NewErr(session.ErrCTERecursiveRequireUnion, "broken"))
+
+	sql = `
+WITH RECURSIVE rng AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM rng WHERE n < 5
+)
+SELECT n FROM rng;`
+	s.testErrorCode(c, sql)
+}
+
+func (s *testSessionIncSuite) TestCTEWarnings(c *C) {
+	// Test 1: Recursive CTE without termination condition
+	sql := `
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers
+)
+SELECT n FROM numbers;`
+	s.runCheck(sql)
+	c.Assert(int(s.getAffectedRows()), GreaterEqual, 1)
+	row := s.rows[s.getAffectedRows()-1]
+	c.Assert(row[2], Equals, "1", Commentf("Expected warning level 1, got: %v", row))
+	errMsg := row[4].(string)
+	c.Assert(strings.Contains(errMsg, "WHERE") || strings.Contains(errMsg, "LIMIT"), Equals, true,
+		Commentf("Expected termination warning, got: %v", errMsg))
+
+	// Test 2: Recursive CTE with termination condition
+	sql = `
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 10
+)
+SELECT n FROM numbers;`
+	s.runCheck(sql)
+	row = s.rows[s.getAffectedRows()-1]
+	errMsg = row[4].(string)
+	hasNoTerminationWarn := !strings.Contains(errMsg, "termination") && !strings.Contains(errMsg, "WHERE or LIMIT")
+	c.Assert(hasNoTerminationWarn, Equals, true,
+		Commentf("Should not have termination warning, got: %v", errMsg))
+
+	// Test 3: Recursive CTE using UNION
+	sql = `
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION
+    SELECT n + 1 FROM numbers WHERE n < 10
+)
+SELECT n FROM numbers;`
+	s.runCheck(sql)
+	row = s.rows[s.getAffectedRows()-1]
+	c.Assert(row[2], Equals, "1", Commentf("Expected warning level 1"))
+	errMsg = row[4].(string)
+	c.Assert(strings.Contains(errMsg, "UNION ALL"), Equals, true,
+		Commentf("Expected UNION ALL performance hint, got: %v", errMsg))
+
+	// Test 4: Recursive CTE with both issues
+	sql = `
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION
+    SELECT n + 1 FROM numbers
+)
+SELECT n FROM numbers;`
+	s.runCheck(sql)
+	row = s.rows[s.getAffectedRows()-1]
+	c.Assert(row[2], Equals, "1", Commentf("Expected warning level 1"))
+	errMsg = row[4].(string)
+	hasTerminationWarn := strings.Contains(errMsg, "WHERE") || strings.Contains(errMsg, "LIMIT")
+	hasUnionWarn := strings.Contains(errMsg, "UNION ALL")
+	c.Assert(hasTerminationWarn || hasUnionWarn, Equals, true,
+		Commentf("Expected warnings, got: %v", errMsg))
+}
+
+func (s *testSessionIncSuite) TestCTEWithDML(c *C) {
+	saved := config.GetGlobalConfig().Inc
+	savedRealRowCount := s.realRowCount
+	defer func() {
+		config.GetGlobalConfig().Inc = saved
+		s.realRowCount = savedRealRowCount
+	}()
+
+	config.GetGlobalConfig().Inc.CheckDMLWhere = false
+	config.GetGlobalConfig().Inc.EnableSelectStar = false
+	s.realRowCount = false
+
+	s.mustRunExec(c, `drop table if exists test_cte_target;
+create table test_cte_target(id int primary key, val int);
+insert into test_cte_target values (1, 10), (2, 20), (3, 30);`)
+
+	// Test INSERT with CTE (MySQL 8.0 standard syntax)
+	sql := `
+INSERT INTO test_cte_target
+WITH cte AS (SELECT 100 AS id, 200 AS val)
+SELECT id, val FROM cte;`
+	s.testErrorCode(c, sql)
+
+	// Test INSERT with column list and CTE
+	sql = `
+INSERT INTO test_cte_target (id, val)
+WITH cte AS (SELECT 101 AS i, 201 AS v)
+SELECT i, v FROM cte;`
+	s.testErrorCode(c, sql)
+
+	// Test INSERT with parenthesized CTE select
+	sql = `
+INSERT INTO test_cte_target (id, val)
+(WITH cte AS (SELECT 102 AS i, 202 AS v) SELECT i, v FROM cte);`
+	s.testErrorCode(c, sql)
+
+	// Test UPDATE with CTE
+	sql = `
+WITH cte AS (SELECT 1 AS target_id, 999 AS new_val)
+UPDATE test_cte_target
+SET val = (SELECT new_val FROM cte)
+WHERE id = (SELECT target_id FROM cte);`
+	s.testErrorCode(c, sql)
+
+	// Test DELETE with CTE
+	sql = `
+WITH cte AS (SELECT 100 AS target_id)
+DELETE FROM test_cte_target
+WHERE id IN (SELECT target_id FROM cte);`
+	s.testErrorCode(c, sql)
+
+	// Test multiple CTEs in INSERT
+	sql = `
+INSERT INTO test_cte_target
+WITH cte1 AS (SELECT 103 AS id),
+     cte2 AS (SELECT 203 AS val)
+SELECT id, val FROM cte1, cte2;`
+	s.testErrorCode(c, sql)
+
+	// Test CTE referencing another CTE in INSERT
+	sql = `
+INSERT INTO test_cte_target
+WITH cte1 AS (SELECT 104 AS id),
+     cte2 AS (SELECT id, 204 AS val FROM cte1)
+SELECT id, val FROM cte2;`
+	s.testErrorCode(c, sql)
+}
+
+func (s *testSessionIncSuite) TestCTEWithInceptionProtocol(c *C) {
+	saved := config.GetGlobalConfig().Inc
+	savedRealRowCount := s.realRowCount
+	defer func() {
+		config.GetGlobalConfig().Inc = saved
+		s.realRowCount = savedRealRowCount
+	}()
+
+	config.GetGlobalConfig().Inc.CheckDMLWhere = false
+	s.realRowCount = false
+
+	s.mustRunExec(c, `drop table if exists test_inception_cte;
+create table test_inception_cte(id int primary key, name varchar(50));`)
+
+	// Test CTE within Inception protocol wrapper
+	sql := `
+INSERT INTO test_inception_cte
+WITH active AS (SELECT 1 AS id, 'test' AS name)
+SELECT id, name FROM active;`
+	s.testErrorCode(c, sql)
+
+	// Test recursive CTE within Inception protocol
+	sql = `
+INSERT INTO test_inception_cte
+WITH RECURSIVE nums AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM nums WHERE n < 3
+)
+SELECT n, CONCAT('num_', n) FROM nums;`
+	s.testErrorCode(c, sql)
+}
+
 func (s *testSessionIncSuite) TestUpdate(c *C) {
 	saved := config.GetGlobalConfig().Inc
 	defer func() {

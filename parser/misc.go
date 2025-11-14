@@ -426,6 +426,7 @@ var tokenMap = map[string]int{
 	"READ":                     read,
 	"REAL":                     realType,
 	"RECENT":                   recent,
+	"RECURSIVE":                recursive,
 	"REDUNDANT":                redundant,
 	"REFERENCES":               references,
 	"REGEXP":                   regexpKwd,

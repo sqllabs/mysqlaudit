@@ -73,6 +73,260 @@ const (
 	TABLE_PARTITION_COMMENT_MAXLEN = 1024
 )
 
+type cteDefinition struct {
+	name       string
+	lowerName  string
+	node       *ast.CommonTableExpression
+	tableInfo  *TableInfo
+	columns    []string
+	hasSelfRef bool
+	reported   map[ErrorCode]bool
+	warned     map[string]bool
+}
+
+func (d *cteDefinition) markReported(code ErrorCode) bool {
+	if d.reported == nil {
+		d.reported = make(map[ErrorCode]bool)
+	}
+	if d.reported[code] {
+		return false
+	}
+	d.reported[code] = true
+	return true
+}
+
+func (d *cteDefinition) markWarn(key string) bool {
+	if d.warned == nil {
+		d.warned = make(map[string]bool)
+	}
+	if d.warned[key] {
+		return false
+	}
+	d.warned[key] = true
+	return true
+}
+
+type cteContext struct {
+	defs      map[string]*cteDefinition
+	ordered   []*cteDefinition
+	recursive bool
+}
+
+func (s *session) enterCTEContext(with *ast.WithClause) *cteContext {
+	if with == nil || len(with.CTEs) == 0 {
+		return nil
+	}
+	ctx := &cteContext{
+		defs:      make(map[string]*cteDefinition, len(with.CTEs)),
+		ordered:   make([]*cteDefinition, 0, len(with.CTEs)),
+		recursive: with.IsRecursive,
+	}
+	for _, cte := range with.CTEs {
+		name := cte.Name.O
+		lowerName := strings.ToLower(name)
+		def := &cteDefinition{
+			name:      name,
+			lowerName: lowerName,
+			node:      cte,
+			tableInfo: &TableInfo{
+				Schema: s.dbName,
+				Name:   name,
+			},
+		}
+		if s.cteReports == nil {
+			s.cteReports = make(map[*ast.CommonTableExpression]map[ErrorCode]bool)
+		}
+		if rep, ok := s.cteReports[cte]; ok {
+			def.reported = rep
+		} else {
+			def.reported = make(map[ErrorCode]bool)
+			s.cteReports[cte] = def.reported
+		}
+		if s.cteWarns == nil {
+			s.cteWarns = make(map[*ast.CommonTableExpression]map[string]bool)
+		}
+		if warn, ok := s.cteWarns[cte]; ok {
+			def.warned = warn
+		} else {
+			def.warned = make(map[string]bool)
+			s.cteWarns[cte] = def.warned
+		}
+		if len(cte.ColNameList) > 0 {
+			def.tableInfo.Fields = make([]FieldInfo, len(cte.ColNameList))
+			for i, col := range cte.ColNameList {
+				def.tableInfo.Fields[i] = FieldInfo{
+					Table: name,
+					Field: col.O,
+				}
+			}
+		}
+		ctx.defs[lowerName] = def
+		ctx.ordered = append(ctx.ordered, def)
+	}
+	s.cteStack = append(s.cteStack, ctx)
+	for _, def := range ctx.ordered {
+		s.buildCTEDefinition(ctx, def)
+	}
+	return ctx
+}
+
+func (s *session) leaveCTEContext(ctx *cteContext) {
+	if ctx == nil {
+		return
+	}
+	if n := len(s.cteStack); n > 0 && s.cteStack[n-1] == ctx {
+		s.cteStack = s.cteStack[:n-1]
+		return
+	}
+	for i := len(s.cteStack) - 1; i >= 0; i-- {
+		if s.cteStack[i] == ctx {
+			s.cteStack = append(s.cteStack[:i], s.cteStack[i+1:]...)
+			return
+		}
+	}
+}
+
+func (s *session) lookupCTEDefinition(name string) *cteDefinition {
+	if len(s.cteStack) == 0 {
+		return nil
+	}
+	lower := strings.ToLower(name)
+	for i := len(s.cteStack) - 1; i >= 0; i-- {
+		if def, ok := s.cteStack[i].defs[lower]; ok {
+			return def
+		}
+	}
+	return nil
+}
+
+func (s *session) nodeReferencesCTE(def *cteDefinition, node ast.ResultSetNode) bool {
+	if def == nil || node == nil {
+		return false
+	}
+	tables := extractTableList(node, nil)
+	for _, tbl := range tables {
+		if tName, ok := tbl.Source.(*ast.TableName); ok {
+			if tName.Schema.L == "" && strings.EqualFold(tName.Name.O, def.name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func selectHasTermination(sel *ast.SelectStmt) bool {
+	if sel == nil {
+		return false
+	}
+	return sel.Where != nil || sel.Limit != nil
+}
+
+func (s *session) collectRecursiveCTEMembers(def *cteDefinition, union *ast.UnionStmt) ([]*ast.SelectStmt, bool) {
+	if union == nil || union.SelectList == nil {
+		return nil, false
+	}
+	var members []*ast.SelectStmt
+	containsDistinct := false
+	for _, sel := range union.SelectList.Selects {
+		if sel.IsAfterUnionDistinct {
+			containsDistinct = true
+		}
+		if s.nodeReferencesCTE(def, sel) {
+			members = append(members, sel)
+		}
+	}
+	return members, containsDistinct
+}
+
+func (s *session) warnCTETermination(def *cteDefinition, members []*ast.SelectStmt) {
+	if len(members) == 0 {
+		return
+	}
+	for _, sel := range members {
+		if selectHasTermination(sel) {
+			return
+		}
+	}
+	if !def.markWarn("termination") {
+		return
+	}
+	msg := fmt.Sprintf("Recursive CTE '%s' should add WHERE or LIMIT as a termination condition.", def.name)
+	s.appendWarningMessage(msg)
+}
+
+func (s *session) warnCTEUnionDistinct(def *cteDefinition) {
+	if !def.markWarn("union_distinct") {
+		return
+	}
+	msg := fmt.Sprintf("CTE '%s' uses UNION (deduplication). Use UNION ALL if deduplication is unnecessary.", def.name)
+	s.appendWarningMessage(msg)
+}
+
+func (s *session) buildCTEDefinition(ctx *cteContext, def *cteDefinition) {
+	if def == nil || def.node == nil || def.node.Query == nil {
+		return
+	}
+	def.hasSelfRef = s.cteHasSelfReference(def)
+	if def.hasSelfRef && !ctx.recursive {
+		if def.markReported(ErrCTERecursiveRequireKeyword) {
+			s.appendErrorNo(ErrCTERecursiveRequireKeyword, def.name)
+		}
+	}
+	derived := s.deriveCTEColumns(def)
+	if len(def.node.ColNameList) > 0 {
+		names := make([]string, 0, len(def.node.ColNameList))
+		for _, col := range def.node.ColNameList {
+			names = append(names, col.O)
+		}
+		if len(derived) > 0 && len(derived) != len(names) {
+			if def.markReported(ErrCTEColumnNumberNotMatch) {
+				s.appendErrorNo(ErrCTEColumnNumberNotMatch, def.name, len(names), len(derived))
+			}
+		}
+		def.columns = names
+	} else if len(derived) > 0 {
+		def.columns = derived
+	}
+	if len(def.columns) > 0 {
+		def.tableInfo.Fields = make([]FieldInfo, len(def.columns))
+		for i, col := range def.columns {
+			def.tableInfo.Fields[i] = FieldInfo{
+				Table: def.name,
+				Field: col,
+			}
+		}
+	}
+	var recursiveMembers []*ast.SelectStmt
+	var containsDistinct bool
+	if union, ok := def.node.Query.Query.(*ast.UnionStmt); ok {
+		recursiveMembers, containsDistinct = s.collectRecursiveCTEMembers(def, union)
+		if containsDistinct {
+			s.warnCTEUnionDistinct(def)
+		}
+		if def.hasSelfRef {
+			s.warnCTETermination(def, recursiveMembers)
+		}
+	} else if def.hasSelfRef {
+		if def.markReported(ErrCTERecursiveRequireUnion) {
+			s.appendErrorNo(ErrCTERecursiveRequireUnion, def.name)
+		}
+	}
+	if def.node.Query.Query != nil {
+		s.checkSelectItem(def.node.Query.Query, nil, false)
+	}
+}
+
+func (s *session) deriveCTEColumns(def *cteDefinition) []string {
+	if def == nil || def.node == nil || def.node.Query == nil || def.node.Query.Query == nil {
+		return nil
+	}
+	return s.getSubSelectColumns(def.node.Query.Query)
+}
+
+func (s *session) cteHasSelfReference(def *cteDefinition) bool {
+	return s.nodeReferencesCTE(def, def.node.Query.Query)
+}
+
 func (s *session) ExecuteInc(ctx context.Context, sql string) (recordSets []sqlexec.RecordSet, err error) {
 
 	// 跳过mysql客户端发送的sql
@@ -5694,6 +5948,8 @@ func (s *session) checkCreateView(node *ast.CreateViewStmt, sql string) {
 
 	switch selectNode := node.Select.(type) {
 	case *ast.UnionStmt:
+		ctx := s.enterCTEContext(selectNode.With)
+		defer s.leaveCTEContext(ctx)
 		for _, sel := range selectNode.SelectList.Selects {
 			// 是否有星号列
 			hasWildCard := false
@@ -5720,6 +5976,8 @@ func (s *session) checkCreateView(node *ast.CreateViewStmt, sql string) {
 		s.checkSelectItem(selectNode, nil, false)
 
 	case *ast.SelectStmt:
+		ctx := s.enterCTEContext(selectNode.With)
+		defer s.leaveCTEContext(ctx)
 		if selectNode.Fields != nil {
 			// 是否有星号列
 			hasWildCard := false
@@ -5909,6 +6167,16 @@ func (s *session) checkDBExists(db string, reportNotExists bool) bool {
 func (s *session) checkInsert(node *ast.InsertStmt, sql string) {
 
 	log.Debug("checkInsert")
+	var withClause *ast.WithClause
+	if node.With != nil {
+		withClause = node.With
+	} else if sel, ok := node.Select.(*ast.SelectStmt); ok && sel.With != nil {
+		withClause = sel.With
+	} else if setOpr, ok := node.Select.(*ast.UnionStmt); ok && setOpr.With != nil {
+		withClause = setOpr.With
+	}
+	ctx := s.enterCTEContext(withClause)
+	defer s.leaveCTEContext(ctx)
 
 	// sqlId, ok := s.checkFingerprint(strings.Replace(strings.ToLower(sql), "values", "values ", 1))
 	// if ok {
@@ -6328,10 +6596,14 @@ func (s *session) getSubSelectColumns(node ast.ResultSetNode) []string {
 
 	switch sel := node.(type) {
 	case *ast.UnionStmt:
+		ctx := s.enterCTEContext(sel.With)
+		defer s.leaveCTEContext(ctx)
 		// 取第一个select的列数
 		return s.getSubSelectColumns(sel.SelectList.Selects[0])
 
 	case *ast.SelectStmt:
+		ctx := s.enterCTEContext(sel.With)
+		defer s.leaveCTEContext(ctx)
 		// var tableList []*ast.TableSource
 		// var tableInfoList []*TableInfo
 
@@ -7642,6 +7914,8 @@ func (s *session) anlyzeExplain(rows []ExplainInfo) {
 
 func (s *session) checkUpdate(node *ast.UpdateStmt, sql string) {
 	log.Debug("checkUpdate")
+	ctx := s.enterCTEContext(node.With)
+	defer s.leaveCTEContext(ctx)
 
 	// 从set列表读取要更新的表
 	var originTable string
@@ -8106,6 +8380,8 @@ func (s *session) checkWindowFrameBound(bound *ast.FrameBound, tables []*TableIn
 
 func (s *session) checkDelete(node *ast.DeleteStmt, sql string) {
 	log.Debug("checkDelete")
+	ctx := s.enterCTEContext(node.With)
+	defer s.leaveCTEContext(ctx)
 
 	// sqlId, ok := s.checkFingerprint(sql)
 	// if ok {
@@ -8575,6 +8851,11 @@ func extractTableList(node ast.ResultSetNode, input []*ast.TableSource) []*ast.T
 }
 
 func (s *session) getTableFromCache(db string, tableName string, reportNotExists bool) *TableInfo {
+	if tableName != "" {
+		if def := s.lookupCTEDefinition(tableName); def != nil && def.tableInfo != nil {
+			return def.tableInfo.copy()
+		}
+	}
 	if db == "" {
 		db = s.dbName
 	}
@@ -8755,6 +9036,8 @@ func (s *session) checkSelectItem(node ast.ResultSetNode,
 
 	switch x := node.(type) {
 	case *ast.UnionStmt:
+		ctx := s.enterCTEContext(x.With)
+		defer s.leaveCTEContext(ctx)
 		stmt := x.SelectList
 		for _, sel := range stmt.Selects[:len(stmt.Selects)-1] {
 			if sel.Limit != nil {
@@ -8770,7 +9053,10 @@ func (s *session) checkSelectItem(node ast.ResultSetNode,
 		}
 
 	case *ast.SelectStmt:
-		return s.checkSubSelectItem(x, outerTables)
+		ctx := s.enterCTEContext(x.With)
+		res := s.checkSubSelectItem(x, outerTables)
+		s.leaveCTEContext(ctx)
+		return res
 
 	case *ast.Join:
 		tableInfoList := s.checkSelectItem(x.Left, nil, false)
@@ -8798,7 +9084,7 @@ func (s *session) checkSelectItem(node ast.ResultSetNode,
 			}
 			return nil
 		case *ast.SelectStmt:
-			s.checkSubSelectItem(tblSource, nil)
+			s.checkSelectItem(tblSource, nil, false)
 
 			cols := s.getSubSelectColumns(tblSource)
 			if cols != nil {

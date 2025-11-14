@@ -10,9 +10,31 @@
 
 goInception是一个集审核、执行、备份及生成回滚语句于一身的MySQL运维工具， 通过对执行SQL的语法解析，返回基于自定义规则的审核结果，并提供执行和备份及生成回滚语句的功能。
 
-> 兼容性说明：goInception 基于 TiDB 协议栈，与 MySQL 5.6+ 兼容，已针对 MySQL 8.4（含默认的 `caching_sha2_password` 认证）完成认证与 DDL/DML 全链路验证。
+## 公共表表达式（CTE）支持
 
-> 兼容性说明：goInception 基于 TiDB 协议栈，与 MySQL 5.6+ 兼容，并已针对 MySQL 8.4（含 `caching_sha2_password` 默认认证）完成认证及 DDL/DML 验证。
+项目已经全面跟进 MySQL 8.x 的 CTE 语法，常见的非递归/递归写法都可以直接进入审核流程：
+
+```sql
+WITH active_users AS (
+    SELECT * FROM users WHERE status = 'active'
+),
+user_orders AS (
+    SELECT u.*, COUNT(o.id) AS order_count
+    FROM active_users u
+    LEFT JOIN orders o ON u.id = o.user_id
+    GROUP BY u.id
+)
+SELECT * FROM user_orders WHERE order_count > 0;
+
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 10
+)
+SELECT * FROM numbers;
+```
+
+审核器会检查递归 CTE 是否显式声明 `WITH RECURSIVE`、是否使用 `UNION/UNION ALL` 以及列清单是否匹配期望列数，以便在问题 SQL 上给出明确的诊断信息。
 
 ## 架构
 
@@ -46,7 +68,5 @@ goInception基于TiDB的语法解析器，和业内有名的inception审核工�
 
 * [Inception - 审核工具](https://github.com/hanchuanchuan/inception)
 * [TiDB](https://github.com/pingcap/tidb)
-
-
 
 

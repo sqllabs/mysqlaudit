@@ -19,13 +19,13 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/sqllabs/mysqlaudit/model"
 	"github.com/sqllabs/mysqlaudit/mysql"
 	"github.com/sqllabs/mysqlaudit/terror"
 	"github.com/sqllabs/mysqlaudit/util/charset"
 	"github.com/sqllabs/mysqlaudit/util/testleak"
-	. "github.com/pingcap/check"
 	// "github.com/pingcap/errors"
 )
 
@@ -235,6 +235,53 @@ func (s *testParserSuite) TestSimple(c *C) {
 	src = `insert into tb(v) (select v from tb);`
 	_, err = parser.ParseOneStmt(src, "", "")
 	c.Assert(err, IsNil)
+}
+
+func (s *testParserSuite) TestCTEParsing(c *C) {
+	defer testleak.AfterTest(c)()
+	p := New()
+
+	sql := `
+WITH active_users AS (
+    SELECT id FROM users WHERE status = 'active'
+),
+user_orders AS (
+    SELECT u.id AS user_id, COUNT(o.id) AS order_count
+    FROM active_users u
+    LEFT JOIN orders o ON u.id = o.user_id
+    GROUP BY u.id
+)
+SELECT user_id FROM user_orders WHERE order_count > 0;`
+	stmt, err := p.ParseOneStmt(sql, "", "")
+	c.Assert(err, IsNil)
+	sel, ok := stmt.(*ast.SelectStmt)
+	c.Assert(ok, IsTrue)
+	c.Assert(sel.With, NotNil)
+	c.Assert(sel.With.IsRecursive, IsFalse)
+	c.Assert(sel.With.CTEs, HasLen, 2)
+	c.Assert(sel.With.CTEs[0].Name.O, Equals, "active_users")
+	c.Assert(sel.With.CTEs[0].Query, NotNil)
+	c.Assert(sel.With.CTEs[1].Name.O, Equals, "user_orders")
+	c.Assert(sel.With.CTEs[1].Query, NotNil)
+
+	sql = `
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 5
+)
+SELECT n FROM numbers;`
+	stmt, err = p.ParseOneStmt(sql, "", "")
+	c.Assert(err, IsNil)
+	sel, ok = stmt.(*ast.SelectStmt)
+	c.Assert(ok, IsTrue)
+	c.Assert(sel.With, NotNil)
+	c.Assert(sel.With.IsRecursive, IsTrue)
+	c.Assert(sel.With.CTEs, HasLen, 1)
+	c.Assert(sel.With.CTEs[0].IsRecursive, IsTrue)
+	union, ok := sel.With.CTEs[0].Query.Query.(*ast.UnionStmt)
+	c.Assert(ok, IsTrue)
+	c.Assert(union.SelectList.Selects, HasLen, 2)
 }
 
 func (s *testParserSuite) TestWindowFunction(c *C) {

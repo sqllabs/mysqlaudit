@@ -179,6 +179,9 @@ func (s *session) clear() {
 
 	s.statsCollector = nil
 	s.opt = nil
+	s.cteStack = nil
+	s.cteReports = nil
+	s.cteWarns = nil
 	s.ch = nil
 	s.chBackupRecord = nil
 	s.insertBuffer = nil

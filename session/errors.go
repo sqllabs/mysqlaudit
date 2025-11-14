@@ -198,6 +198,9 @@ const (
 	ErrCollationNotSupport
 	ErrTableCollationNotSupport
 	ErrJsonTypeSupport
+	ErrCTERecursiveRequireUnion
+	ErrCTERecursiveRequireKeyword
+	ErrCTEColumnNumberNotMatch
 	ErrEngineNotSupport
 	ErrMixOfGroupFuncAndFields
 	ErrFieldNotInGroupBy
@@ -391,6 +394,9 @@ var ErrorsDefault = map[ErrorCode]string{
 	ErrCollationNotSupport:                 "Set collation to one of '%s'",
 	ErrEngineNotSupport:                    "Set engine to one of '%s'",
 	ErrJsonTypeSupport:                     "Json type not allowed in column '%s'.",
+	ErrCTERecursiveRequireUnion:            "Recursive common table expression '%s' must contain UNION or UNION ALL.",
+	ErrCTERecursiveRequireKeyword:          "Common table expression '%s' references itself but WITH RECURSIVE is missing.",
+	ErrCTEColumnNumberNotMatch:             "Wrong number of columns in CTE '%s': expected %d, got %d.",
 	ErrMixOfGroupFuncAndFields:             "In aggregated query without GROUP BY, expression #%d of SELECT list contains nonaggregated column '%s'; this is incompatible with sql_mode=only_full_group_by.",
 	ErrFieldNotInGroupBy:                   "Expression #%d of %s is not in GROUP BY clause and contains nonaggregated column '%s' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by.",
 	ErCantChangeColumnPosition:             "Cannot change the position of the column '%s'.",
@@ -584,6 +590,9 @@ var ErrorsChinese = map[ErrorCode]string{
 	ErrEngineNotSupport:                    "允许的存储引擎: '%s'.",
 	ErrWrongUsage:                          "%s子句无法使用%s",
 	ErrJsonTypeSupport:                     "不允许使用json类型(列'%s').",
+	ErrCTERecursiveRequireUnion:            "递归公用表表达式 '%s' 必须包含 UNION 或 UNION ALL.",
+	ErrCTERecursiveRequireKeyword:          "公用表表达式 '%s' 存在自引用但缺少 WITH RECURSIVE.",
+	ErrCTEColumnNumberNotMatch:             "CTE '%s' 的列数量不匹配(期望 %d, 实际 %d).",
 	ErCantChangeColumnPosition:             "不允许改变列顺序(列'%s').",
 	ErCantChangeColumn:                     "不允许change column语法(列'%s').",
 	ER_DATETIME_DEFAULT:                    "请设置 datetime 列 '%s' 的默认值.",
@@ -1099,6 +1108,12 @@ func (e ErrorCode) String() string {
 		return "er_table_collation_not_support"
 	case ErrJsonTypeSupport:
 		return "er_json_type_support"
+	case ErrCTERecursiveRequireUnion:
+		return "er_cte_recursive_require_union"
+	case ErrCTERecursiveRequireKeyword:
+		return "er_cte_recursive_require_keyword"
+	case ErrCTEColumnNumberNotMatch:
+		return "er_cte_column_number_not_match"
 	case ErrEngineNotSupport:
 		return "er_engine_not_support"
 	case ErrMixOfGroupFuncAndFields:

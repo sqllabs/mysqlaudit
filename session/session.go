@@ -259,6 +259,10 @@ type session struct {
 	// 自定义审核级别,通过解析config.GetGlobalConfig().IncLevel生成
 	incLevel map[string]uint8
 
+	cteStack []*cteContext
+	cteReports map[*ast.CommonTableExpression]map[ErrorCode]bool
+	cteWarns   map[*ast.CommonTableExpression]map[string]bool
+
 	alterRollbackBuffer []string
 
 	// 目标数据库的innodb_large_prefix设置

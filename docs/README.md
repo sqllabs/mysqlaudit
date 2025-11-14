@@ -9,6 +9,32 @@
 
 goInception is a MySQL maintenance tool, which can be used to review, implement, backup, and generate SQL statements for rollback. It parses SQL syntax and returns the result of the review based on custom rules.
 
+## Common Table Expressions (CTE)
+
+CTE syntax from MySQL 8.x is fully supported, so both non-recursive and recursive forms can be audited directly:
+
+```sql
+WITH active_users AS (
+    SELECT * FROM users WHERE status = 'active'
+),
+user_orders AS (
+    SELECT u.*, COUNT(o.id) AS order_count
+    FROM active_users u
+    LEFT JOIN orders o ON u.id = o.user_id
+    GROUP BY u.id
+)
+SELECT * FROM user_orders WHERE order_count > 0;
+
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1 FROM numbers WHERE n < 10
+)
+SELECT * FROM numbers;
+```
+
+The auditor also validates recursive CTEs for `WITH RECURSIVE`, `UNION/UNION ALL`, and matching column lists so problem queries surface actionable diagnostics.
+
 
 ## Architecture
 
