@@ -176,6 +176,13 @@ func (parser *Parser) EnableWindowFunc(val bool) {
 	parser.lexer.EnableWindowFunc(val)
 }
 
+// NewWithWindowFunc returns a parser instance with window function support enabled.
+func NewWithWindowFunc() *Parser {
+	p := New()
+	p.EnableWindowFunc(true)
+	return p
+}
+
 // ParseErrorWith returns "You have a syntax error near..." error message compatible with mysql.
 func ParseErrorWith(errstr string, lineno int) error {
 	if len(errstr) > mysql.ErrTextLength {

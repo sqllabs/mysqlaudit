@@ -19,9 +19,9 @@ import (
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
-	. "github.com/pingcap/check"
 )
 
 var _ = Suite(&testSessionIncTranSuite{})
@@ -459,16 +459,16 @@ func (s *testSessionIncTranSuite) TestCreateTable(c *C) {
 
 	res = s.mustRunBackupTran(c, `DROP TABLE IF EXISTS t1,t2;
 
-	CREATE TABLE t1 (id int(11) NOT NULL,
-		c1 int(11) DEFAULT NULL,
-		c2 int(11) DEFAULT NULL,
+	CREATE TABLE t1 (id int NOT NULL,
+		c1 int DEFAULT NULL,
+		c2 int DEFAULT NULL,
 		PRIMARY KEY (id));
 
 	INSERT INTO t1 VALUES (1, 1, 1);
 
-	CREATE TABLE t2 (id int(11) NOT NULL,
-		c1 int(11) DEFAULT NULL,
-		c2 int(11) DEFAULT NULL,
+	CREATE TABLE t2 (id int NOT NULL,
+		c1 int DEFAULT NULL,
+		c2 int DEFAULT NULL,
 		PRIMARY KEY (id))`)
 	s.assertRows(c, res.Rows()[2:],
 		"DROP TABLE `test_inc`.`t1`;",

@@ -319,9 +319,9 @@ func (s *testSessionIncSuite) TestNoSourceInfo2(c *C) {
 
 func (s *testSessionIncSuite) TestInlineControlComment(c *C) {
 	res := s.tk.MustQueryInc(fmt.Sprintf(`/*%s;--check=1;--backup=0;--ignore-warnings=1;*/inception_magic_start;
-use test_inc;
+%s
 create table t_inline(id int);
-inception_magic_commit;`, s.getAddr()))
+inception_magic_commit;`, s.getAddr(), s.useDB))
 	rows := res.Rows()
 	c.Assert(len(rows), GreaterEqual, 3)
 	last := rows[len(rows)-1]
@@ -342,7 +342,8 @@ func (s *testSessionIncSuite) TestWrongDBName(c *C) {
 
 func (s *testSessionIncSuite) TestEnd(c *C) {
 	res := s.tk.MustQueryInc(fmt.Sprintf(`/*%s;--check=1;--backup=0;--ignore-warnings=1;*/
-inception_magic_start;use test_inc;create table t1(id int);`, s.getAddr()))
+inception_magic_start;%s
+create table t1(id int);`, s.getAddr(), s.useDB))
 	s.rows = res.Rows()
 	c.Assert(s.getAffectedRows(), Equals, 3)
 
@@ -1436,7 +1437,7 @@ func (s *testSessionIncSuite) TestAlterTableModifyColumn(c *C) {
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 int);alter table t1 modify column c1 varchar(10);"
 	s.testErrorCode(c, sql,
-		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int(11)", "varchar(10)"))
+		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int", "varchar(10)"))
 
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 smallint);alter table t1 modify column c1 int;"
@@ -1445,12 +1446,12 @@ func (s *testSessionIncSuite) TestAlterTableModifyColumn(c *C) {
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 int);alter table t1 modify column c1 smallint;"
 	s.testErrorCode(c, sql,
-		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int(11)", "smallint(6)"))
+		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int", "smallint(6)"))
 
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 int);alter table t1 modify column c1 smallint(5);"
 	s.testErrorCode(c, sql,
-		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int(11)", "smallint(5)"))
+		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "int", "smallint(5)"))
 
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 varchar(100));alter table t1 modify column c1 varchar(20);"
@@ -1465,7 +1466,7 @@ func (s *testSessionIncSuite) TestAlterTableModifyColumn(c *C) {
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 decimal(10,4));alter table t1 modify column c1 int;"
 	s.testErrorCode(c, sql,
-		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "decimal(10,4)", "int(11)"))
+		session.NewErr(session.ER_CHANGE_COLUMN_TYPE, "t1.c1", "decimal(10,4)", "int"))
 
 	config.GetGlobalConfig().Inc.CheckColumnTypeChange = true
 	sql = "create table t1(c1 decimal(10,4));alter table t1 modify column c1 decimal(8,4);"
@@ -1924,7 +1925,7 @@ PARTITION BY RANGE (TO_DAYS(hiredate) ) (
 );`
 	s.mustRunExec(c, sql)
 
-	sql = `create table t_list(a int(11),b int(11))
+	sql = `create table t_list(a int,b int)
 		partition by list (b)(
 		partition p0 values in (1,3,5,7,9),
 		partition p1 values in (2,4,6,8,0));`
@@ -2946,7 +2947,7 @@ func (s *testSessionIncSuite) TestAlterTable(c *C) {
 	config.GetGlobalConfig().Inc.EnableSetCharset = true
 	config.GetGlobalConfig().Inc.EnableSetCollation = true
 	config.GetGlobalConfig().Inc.SupportCharset = "utf8mb4"
-	config.GetGlobalConfig().Inc.SupportCollation = "utf8_general_ci,utf8mb4_general_ci,utf8mb4_0900_ai_ci,utf8mb4_zh_0900_as_cs"
+	config.GetGlobalConfig().Inc.SupportCollation = "utf8_general_ci,utf8mb4_general_ci,utf8mb4_general_ci,utf8mb4_zh_0900_as_cs"
 	sql = `drop table if exists t1;
 		create table t1(id int primary key);
 		alter table t1 DEFAULT CHARSET = utf8mb4 COLLATE utf8mb4_zh_0900_as_cs;`
@@ -3045,7 +3046,7 @@ func (s *testSessionIncSuite) TestTableCharsetCollation(c *C) {
 	s.testErrorCode(c, sql)
 
 	config.GetGlobalConfig().Inc.SupportCharset = "utf8,utf8mb4"
-	config.GetGlobalConfig().Inc.SupportCollation = "utf8_general_ci,utf8mb4_general_ci,utf8mb4_0900_ai_ci,utf8mb4_zh_0900_as_cs"
+	config.GetGlobalConfig().Inc.SupportCollation = "utf8_general_ci,utf8mb4_general_ci,utf8mb4_general_ci,utf8mb4_zh_0900_as_cs"
 	sql = `create table t1(id int,c1 varchar(20)) DEFAULT CHARSET = utf8mb4 COLLATE utf8mb4_zh_0900_as_cs;`
 	if s.DBVersion >= 80000 {
 		s.testErrorCode(c, sql)

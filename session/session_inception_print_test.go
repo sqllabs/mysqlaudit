@@ -19,10 +19,10 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/session"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
-	. "github.com/pingcap/check"
 )
 
 var _ = Suite(&testSessionPrintSuite{})
@@ -53,12 +53,13 @@ func (s *testSessionPrintSuite) TearDownSuite(c *C) {
 }
 
 func (s *testSessionPrintSuite) makeSQL(sql string) *testkit.Result {
-	a := `/*--user=test;--password=test;--host=127.0.0.1;--query-print=1;--backup=0;--port=3306;--enable-ignore-warnings;*/
+	comment := s.buildOptionComment("--query-print=1", "--backup=0", "--enable-ignore-warnings")
+	template := fmt.Sprintf(`%s
 inception_magic_start;
-use test_inc;
-%s;
-inception_magic_commit;`
-	return s.tk.MustQueryInc(fmt.Sprintf(a, sql))
+%s
+%%s;
+inception_magic_commit;`, comment, s.useDB)
+	return s.tk.MustQueryInc(fmt.Sprintf(template, sql))
 }
 
 func (s *testSessionPrintSuite) testErrorCode(c *C, sql string, errors ...*session.SQLError) {

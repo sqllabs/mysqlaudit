@@ -2,6 +2,8 @@
 
 ### gh-ost
 
+> **Important:** Starting from MySQL 8.4, goInception no longer runs gh-ost because upstream gh-ost still depends on legacy `SHOW SLAVE STATUS` / `SHOW MASTER STATUS` syntax. When the inspected database reports version 8.4 or higher the audit will stop with `gh-ost not supported on MySQL 8.4+, use pt-osc instead`. Please switch to pt-osc or disable gh-ost until the upstream project supports the new `SHOW REPLICA STATUS` syntax.
+
 - gh-ost is built-in GoInception. No additional installation. About Stop, Pause, Recover are contained in GoInception command.
 - Support calling gh-ost in binary mode, the parameter switch is `ghost_bin_dir`, please refer to the `osc_bin_dir` parameter of pt-osc for usage, if this parameter is not specified, it will still be called with the built-in gh-ost.
 
@@ -139,4 +141,3 @@ ghost_allow_master_master              | false  | bool | If gh-ost can run in Du
 |ghost_throttle_query| |string|Flow check at every minute. When the value is `0`, don't need throttling. When the value `>0`, need throttling. This query will run on a migrated server, please keep it lightly.|
 |ghost_timestamp_old_table|FALSE|bool|Use timestamp in old-tablename, keep unique name|
 |ghost_tungsten|FALSE|bool|Tell gh-ost running in a tungsten-replication structure|
-

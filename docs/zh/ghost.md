@@ -1,5 +1,7 @@
 # gh-ost
 
+> **重要提示：** 从 MySQL 8.4 开始，gh-ost 官方仍依赖已废弃的 `SHOW SLAVE STATUS`/`SHOW MASTER STATUS`，goInception 默认在 8.4+ 环境禁用 gh-ost，并提示“gh-ost not supported on MySQL 8.4+, use pt-osc instead”。请改用 pt-osc，或等待 gh-ost 官方支持 `SHOW REPLICA STATUS` 后再重新启用。
+
 - 内置gh-ost源码(`v1.0.48`)，因此无须下载。手动终止和暂停及恢复功能已开放相应命令，因此隐藏相关参数。
 - 支持binary方式调用gh-ost, 参数开关为`ghost_bin_dir`, 使用方式请参考pt-osc的`osc_bin_dir`参数,在未指定该参数时仍以内置源码方式调用.
 

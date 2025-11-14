@@ -11,6 +11,8 @@
 
 ### 说明
 * `pt-online-schema-change` 在 MySQL 8.4（`--recursion-method=none`）下验证通过；`gh-ost` 因语法仍使用 `SHOW SLAVE STATUS`，待官方支持 `SHOW REPLICA STATUS` 后再验证。
+* 元数据与测试期望全面改为 MySQL 8.x 风格（移除显示宽度，默认排序规则为 `utf8mb4_general_ci`），不再维护 MySQL 5.7 兼容格式。
+* MySQL 8.4+ 环境默认禁用 gh-ost，并提示 “gh-ost not supported on MySQL 8.4+, use pt-osc instead”，请改用 pt-osc 或在官方支持 `SHOW REPLICA STATUS` 后再启用。
 
 ## [v1.2.5] - 2021-10-31
 

@@ -19,9 +19,9 @@ import (
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sqllabs/mysqlaudit/config"
 	. "github.com/pingcap/check"
 	log "github.com/sirupsen/logrus"
+	"github.com/sqllabs/mysqlaudit/config"
 )
 
 var _ = Suite(&testSessionIncBackupSuite{})
@@ -103,9 +103,9 @@ func (s *testSessionIncBackupSuite) TestDropTable(c *C) {
 	backup = s.query("t1", row[7].(string))
 	// mysql 8.0版本默认字符集改成了utf8mb4
 	if s.DBVersion < 80000 || s.DBType == DBTypeMariaDB {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
 	} else {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;")
 	}
 
 	s.mustRunBackup(c, "create table t1(id int) default charset utf8mb4;")
@@ -113,9 +113,9 @@ func (s *testSessionIncBackupSuite) TestDropTable(c *C) {
 	row = s.rows[s.getAffectedRows()-1]
 	backup = s.query("t1", row[7].(string))
 	if s.DBVersion < 80000 || s.DBType == DBTypeMariaDB {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
 	} else {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;")
 	}
 
 	s.mustRunExec(c, "create table t1(id int not null default 0);")
@@ -123,9 +123,9 @@ func (s *testSessionIncBackupSuite) TestDropTable(c *C) {
 	row = s.rows[s.getAffectedRows()-1]
 	backup = s.query("t1", row[7].(string))
 	if s.DBVersion < 80000 || s.DBType == DBTypeMariaDB {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) NOT NULL DEFAULT '0'\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int NOT NULL DEFAULT '0'\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
 	} else {
-		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int(11) NOT NULL DEFAULT '0'\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;")
+		c.Assert(backup, Equals, "CREATE TABLE `t1` (\n `id` int NOT NULL DEFAULT '0'\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;")
 	}
 }
 
@@ -252,13 +252,13 @@ func (s *testSessionIncBackupSuite) TestAlterTableModifyColumn(c *C) {
 	}, "\n")
 	s.mustRunBackup(c, sql)
 	s.assertRows(c, s.rows[1:],
-		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int(11);",
+		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int;",
 		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` varchar(10);",
 		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` varchar(100) NOT NULL;",
-		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int(11);",
-		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int(11);",
+		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int;",
+		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int;",
 		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` varchar(200) NOT NULL COMMENT '测试列';",
-		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int(11);",
+		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int;",
 		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` varchar(20);",
 	)
 }
@@ -274,7 +274,7 @@ func (s *testSessionIncBackupSuite) TestAlterTableChangeColumn(c *C) {
 	s.mustRunBackup(c, "alter table t1 change column c1 c1 varchar(10);")
 	row := s.rows[s.getAffectedRows()-1]
 	backup := s.query("t1", row[7].(string))
-	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int(11);")
+	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c1` int;")
 
 	sql = `alter table t1 change column c1 c2 varchar(100) not null;
 	alter table t1 add column c3 int,add column c4 int;
@@ -286,8 +286,8 @@ func (s *testSessionIncBackupSuite) TestAlterTableChangeColumn(c *C) {
 	s.assertRows(c, s.rows[1:],
 		"ALTER TABLE `test_inc`.`t1` CHANGE COLUMN `c2` `c1` varchar(10);",
 		"ALTER TABLE `test_inc`.`t1` DROP COLUMN `c4`,DROP COLUMN `c3`;",
-		"ALTER TABLE `test_inc`.`t1` CHANGE COLUMN `c1` `c3` int(11);",
-		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c4` int(11),CHANGE COLUMN `c5` `c2` varchar(100) NOT NULL;",
+		"ALTER TABLE `test_inc`.`t1` CHANGE COLUMN `c1` `c3` int;",
+		"ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c4` int,CHANGE COLUMN `c5` `c2` varchar(100) NOT NULL;",
 	)
 }
 
@@ -296,7 +296,7 @@ func (s *testSessionIncBackupSuite) TestAlterTableDropColumn(c *C) {
 	sql = `drop table if exists t1;
 	create table t1(id int primary key,
 		c1 int,
-		c2 int(11) not null default 0 comment '测试列');`
+		c2 int not null default 0 comment '测试列');`
 	s.mustRunExec(c, sql)
 
 	sql = strings.Join([]string{
@@ -306,8 +306,8 @@ func (s *testSessionIncBackupSuite) TestAlterTableDropColumn(c *C) {
 
 	s.mustRunBackup(c, sql)
 	s.assertRows(c, s.rows[1:],
-		"ALTER TABLE `test_inc`.`t1` ADD COLUMN `c1` int(11);",
-		"ALTER TABLE `test_inc`.`t1` ADD COLUMN `c2` int(11) NOT NULL DEFAULT '0' COMMENT '测试列';",
+		"ALTER TABLE `test_inc`.`t1` ADD COLUMN `c1` int;",
+		"ALTER TABLE `test_inc`.`t1` ADD COLUMN `c2` int NOT NULL DEFAULT '0' COMMENT '测试列';",
 	)
 }
 
@@ -711,7 +711,7 @@ func (s *testSessionIncBackupSuite) TestDelete(c *C) {
 
 	s.mustRunBackup(c, `DROP TABLE IF EXISTS t1;
 			CREATE TABLE t1 (
-			    id     int(11) not null auto_increment,
+			    id     int not null auto_increment,
 			    v4_2 decimal(4,2),
 			    v5_0 decimal(5,0),
 			    v7_3 decimal(7,3),
@@ -723,8 +723,8 @@ func (s *testSessionIncBackupSuite) TestDelete(c *C) {
 			    v30_5 decimal(30,5),
 			    v30_20 decimal(30,20),
 			    v30_25 decimal(30,25),
-			    prec   int(11),
-			    scale  int(11),
+			    prec   int,
+			    scale  int,
 			    PRIMARY KEY(id)
 			);
  INSERT INTO t1 (v4_2,v5_0,v7_3,v10_2,v10_3,v13_2,v15_14,v20_10,v30_5,v30_20,v30_25,prec,scale) VALUES
@@ -918,7 +918,7 @@ func (s *testSessionIncBackupSuite) TestAlterTable(c *C) {
 	s.mustRunBackup(c, sql)
 	row = s.rows[s.getAffectedRows()-1]
 	backup = s.query("t1", row[7].(string))
-	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` DROP COLUMN `c1`,ADD COLUMN `c1` int(11);", Commentf("%v", s.rows))
+	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` DROP COLUMN `c1`,ADD COLUMN `c1` int;", Commentf("%v", s.rows))
 
 	// 删除后添加索引
 	sql = "drop table if exists t1;create table t1(id int ,c1 int,key ix(c1));alter table t1 drop index ix;alter table t1 add index ix(c1);"
@@ -960,7 +960,7 @@ func (s *testSessionIncBackupSuite) TestAlterTable(c *C) {
 	s.mustRunBackup(c, sql)
 	row = s.rows[s.getAffectedRows()-1]
 	backup = s.query("t1", row[7].(string))
-	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c3` int(11) DEFAULT '10';", Commentf("%v", s.rows))
+	c.Assert(backup, Equals, "ALTER TABLE `test_inc`.`t1` MODIFY COLUMN `c3` int DEFAULT '10';", Commentf("%v", s.rows))
 
 	sql = `drop table if exists t1;
 	create table t1(id int,c1 int,
@@ -1113,7 +1113,7 @@ func (s *testSessionIncBackupSuite) TestGenerateColumns(c *C) {
 	c1 int(10) NOT NULL default 1 comment "c1",
 	jdoc json DEFAULT NULL comment "json类型字段",
 	project varchar(30) GENERATED ALWAYS AS (json_unquote(json_extract(jdoc,'$."project"'))) VIRTUAL NOT NULL comment "json生成虚拟列",
-	c2 int(11) GENERATED ALWAYS AS ((c1 + 1)) STORED comment "json生成虚拟列"
+	c2 int GENERATED ALWAYS AS ((c1 + 1)) STORED comment "json生成虚拟列"
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '生成虚拟列表delete回滚测试';
 
 	-- 写入测试数据

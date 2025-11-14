@@ -61,7 +61,7 @@ func (s *session) makeNewResult() ([]Record, error) {
 
 func NewInception() *session {
 	se := &session{
-		parser:              parser.New(),
+		parser:              parser.NewWithWindowFunc(),
 		sessionVars:         variable.NewSessionVars(),
 		lowerCaseTableNames: 1,
 		isAPI:               true,

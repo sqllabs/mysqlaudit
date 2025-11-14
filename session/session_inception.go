@@ -1770,6 +1770,14 @@ func (s *session) checkBinlogRowImageIsFull() bool {
 	return format != "MINIMAL"
 }
 
+func (s *session) ghostAvailable() bool {
+	if s.dbVersion >= 80400 {
+		s.appendErrorMsg("gh-ost not supported on MySQL 8.4+, use pt-osc instead")
+		return false
+	}
+	return true
+}
+
 func (s *session) mysqlServerVersion() {
 	log.Debug("mysqlServerVersion")
 
@@ -4351,28 +4359,42 @@ func (s *session) checkModifyColumn(t *TableInfo, c *ast.AlterTableSpec) {
 			case mysql.TypeDecimal, mysql.TypeNewDecimal,
 				mysql.TypeVarchar,
 				mysql.TypeVarString:
-				str := string([]byte(foundField.Type)[:7])
+				prefix := foundField.Type
+				if len(prefix) > 7 {
+					prefix = prefix[:7]
+				}
 				// 类型不一致
-				if !strings.Contains(fieldType, str) {
+				if !strings.Contains(fieldType, prefix) {
 					s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
 						fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
 						foundField.Type, fieldType)
-				} else if GetDataTypeLength(fieldType)[0] < GetDataTypeLength(foundField.Type)[0] {
-					s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
-						fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
-						foundField.Type, fieldType)
+				} else {
+					newLen := GetDataTypeLength(fieldType)
+					oldLen := GetDataTypeLength(foundField.Type)
+					if newLen[0] != -1 && oldLen[0] != -1 && newLen[0] < oldLen[0] {
+						s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
+							fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
+							foundField.Type, fieldType)
+					}
 				}
 			case mysql.TypeString:
-				str := string([]byte(foundField.Type)[:4])
+				prefix := foundField.Type
+				if len(prefix) > 4 {
+					prefix = prefix[:4]
+				}
 				// 类型不一致
-				if !strings.Contains(fieldType, str) {
+				if !strings.Contains(fieldType, prefix) {
 					s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
 						fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
 						foundField.Type, fieldType)
-				} else if GetDataTypeLength(fieldType)[0] < GetDataTypeLength(foundField.Type)[0] {
-					s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
-						fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
-						foundField.Type, fieldType)
+				} else {
+					newLen := GetDataTypeLength(fieldType)
+					oldLen := GetDataTypeLength(foundField.Type)
+					if newLen[0] != -1 && oldLen[0] != -1 && newLen[0] < oldLen[0] {
+						s.appendErrorNo(ER_CHANGE_COLUMN_TYPE,
+							fmt.Sprintf("%s.%s", t.Name, nc.Name.Name),
+							foundField.Type, fieldType)
+					}
 				}
 			default:
 				// log.Info(fieldType, ":", foundField.Type)
@@ -7871,6 +7893,12 @@ func (s *session) checkItem(expr ast.ExprNode, tables []*TableInfo) bool {
 
 	case *ast.AggregateFuncExpr:
 		return s.checkAggregateFuncItem(e, tables)
+	case *ast.WindowFuncExpr:
+		for _, arg := range e.Args {
+			s.checkItem(arg, tables)
+		}
+		s.checkWindowSpec(&e.Spec, tables)
+		return true
 
 	case *ast.PatternInExpr:
 		s.checkItem(e.Expr, tables)
@@ -8042,6 +8070,38 @@ func (s *session) checkAggregateFuncItem(f *ast.AggregateFuncExpr, tables []*Tab
 	// }
 
 	return false
+}
+
+func (s *session) checkWindowSpec(spec *ast.WindowSpec, tables []*TableInfo) {
+	if spec == nil || spec.OnlyAlias {
+		return
+	}
+	if spec.PartitionBy != nil {
+		for _, item := range spec.PartitionBy.Items {
+			s.checkItem(item.Expr, tables)
+		}
+	}
+	if spec.OrderBy != nil {
+		for _, item := range spec.OrderBy.Items {
+			s.checkItem(item.Expr, tables)
+		}
+	}
+	if spec.Frame != nil {
+		s.checkWindowFrameBound(&spec.Frame.Extent.Start, tables)
+		s.checkWindowFrameBound(&spec.Frame.Extent.End, tables)
+	}
+}
+
+func (s *session) checkWindowFrameBound(bound *ast.FrameBound, tables []*TableInfo) {
+	if bound == nil {
+		return
+	}
+	if bound.Expr != nil {
+		s.checkItem(bound.Expr, tables)
+	}
+	if bound.Unit != nil {
+		s.checkItem(bound.Unit, tables)
+	}
 }
 
 func (s *session) checkDelete(node *ast.DeleteStmt, sql string) {
@@ -8924,6 +8984,10 @@ func (s *session) checkSubSelectItem(node *ast.SelectStmt, outerTables []*TableI
 
 	if node.Having != nil {
 		s.checkItem(node.Having.Expr, tableInfoList)
+	}
+
+	for i := range node.WindowSpecs {
+		s.checkWindowSpec(&node.WindowSpecs[i], tableInfoList)
 	}
 
 	if node.OrderBy != nil {

@@ -28,6 +28,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/ngaut/pools"
+	"github.com/pingcap/errors"
+	"github.com/pingcap/tipb/go-binlog"
+	log "github.com/sirupsen/logrus"
 	"github.com/sqllabs/mysqlaudit/ast"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/domain"
@@ -54,10 +58,6 @@ import (
 	"github.com/sqllabs/mysqlaudit/util/kvcache"
 	"github.com/sqllabs/mysqlaudit/util/sqlexec"
 	"github.com/sqllabs/mysqlaudit/util/timeutil"
-	"github.com/ngaut/pools"
-	"github.com/pingcap/errors"
-	"github.com/pingcap/tipb/go-binlog"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 
 	"github.com/jinzhu/gorm"
@@ -1215,8 +1215,14 @@ func getHostByIP(ip string) []string {
 	if ip == "127.0.0.1" {
 		return []string{"localhost"}
 	}
+	if net.ParseIP(ip) == nil {
+		return []string{ip}
+	}
 	addrs, err := net.LookupAddr(ip)
-	terror.Log(errors.Trace(err))
+	if err != nil || len(addrs) == 0 {
+		terror.Log(errors.Trace(err))
+		return []string{ip}
+	}
 	return addrs
 }
 
@@ -1365,7 +1371,7 @@ func createSession(store kv.Storage) (*session, error) {
 	}
 	s := &session{
 		store:               store,
-		parser:              parser.New(),
+		parser:              parser.NewWithWindowFunc(),
 		sessionVars:         variable.NewSessionVars(),
 		lowerCaseTableNames: 1,
 	}
@@ -1391,7 +1397,7 @@ func createSession(store kv.Storage) (*session, error) {
 func createSessionWithDomain(store kv.Storage, dom *domain.Domain) (*session, error) {
 	s := &session{
 		store:       store,
-		parser:      parser.New(),
+		parser:      parser.NewWithWindowFunc(),
 		sessionVars: variable.NewSessionVars(),
 	}
 	if plannercore.PreparedPlanCacheEnabled() {

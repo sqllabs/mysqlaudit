@@ -123,7 +123,7 @@ func SetStatsLease(lease time.Duration) {
 func Parse(ctx sessionctx.Context, src string) ([]ast.StmtNode, error) {
 	log.Debug("compiling", src)
 	charset, collation := ctx.GetSessionVars().GetCharsetInfo()
-	p := parser.New()
+	p := parser.NewWithWindowFunc()
 	p.SetSQLMode(ctx.GetSessionVars().SQLMode)
 	stmts, _, err := p.Parse(src, charset, collation)
 	if err != nil {

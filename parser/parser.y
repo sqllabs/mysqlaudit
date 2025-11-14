@@ -98,10 +98,12 @@ import (
 	convert           "CONVERT"
 	create            "CREATE"
 	cross             "CROSS"
+	cumeDist          "CUME_DIST"
 	currentDate       "CURRENT_DATE"
 	currentTime       "CURRENT_TIME"
 	currentTs         "CURRENT_TIMESTAMP"
 	currentUser       "CURRENT_USER"
+	denseRank         "DENSE_RANK"
 	database          "DATABASE"
 	databases         "DATABASES"
 	dayHour           "DAY_HOUR"
@@ -127,7 +129,9 @@ import (
 	explain           "EXPLAIN"
 	falseKwd          "FALSE"
 	floatType         "FLOAT"
+	following         "FOLLOWING"
 	forKwd            "FOR"
+	firstValue        "FIRST_VALUE"
 	force             "FORCE"
 	foreign           "FOREIGN"
 	from              "FROM"
@@ -136,6 +140,7 @@ import (
 	geometryType      "GEOMETRY"
 	grant             "GRANT"
 	group             "GROUP"
+	groups            "GROUPS"
 	having            "HAVING"
 	highPriority      "HIGH_PRIORITY"
 	hourMicrosecond   "HOUR_MICROSECOND"
@@ -162,7 +167,11 @@ import (
 	key               "KEY"
 	keys              "KEYS"
 	kill              "KILL"
+	lag               "LAG"
+	last              "LAST"
+	lastValue         "LAST_VALUE"
 	leading           "LEADING"
+	lead              "LEAD"
 	left              "LEFT"
 	like              "LIKE"
 	limit             "LIMIT"
@@ -184,6 +193,9 @@ import (
 	mod               "MOD"
 	not               "NOT"
 	noWriteToBinLog   "NO_WRITE_TO_BINLOG"
+	nthValue          "NTH_VALUE"
+	ntile             "NTILE"
+	nulls             "NULLS"
 	null              "NULL"
 	numericType       "NUMERIC"
 	nvarcharType      "NVARCHAR"
@@ -193,19 +205,26 @@ import (
 	or                "OR"
 	order             "ORDER"
 	outer             "OUTER"
+	over              "OVER"
 	packKeys          "PACK_KEYS"
+	percentRank       "PERCENT_RANK"
 	partition         "PARTITION"
 	precisionType     "PRECISION"
+	preceding         "PRECEDING"
 	primary           "PRIMARY"
 	primaryZone       "PRIMARY_ZONE"
 	procedure         "PROCEDURE"
 	shardRowIDBits    "SHARD_ROW_ID_BITS"
 	rangeKwd          "RANGE"
+	rank              "RANK"
+	rowNumber         "ROW_NUMBER"
+	rows              "ROWS"
 	read              "READ"
 	realType          "REAL"
 	references        "REFERENCES"
 	regexpKwd         "REGEXP"
 	rename            "RENAME"
+	respect           "RESPECT"
 	repeat            "REPEAT"
 	replace           "REPLACE"
 	restrict          "RESTRICT"
@@ -238,6 +257,7 @@ import (
 	trueKwd           "TRUE"
 	unique            "UNIQUE"
 	union             "UNION"
+	unbounded         "UNBOUNDED"
 	unlock            "UNLOCK"
 	unsigned          "UNSIGNED"
 	update            "UPDATE"
@@ -256,6 +276,7 @@ import (
 	where             "WHERE"
 	write             "WRITE"
 	with              "WITH"
+	window            "WINDOW"
 	xor               "XOR"
 	yearMonth         "YEAR_MONTH"
 	zerofill          "ZEROFILL"
@@ -577,6 +598,7 @@ import (
 	SimpleExpr             "simple expression"
 	SimpleIdent            "Simple Identifier expression"
 	SumExpr                "aggregate functions"
+	WindowFuncCall         "WINDOW function call"
 	FunctionCallGeneric    "Function call with Identifier"
 	FunctionCallKeyword    "Function call with keyword as function name"
 	FunctionCallNonKeyword "Function call with nonkeyword as function name"
@@ -720,6 +742,28 @@ import (
 	FuncDatetimePrec              "Function datetime precision"
 	GlobalScope                   "The scope of variable"
 	GroupByClause                 "GROUP BY clause"
+	OptWindowingClause            "Optional OVER clause"
+	WindowClause                  "WINDOW clause"
+	WindowDefinitionList          "WINDOW definition list"
+	WindowDefinition              "WINDOW definition"
+	WindowName                    "WINDOW name"
+	WindowSpec                    "WINDOW spec"
+	WindowSpecDetails             "WINDOW spec details"
+	OptExistingWindowName         "Optional existing WINDOW name"
+	OptPartitionClause            "Optional PARTITION BY clause in WINDOW"
+	OptWindowOrderByClause        "Optional ORDER BY clause in WINDOW"
+	OptWindowFrameClause          "Optional FRAME clause in WINDOW"
+	WindowFrameUnits              "WINDOW frame units"
+	WindowFrameExtent             "WINDOW frame extent"
+	WindowFrameStart              "WINDOW frame start"
+	WindowFrameBetween            "WINDOW frame between"
+	WindowFrameBound              "WINDOW frame bound"
+	WindowingClause               "OVER clause"
+	WindowNameOrSpec              "Window name or spec"
+	OptLeadLagInfo                "Optional arguments of LEAD/LAG"
+	OptLLDefault                  "Optional default value of LEAD/LAG"
+	OptNullTreatment              "Optional NULL treatment"
+	OptFromFirstLast              "Optional FROM FIRST/LAST clause"
 	HashString                    "Hashed string"
 	HavingClause                  "HAVING clause"
 	HandleRange                   "handle range"
@@ -5117,6 +5161,7 @@ SimpleExpr:
 |	FunctionCallKeyword
 |	FunctionCallNonKeyword
 |	FunctionCallGeneric
+|	WindowFuncCall
 |	SimpleExpr "COLLATE" StringName %prec neg
 	{
 		// TODO: Create a builtin function hold expr and collation. When do evaluation, convert expr result using the collation.
@@ -5602,68 +5647,124 @@ TrimDirection:
 	}
 
 SumExpr:
-	"AVG" '(' BuggyDefaultFalseDistinctOpt Expression ')'
+	"AVG" '(' BuggyDefaultFalseDistinctOpt Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool), Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		}
 	}
-|	builtinBitAnd '(' Expression ')'
+|	builtinBitAnd '(' Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		if $5 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, Spec: *($5.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		}
 	}
-|	builtinBitAnd '(' "ALL" Expression ')'
+|	builtinBitAnd '(' "ALL" Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		}
 	}
-|	builtinBitOr '(' Expression ')'
+|	builtinBitOr '(' Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		if $5 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, Spec: *($5.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		}
 	}
-|	builtinBitOr '(' "ALL" Expression ')'
+|	builtinBitOr '(' "ALL" Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		}
 	}
-|	builtinBitXor '(' Expression ')'
+|	builtinBitXor '(' Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		if $5 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, Spec: *($5.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		}
 	}
-|	builtinBitXor '(' "ALL" Expression ')'
+|	builtinBitXor '(' "ALL" Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		}
 	}
 |	builtinCount '(' DistinctKwd ExpressionList ')'
 	{
 		$$ = &ast.AggregateFuncExpr{F: $1, Args: $4.([]ast.ExprNode), Distinct: true}
 	}
-|	builtinCount '(' "ALL" Expression ')'
+|	builtinCount '(' "ALL" Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}}
+		}
 	}
-|	builtinCount '(' Expression ')'
+|	builtinCount '(' Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		if $5 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, Spec: *($5.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$3}}
+		}
 	}
-|	builtinCount '(' '*' ')'
+|	builtinCount '(' '*' ')' OptWindowingClause
 	{
 		args := []ast.ExprNode{ast.NewValueExpr(1)}
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: args}
+		if $5 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: args, Spec: *($5.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: args}
+		}
 	}
-|	builtinGroupConcat '(' BuggyDefaultFalseDistinctOpt ExpressionList OrderByOptional OptGConcatSeparator ')'
+|	builtinGroupConcat '(' BuggyDefaultFalseDistinctOpt ExpressionList OrderByOptional OptGConcatSeparator ')' OptWindowingClause
 	{
 		args := $4.([]ast.ExprNode)
 		args = append(args, $6.(ast.ExprNode))
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: args, Distinct: $3.(bool)}
+		if $8 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: args, Distinct: $3.(bool), Spec: *($8.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: args, Distinct: $3.(bool)}
+		}
 	}
-|	builtinMax '(' BuggyDefaultFalseDistinctOpt Expression ')'
+|	builtinMax '(' BuggyDefaultFalseDistinctOpt Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool), Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		}
 	}
-|	builtinMin '(' BuggyDefaultFalseDistinctOpt Expression ')'
+|	builtinMin '(' BuggyDefaultFalseDistinctOpt Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool), Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		}
 	}
-|	builtinSum '(' BuggyDefaultFalseDistinctOpt Expression ')'
+|	builtinSum '(' BuggyDefaultFalseDistinctOpt Expression ')' OptWindowingClause
 	{
-		$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		if $6 != nil {
+			$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool), Spec: *($6.(*ast.WindowSpec))}
+		} else {
+			$$ = &ast.AggregateFuncExpr{F: $1, Args: []ast.ExprNode{$4}, Distinct: $3.(bool)}
+		}
 	}
 
 OptGConcatSeparator:
@@ -6089,7 +6190,14 @@ SelectStmtFromDual:
 		st := $1.(*ast.SelectStmt)
 		lastField := st.Fields.Fields[len(st.Fields.Fields)-1]
 		if lastField.Expr != nil && lastField.AsName.O == "" {
-			lastEnd := yyS[yypt-2].offset - 1
+			var lastEnd int
+			if $4 != nil {
+				lastEnd = yyS[yypt].offset - 1
+			} else if $3 != nil {
+				lastEnd = yyS[yypt-1].offset - 1
+			} else {
+				lastEnd = yyS[yypt-2].offset - 1
+			}
 			lastField.SetText(parser.src[lastField.Offset:lastEnd])
 		}
 		if $3 != nil {
@@ -6098,6 +6206,31 @@ SelectStmtFromDual:
 
 		if $4 != nil {
 			st.OrderBy = $4.(*ast.OrderByClause)
+		}
+	}
+|	SelectStmtBasic FromDual WhereClauseOptional WindowClause OrderByOptional
+	{
+		st := $1.(*ast.SelectStmt)
+		lastField := st.Fields.Fields[len(st.Fields.Fields)-1]
+		if lastField.Expr != nil && lastField.AsName.O == "" {
+			var lastEnd int
+			if $5 != nil {
+				lastEnd = yyS[yypt].offset - 1
+			} else if $4 != nil {
+				lastEnd = yyS[yypt-1].offset - 1
+			} else if $3 != nil {
+				lastEnd = yyS[yypt-2].offset - 1
+			} else {
+				lastEnd = yyS[yypt-3].offset - 1
+			}
+			lastField.SetText(parser.src[lastField.Offset:lastEnd])
+		}
+		if $3 != nil {
+			st.Where = $3.(ast.ExprNode)
+		}
+		st.WindowSpecs = $4.([]ast.WindowSpec)
+		if $5 != nil {
+			st.OrderBy = $5.(*ast.OrderByClause)
 		}
 	}
 
@@ -6123,6 +6256,30 @@ SelectStmtFromTable:
 		if $6 != nil {
 			st.Having = $6.(*ast.HavingClause)
 		}
+		$$ = st
+	}
+|	SelectStmtBasic "FROM" TableRefsClause WhereClauseOptional SelectStmtGroup HavingClause WindowClause
+	{
+		st := $1.(*ast.SelectStmt)
+		st.From = $3.(*ast.TableRefsClause)
+		if st.SelectStmtOpts.TableHints != nil {
+			st.TableHints = st.SelectStmtOpts.TableHints
+		}
+		lastField := st.Fields.Fields[len(st.Fields.Fields)-1]
+		if lastField.Expr != nil && lastField.AsName.O == "" {
+			lastEnd := parser.endOffset(&yyS[yypt-5])
+			lastField.SetText(parser.src[lastField.Offset:lastEnd])
+		}
+		if $4 != nil {
+			st.Where = $4.(ast.ExprNode)
+		}
+		if $5 != nil {
+			st.GroupBy = $5.(*ast.GroupByClause)
+		}
+		if $6 != nil {
+			st.Having = $6.(*ast.HavingClause)
+		}
+		st.WindowSpecs = $7.([]ast.WindowSpec)
 		$$ = st
 	}
 
@@ -6157,6 +6314,39 @@ SelectStmt:
 		}
 		$$ = st
 	}
+|	SelectStmtBasic WindowClause OrderByOptional SelectStmtLimit SelectLockOpt
+	{
+		st := $1.(*ast.SelectStmt)
+		st.LockTp = $5.(ast.SelectLockType)
+		lastField := st.Fields.Fields[len(st.Fields.Fields)-1]
+		if lastField.Expr != nil && lastField.AsName.O == "" {
+			src := parser.src
+			var lastEnd int
+			if $2 != nil {
+				lastEnd = yyS[yypt-3].offset - 1
+			} else if $3 != nil {
+				lastEnd = yyS[yypt-2].offset - 1
+			} else if $4 != nil {
+				lastEnd = yyS[yypt-1].offset - 1
+			} else if $5 != ast.SelectLockNone {
+				lastEnd = yyS[yypt].offset - 1
+			} else {
+				lastEnd = len(src)
+				if src[lastEnd-1] == ';' {
+					lastEnd--
+				}
+			}
+			lastField.SetText(src[lastField.Offset:lastEnd])
+		}
+		st.WindowSpecs = $2.([]ast.WindowSpec)
+		if $3 != nil {
+			st.OrderBy = $3.(*ast.OrderByClause)
+		}
+		if $4 != nil {
+			st.Limit = $4.(*ast.Limit)
+		}
+		$$ = st
+	}
 |	SelectStmtFromDual SelectStmtLimit SelectLockOpt
 	{
 		st := $1.(*ast.SelectStmt)
@@ -6177,6 +6367,292 @@ SelectStmt:
 			st.Limit = $3.(*ast.Limit)
 		}
 		$$ = st
+	}
+
+WindowClause:
+	"WINDOW" WindowDefinitionList
+	{
+		$$ = $2.([]ast.WindowSpec)
+	}
+
+WindowDefinitionList:
+	WindowDefinition
+	{
+		$$ = []ast.WindowSpec{$1.(ast.WindowSpec)}
+	}
+|	WindowDefinitionList ',' WindowDefinition
+	{
+		$$ = append($1.([]ast.WindowSpec), $3.(ast.WindowSpec))
+	}
+
+WindowDefinition:
+	WindowName "AS" WindowSpec
+	{
+		spec := $3.(ast.WindowSpec)
+		spec.Name = $1.(model.CIStr)
+		$$ = spec
+	}
+
+WindowName:
+	Identifier
+	{
+		$$ = model.NewCIStr($1)
+	}
+
+WindowSpec:
+	'(' WindowSpecDetails ')'
+	{
+		$$ = $2.(ast.WindowSpec)
+	}
+
+WindowSpecDetails:
+	OptExistingWindowName OptPartitionClause OptWindowOrderByClause OptWindowFrameClause
+	{
+		spec := ast.WindowSpec{Ref: $1.(model.CIStr)}
+		if $2 != nil {
+			spec.PartitionBy = $2.(*ast.PartitionByClause)
+		}
+		if $3 != nil {
+			spec.OrderBy = $3.(*ast.OrderByClause)
+		}
+		if $4 != nil {
+			spec.Frame = $4.(*ast.FrameClause)
+		}
+		$$ = spec
+	}
+
+OptExistingWindowName:
+	{
+		$$ = model.CIStr{}
+	}
+|	WindowName
+
+OptPartitionClause:
+	{
+		$$ = nil
+	}
+|	"PARTITION" "BY" ByList
+	{
+		$$ = &ast.PartitionByClause{Items: $3.([]*ast.ByItem)}
+	}
+
+OptWindowOrderByClause:
+	{
+		$$ = nil
+	}
+|	"ORDER" "BY" ByList
+	{
+		$$ = &ast.OrderByClause{Items: $3.([]*ast.ByItem)}
+	}
+
+OptWindowFrameClause:
+	{
+		$$ = nil
+	}
+|	WindowFrameUnits WindowFrameExtent
+	{
+		$$ = &ast.FrameClause{Type: $1.(ast.FrameType), Extent: $2.(ast.FrameExtent)}
+	}
+
+WindowFrameUnits:
+	"ROWS"
+	{
+		$$ = ast.FrameType(ast.Rows)
+	}
+|	"RANGE"
+	{
+		$$ = ast.FrameType(ast.Ranges)
+	}
+|	"GROUPS"
+	{
+		$$ = ast.FrameType(ast.Groups)
+	}
+
+WindowFrameExtent:
+	WindowFrameStart
+	{
+		$$ = ast.FrameExtent{Start: $1.(ast.FrameBound), End: ast.FrameBound{Type: ast.CurrentRow}}
+	}
+|	WindowFrameBetween
+
+WindowFrameStart:
+	"UNBOUNDED" "PRECEDING"
+	{
+		$$ = ast.FrameBound{Type: ast.Preceding, UnBounded: true}
+	}
+|	NumLiteral "PRECEDING"
+	{
+		$$ = ast.FrameBound{Type: ast.Preceding, Expr: ast.NewValueExpr($1)}
+	}
+|	paramMarker "PRECEDING"
+	{
+		$$ = ast.FrameBound{Type: ast.Preceding, Expr: &ast.ParamMarkerExpr{Offset: yyS[yypt].offset}}
+	}
+|	"INTERVAL" Expression TimeUnit "PRECEDING"
+	{
+		$$ = ast.FrameBound{Type: ast.Preceding, Expr: $2, Unit: ast.NewValueExpr($3)}
+	}
+|	"CURRENT" "ROW"
+	{
+		$$ = ast.FrameBound{Type: ast.CurrentRow}
+	}
+
+WindowFrameBetween:
+	"BETWEEN" WindowFrameBound "AND" WindowFrameBound
+	{
+		$$ = ast.FrameExtent{Start: $2.(ast.FrameBound), End: $4.(ast.FrameBound)}
+	}
+
+WindowFrameBound:
+	WindowFrameStart
+|	"UNBOUNDED" "FOLLOWING"
+	{
+		$$ = ast.FrameBound{Type: ast.Following, UnBounded: true}
+	}
+|	NumLiteral "FOLLOWING"
+	{
+		$$ = ast.FrameBound{Type: ast.Following, Expr: ast.NewValueExpr($1)}
+	}
+|	paramMarker "FOLLOWING"
+	{
+		$$ = ast.FrameBound{Type: ast.Following, Expr: &ast.ParamMarkerExpr{Offset: yyS[yypt].offset}}
+	}
+|	"INTERVAL" Expression TimeUnit "FOLLOWING"
+	{
+		$$ = ast.FrameBound{Type: ast.Following, Expr: $2, Unit: ast.NewValueExpr($3)}
+	}
+
+OptWindowingClause:
+	{
+		$$ = nil
+	}
+|	WindowingClause
+	{
+		spec := $1.(ast.WindowSpec)
+		$$ = &spec
+	}
+
+WindowingClause:
+	"OVER" WindowNameOrSpec
+	{
+		$$ = $2.(ast.WindowSpec)
+	}
+
+WindowNameOrSpec:
+	WindowName
+	{
+		$$ = ast.WindowSpec{Name: $1.(model.CIStr), OnlyAlias: true}
+	}
+|	WindowSpec
+
+WindowFuncCall:
+	"ROW_NUMBER" '(' ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Spec: $4.(ast.WindowSpec)}
+	}
+|	"RANK" '(' ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Spec: $4.(ast.WindowSpec)}
+	}
+|	"DENSE_RANK" '(' ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Spec: $4.(ast.WindowSpec)}
+	}
+|	"CUME_DIST" '(' ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Spec: $4.(ast.WindowSpec)}
+	}
+|	"PERCENT_RANK" '(' ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Spec: $4.(ast.WindowSpec)}
+	}
+|	"NTILE" '(' SimpleExpr ')' WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, Spec: $5.(ast.WindowSpec)}
+	}
+|	"LEAD" '(' Expression OptLeadLagInfo ')' OptNullTreatment WindowingClause
+	{
+		args := []ast.ExprNode{$3}
+		if $4 != nil {
+			args = append(args, $4.([]ast.ExprNode)...)
+		}
+		$$ = &ast.WindowFuncExpr{F: $1, Args: args, IgnoreNull: $6.(bool), Spec: $7.(ast.WindowSpec)}
+	}
+|	"LAG" '(' Expression OptLeadLagInfo ')' OptNullTreatment WindowingClause
+	{
+		args := []ast.ExprNode{$3}
+		if $4 != nil {
+			args = append(args, $4.([]ast.ExprNode)...)
+		}
+		$$ = &ast.WindowFuncExpr{F: $1, Args: args, IgnoreNull: $6.(bool), Spec: $7.(ast.WindowSpec)}
+	}
+|	"FIRST_VALUE" '(' Expression ')' OptNullTreatment WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, IgnoreNull: $5.(bool), Spec: $6.(ast.WindowSpec)}
+	}
+|	"LAST_VALUE" '(' Expression ')' OptNullTreatment WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3}, IgnoreNull: $5.(bool), Spec: $6.(ast.WindowSpec)}
+	}
+|	"NTH_VALUE" '(' Expression ',' SimpleExpr ')' OptFromFirstLast OptNullTreatment WindowingClause
+	{
+		$$ = &ast.WindowFuncExpr{F: $1, Args: []ast.ExprNode{$3, $5}, FromLast: $7.(bool), IgnoreNull: $8.(bool), Spec: $9.(ast.WindowSpec)}
+	}
+
+OptLeadLagInfo:
+	{
+		$$ = nil
+	}
+|	',' NumLiteral OptLLDefault
+	{
+		args := []ast.ExprNode{ast.NewValueExpr($2)}
+		if $3 != nil {
+			args = append(args, $3.(ast.ExprNode))
+		}
+		$$ = args
+	}
+|	',' paramMarker OptLLDefault
+	{
+		args := []ast.ExprNode{&ast.ParamMarkerExpr{Offset: yyS[yypt-1].offset}}
+		if $3 != nil {
+			args = append(args, $3.(ast.ExprNode))
+		}
+		$$ = args
+	}
+
+OptLLDefault:
+	{
+		$$ = nil
+	}
+|	',' Expression
+	{
+		$$ = $2
+	}
+
+OptNullTreatment:
+	{
+		$$ = false
+	}
+|	"RESPECT" "NULLS"
+	{
+		$$ = false
+	}
+|	"IGNORE" "NULLS"
+	{
+		$$ = true
+	}
+
+OptFromFirstLast:
+	{
+		$$ = false
+	}
+|	"FROM" "FIRST"
+	{
+		$$ = false
+	}
+|	"FROM" "LAST"
+	{
+		$$ = true
 	}
 
 FromDual:

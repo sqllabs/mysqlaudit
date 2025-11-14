@@ -62,6 +62,10 @@ var regGhostPercent *regexp.Regexp = regexp.MustCompile(`^Copy:.*?(\d+).\d+%;.*?
 
 func (s *session) checkAlterUseOsc(t *TableInfo) {
 	if (s.osc.OscOn || s.ghost.GhostOn) && (s.osc.OscMinTableSize == 0 || t.TableSize >= s.osc.OscMinTableSize) {
+		if s.ghost.GhostOn && !s.ghostAvailable() {
+			s.myRecord.useOsc = false
+			return
+		}
 		s.myRecord.useOsc = true
 	} else {
 		s.myRecord.useOsc = false

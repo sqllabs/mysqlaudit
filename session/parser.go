@@ -716,6 +716,15 @@ func processValue(value driver.Value, dataType string) driver.Value {
 		return value
 	}
 
+	if dataType != "" {
+		base := strings.Fields(strings.ToLower(dataType))
+		if len(base) > 0 {
+			dataType = base[0]
+		} else {
+			dataType = strings.ToLower(dataType)
+		}
+	}
+
 	switch v := value.(type) {
 	case int8:
 		if v >= 0 {

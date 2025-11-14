@@ -41,12 +41,12 @@ import (
 	"github.com/sqllabs/mysqlaudit/util/auth"
 
 	// "github.com/sqllabs/mysqlaudit/util/logutil"
+	. "github.com/pingcap/check"
+	"github.com/pingcap/tipb/go-binlog"
 	"github.com/sqllabs/mysqlaudit/util/sqlexec"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
 	"github.com/sqllabs/mysqlaudit/util/testleak"
 	"github.com/sqllabs/mysqlaudit/util/testutil"
-	. "github.com/pingcap/check"
-	"github.com/pingcap/tipb/go-binlog"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -1275,7 +1275,7 @@ func (s *testSessionSuite) TestUnique(c *C) {
 	tk1 := testkit.NewTestKitWithInit(c, s.store)
 	tk2 := testkit.NewTestKitWithInit(c, s.store)
 
-	tk.MustExec(`CREATE TABLE test ( id int(11) UNSIGNED NOT NULL AUTO_INCREMENT, val int UNIQUE, PRIMARY KEY (id)); `)
+	tk.MustExec(`CREATE TABLE test ( id int UNSIGNED NOT NULL AUTO_INCREMENT, val int UNIQUE, PRIMARY KEY (id)); `)
 	tk.MustExec("begin;")
 	tk.MustExec("insert into test(id, val) values(1, 1);")
 	tk1.MustExec("begin;")
@@ -1297,7 +1297,7 @@ func (s *testSessionSuite) TestUnique(c *C) {
 	// Test for https://github.com/sqllabs/mysqlaudit/issues/463
 	tk.MustExec("drop table test;")
 	tk.MustExec(`CREATE TABLE test (
-			id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			id int UNSIGNED NOT NULL AUTO_INCREMENT,
 			val int UNIQUE,
 			PRIMARY KEY (id)
 		);`)
@@ -1323,7 +1323,7 @@ func (s *testSessionSuite) TestUnique(c *C) {
 
 	tk.MustExec("drop table test;")
 	tk.MustExec(`CREATE TABLE test (
-			id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			id int UNSIGNED NOT NULL AUTO_INCREMENT,
 			val1 int UNIQUE,
 			val2 int UNIQUE,
 			PRIMARY KEY (id)
@@ -1923,8 +1923,8 @@ func (s *testSessionSuite) TestStatementErrorInTransaction(c *C) {
 
 	tk.MustExec("drop table if exists test;")
 	tk.MustExec(`create table test (
- 		  a int(11) DEFAULT NULL,
- 		  b int(11) DEFAULT NULL
+ 		  a int DEFAULT NULL,
+ 		  b int DEFAULT NULL
  	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;`)
 	tk.MustExec("insert into test values (1, 2), (1, 2), (1, 1), (1, 1);")
 

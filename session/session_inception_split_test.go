@@ -20,9 +20,9 @@ import (
 	// "strings"
 	"testing"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
-	. "github.com/pingcap/check"
 )
 
 var _ = Suite(&testSessionSplitSuite{})
@@ -53,19 +53,19 @@ func (s *testSessionSplitSuite) TearDownSuite(c *C) {
 }
 
 func (s *testSessionSplitSuite) makeSQL(sql string) *testkit.Result {
-	a := `/*--user=test;--password=test;--host=127.0.0.1;--split=1;--port=3306;--enable-ignore-warnings;*/
+	comment := s.buildOptionComment("--split=1", "--enable-ignore-warnings")
+	template := fmt.Sprintf(`%s
 inception_magic_start;
-use test_inc;
-%s;
-inception_magic_commit;`
-	return s.tk.MustQueryInc(fmt.Sprintf(a, sql))
+%s
+%%s;
+inception_magic_commit;`, comment, s.useDB)
+	return s.tk.MustQueryInc(fmt.Sprintf(template, sql))
 }
 
 func (s *testSessionSplitSuite) TestBegin(c *C) {
-	sql := `/*--user=test;--password=test;--host=127.0.0.1;--split=1;--port=3306;--enable-ignore-warnings;*/
-use test_inc;
-create table t1(id int);`
-	// res := s.tk.MustQueryInc(sql)
+	sql := fmt.Sprintf(`%s
+%s
+create table t1(id int);`, s.buildOptionComment("--split=1", "--enable-ignore-warnings"), s.useDB)
 	s.tk.MustQueryInc(sql)
 
 	c.Assert(int(s.tk.Se.AffectedRows()), Equals, 1)
@@ -75,10 +75,10 @@ create table t1(id int);`
 }
 
 func (s *testSessionSplitSuite) TestEnd(c *C) {
-	sql := `/*--user=test;--password=test;--host=127.0.0.1;--split=1;--port=3306;--enable-ignore-warnings;*/
+	sql := fmt.Sprintf(`%s
 inception_magic_start;
-use test_inc;
-create table t1(id int);`
+%s
+create table t1(id int);`, s.buildOptionComment("--split=1", "--enable-ignore-warnings"), s.useDB)
 	res := s.tk.MustQueryInc(sql)
 
 	c.Assert(int(s.tk.Se.AffectedRows()), Equals, 2)
@@ -87,10 +87,10 @@ create table t1(id int);`
 }
 
 func (s *testSessionSplitSuite) TestWrongStmt(c *C) {
-	sql := `/*--user=test;--password=test;--host=127.0.0.1;--split=1;--port=3306;--enable-ignore-warnings;*/
+	sql := fmt.Sprintf(`%s
 inception_magic_start;
 123;
-inception_magic_commit;`
+inception_magic_commit;`, s.buildOptionComment("--split=1", "--enable-ignore-warnings"))
 	res := s.tk.MustQueryInc(sql)
 
 	c.Assert(int(s.tk.Se.AffectedRows()), Equals, 1)

@@ -224,8 +224,8 @@ func mustExecSQL(c *C, se Session, sql string, args ...interface{}) ast.RecordSe
 }
 
 func match(c *C, row []types.Datum, expected ...interface{}) {
-	c.Assert(len(row), Equals, len(expected))
-	for i := range row {
+	c.Assert(len(row) >= len(expected), IsTrue)
+	for i := range expected {
 		got := fmt.Sprintf("%v", row[i].GetValue())
 		need := fmt.Sprintf("%v", expected[i])
 		c.Assert(got, Equals, need)

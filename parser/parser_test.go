@@ -237,6 +237,13 @@ func (s *testParserSuite) TestSimple(c *C) {
 	c.Assert(err, IsNil)
 }
 
+func (s *testParserSuite) TestWindowFunction(c *C) {
+	defer testleak.AfterTest(c)()
+	p := NewWithWindowFunc()
+	_, err := p.ParseOneStmt("SELECT ROW_NUMBER() OVER (PARTITION BY a ORDER BY b) FROM t", "", "")
+	c.Assert(err, IsNil)
+}
+
 type testCase struct {
 	src     string
 	ok      bool

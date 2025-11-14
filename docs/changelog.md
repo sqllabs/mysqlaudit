@@ -11,6 +11,8 @@
 
 ### Notes
 * `pt-online-schema-change` verified against MySQL 8.4 (`--recursion-method=none`); `gh-ost` pending update due to MySQL 8.4 replacing `SHOW SLAVE STATUS` with `SHOW REPLICA STATUS`.
+* Metadata and test expectations now follow MySQL 8.x output (display widths removed, collations default to `utf8mb4_general_ci`); compatibility with legacy MySQL 5.7 formats has been dropped.
+* gh-ost integration is disabled automatically on MySQL 8.4+ and goInception reports `gh-ost not supported on MySQL 8.4+, use pt-osc instead`; please switch to pt-osc until upstream gh-ost supports `SHOW REPLICA STATUS`.
 
 ## [v1.2.5]-2021-10-31
 

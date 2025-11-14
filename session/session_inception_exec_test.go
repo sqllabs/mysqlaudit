@@ -21,11 +21,11 @@ import (
 	"sync"
 	"testing"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/session"
 	"github.com/sqllabs/mysqlaudit/util"
 	"github.com/sqllabs/mysqlaudit/util/testkit"
-	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )
 
@@ -1013,6 +1013,15 @@ func (s *testSessionIncExecSuite) TestAlterTableGhost(c *C) {
 
 	sql = "alter table t1 add column `c6` varchar(20) comment \"!@#$%^&*()_+[]{}\\|;:',.<>/?\";  -- 测试注释"
 	s.testErrorCode(c, sql)
+
+	if s.DBVersion >= 80400 {
+		sql = "alter table t1 add column `c7` varchar(20);"
+		rows := s.testErrorCode(c, sql)
+		row := rows[s.getAffectedRows()-1]
+		c.Assert(row[2], Equals, "2", Commentf("%v", rows))
+		msg := fmt.Sprintf("%v", row[4])
+		c.Assert(strings.Contains(msg, "gh-ost not supported on MySQL 8.4+"), Equals, true, Commentf("%v", row))
+	}
 }
 
 // 测试忽略指定的Alter语句
@@ -1194,7 +1203,7 @@ PARTITION BY RANGE (TO_DAYS(hiredate) ) (
 );`
 	s.testErrorCode(c, sql)
 
-	sql = `create table t_list(a int(11),b int(11))
+	sql = `create table t_list(a int,b int)
 		partition by list (b)(
 		partition p0 values in (1,3,5,7,9),
 		partition p1 values in (2,4,6,8,0));`

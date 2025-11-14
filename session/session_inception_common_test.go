@@ -71,13 +71,15 @@ func init() {
 // }
 
 type testCommon struct {
-	cluster   *mocktikv.Cluster
-	mvccStore mocktikv.MVCCStore
-	store     kv.Storage
-	dom       *domain.Domain
-	tk        *testkit.TestKit
-	db        *gorm.DB
-	dbAddr    string
+	cluster      *mocktikv.Cluster
+	mvccStore    mocktikv.MVCCStore
+	store        kv.Storage
+	dom          *domain.Domain
+	tk           *testkit.TestKit
+	db           *gorm.DB
+	dbAddr       string
+	dbName       string
+	backupSchema string
 
 	// 执行结果集
 	// res *testkit.Result
@@ -128,8 +130,6 @@ func (s *testCommon) initSetUp(c *C) {
 
 	s.realRowCount = true
 
-	s.useDB = "use test_inc;"
-
 	testleak.BeforeTest()
 	s.cluster = mocktikv.NewCluster()
 	mocktikv.BootstrapWithSingleStore(s.cluster)
@@ -174,10 +174,10 @@ func (s *testCommon) initSetUp(c *C) {
 
 	inc := &config.GetGlobalConfig().Inc
 
-	inc.BackupHost = "127.0.0.1"
-	inc.BackupPort = 3306
-	inc.BackupUser = "test"
-	inc.BackupPassword = "test"
+	inc.BackupHost = getTestHost()
+	inc.BackupPort = getTestPort()
+	inc.BackupUser = getTestUser()
+	inc.BackupPassword = getTestPassword()
 
 	inc.Lang = "en-US"
 	inc.EnableFingerprint = true
@@ -194,6 +194,11 @@ func (s *testCommon) initSetUp(c *C) {
 
 	s.defaultInc = *inc
 	s.defaultIncLevel = *incLevel
+
+	s.dbName = getTestDBName()
+	s.useDB = fmt.Sprintf("use %s;", s.dbName)
+
+	c.Assert(s.ensureTestDatabase(), IsNil)
 
 	s.remoteBackupTable = "$_$Inception_backup_information$_$"
 	s.parser = parser.New()
@@ -550,6 +555,36 @@ func (s *testCommon) getAddr() string {
 	s.dbAddr = fmt.Sprintf(`--host=%s;--port=%d;--user=%s;--password=%s;`,
 		inc.BackupHost, inc.BackupPort, inc.BackupUser, inc.BackupPassword)
 	return s.dbAddr
+}
+
+func (s *testCommon) buildOptionComment(options ...string) string {
+	var builder strings.Builder
+	builder.WriteString("/*")
+	builder.WriteString(s.getAddr())
+	for _, opt := range options {
+		opt = strings.TrimSpace(opt)
+		if opt == "" {
+			continue
+		}
+		if !strings.HasSuffix(opt, ";") {
+			opt += ";"
+		}
+		builder.WriteString(opt)
+	}
+	builder.WriteString("*/")
+	return builder.String()
+}
+
+func (s *testCommon) ensureTestDatabase() error {
+	inc := config.GetGlobalConfig().Inc
+	addr := fmt.Sprintf("%s:%s@tcp(%s:%d)/mysql?charset=utf8mb4&parseTime=True&loc=Local&maxAllowedPacket=4194304&autocommit=1",
+		inc.BackupUser, inc.BackupPassword, inc.BackupHost, inc.BackupPort)
+	db, err := gorm.Open("mysql", addr)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	return db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;", s.dbName)).Error
 }
 
 func (s *testCommon) mysqlServerVersion() error {
@@ -976,8 +1011,7 @@ func (s *testCommon) query(table, opid string) string {
 	}
 
 	result := []string{}
-	sql := "select rollback_statement from 127_0_0_1_%d_test_inc.`%s` where opid_time = ?;"
-	sql = fmt.Sprintf(sql, inc.BackupPort, table)
+	sql := fmt.Sprintf("select rollback_statement from `%s`.`%s` where opid_time = ?;", s.backupSchemaName(), table)
 
 	rows, err := s.db.Raw(sql, opid).Rows()
 	if err != nil {
@@ -992,6 +1026,16 @@ func (s *testCommon) query(table, opid string) string {
 		}
 	}
 	return strings.Join(result, "\n")
+}
+
+func (s *testCommon) backupSchemaName() string {
+	if s.backupSchema != "" {
+		return s.backupSchema
+	}
+	inc := config.GetGlobalConfig().Inc
+	hostPart := normalizeSchemaComponent(inc.BackupHost)
+	s.backupSchema = fmt.Sprintf("%s_%d_%s", hostPart, inc.BackupPort, s.dbName)
+	return s.backupSchema
 }
 
 // parserStmt 解析sql变成ast语法

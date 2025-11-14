@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	. "github.com/pingcap/check"
 	"github.com/sqllabs/mysqlaudit/config"
 	"github.com/sqllabs/mysqlaudit/session"
-	. "github.com/pingcap/check"
 	"golang.org/x/net/context"
 )
 
@@ -34,16 +34,11 @@ func (s *testInceptionSuite) SetUpSuite(c *C) {
 
 func (s *testInceptionSuite) TestCheck(c *C) {
 	core := session.NewInception()
-	core.LoadOptions(session.SourceOptions{
-		Host:     "127.0.0.1",
-		Port:     3306,
-		User:     "test",
-		Password: "test",
-	})
-	sql := `use test_inc;
-	drop table if exists t1;
+	opts := loadTestSourceOptions()
+	core.LoadOptions(opts)
+	sql := wrapSQLWithDB(`drop table if exists t1;
 	create table t1(id int primary key);
-	insert into t1 values(1);`
+	insert into t1 values(1);`)
 	result, err := core.Audit(context.Background(), sql)
 	c.Assert(err, IsNil)
 
@@ -59,16 +54,11 @@ func (s *testInceptionSuite) TestCheck(c *C) {
 
 func (s *testInceptionSuite) TestExecute(c *C) {
 	core := session.NewInception()
-	core.LoadOptions(session.SourceOptions{
-		Host:     "127.0.0.1",
-		Port:     3306,
-		User:     "test",
-		Password: "test",
-	})
-	sql := `use test_inc;
-	drop table if exists t1;
+	opts := loadTestSourceOptions()
+	core.LoadOptions(opts)
+	sql := wrapSQLWithDB(`drop table if exists t1;
 	create table t1(id int primary key);
-	insert into t1 values(1);`
+	insert into t1 values(1);`)
 	result, err := core.RunExecute(context.Background(), sql)
 	c.Assert(err, IsNil)
 
@@ -84,17 +74,12 @@ func (s *testInceptionSuite) TestExecute(c *C) {
 
 func (s *testInceptionSuite) TestBackup(c *C) {
 	core := session.NewInception()
-	core.LoadOptions(session.SourceOptions{
-		Host:     "127.0.0.1",
-		Port:     3306,
-		User:     "test",
-		Password: "test",
-		Backup:   true,
-	})
-	sql := `use test_inc;
-	drop table if exists t1;
+	opts := loadTestSourceOptions()
+	opts.Backup = true
+	core.LoadOptions(opts)
+	sql := wrapSQLWithDB(`drop table if exists t1;
 	create table t1(id int primary key);
-	insert into t1 values(1);`
+	insert into t1 values(1);`)
 	result, err := core.RunExecute(context.Background(), sql)
 	c.Assert(err, IsNil)
 
@@ -110,16 +95,11 @@ func (s *testInceptionSuite) TestBackup(c *C) {
 
 func (s *testInceptionSuite) TestDropTable(c *C) {
 	core := session.NewInception()
-	core.LoadOptions(session.SourceOptions{
-		Host:     "127.0.0.1",
-		Port:     3306,
-		User:     "test",
-		Password: "test",
-		Backup:   true,
-	})
-	sql := `use test_inc;
-	drop table if exists t000001;
-	create table t000001(id int);`
+	opts := loadTestSourceOptions()
+	opts.Backup = true
+	core.LoadOptions(opts)
+	sql := wrapSQLWithDB(`drop table if exists t000001;
+	create table t000001(id int);`)
 	result, err := core.RunExecute(context.Background(), sql)
 	c.Assert(err, IsNil)
 
@@ -131,4 +111,17 @@ func (s *testInceptionSuite) TestDropTable(c *C) {
 			fmt.Println(fmt.Sprintf("[%v] sql: %v", session.StatusList[row.StageStatus], row.Sql))
 		}
 	}
+}
+
+func loadTestSourceOptions() session.SourceOptions {
+	return session.SourceOptions{
+		Host:     getTestHost(),
+		Port:     int(getTestPort()),
+		User:     getTestUser(),
+		Password: getTestPassword(),
+	}
+}
+
+func wrapSQLWithDB(sql string) string {
+	return fmt.Sprintf("use %s;\n%s", getTestDBName(), sql)
 }
