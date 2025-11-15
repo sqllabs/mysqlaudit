@@ -1,6 +1,6 @@
 module github.com/sqllabs/mysqlaudit
 
-go 1.25.1
+go 1.25.4
 
 replace gopkg.in/gcfg.v1 => github.com/hanchuanchuan/gcfg.v1 v0.0.0-20190302111942-77c0f3dcc0b3
 
